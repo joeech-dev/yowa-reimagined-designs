@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import logoLight from "@/assets/Yowa_Logo_2.png";
+import logoDark from "@/assets/Yowa_Logo_1.png";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,10 +19,17 @@ const Navbar = () => {
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
       <nav className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 rounded-lg gradient-warm flex items-center justify-center">
-              <span className="text-primary-foreground font-display font-bold text-xl">Y</span>
-            </div>
+          <Link to="/" className="flex items-center space-x-3">
+            <img 
+              src={logoLight} 
+              alt="Yowa Innovations Logo" 
+              className="w-10 h-10 dark:hidden"
+            />
+            <img 
+              src={logoDark} 
+              alt="Yowa Innovations Logo" 
+              className="w-10 h-10 hidden dark:block"
+            />
             <span className="font-display font-bold text-xl text-foreground">
               Yowa Innovations
             </span>
