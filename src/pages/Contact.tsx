@@ -1,5 +1,4 @@
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,25 +17,26 @@ const Contact = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 gradient-subtle">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="font-display font-bold text-5xl md:text-6xl mb-6">Contact Us</h1>
-            <p className="text-xl text-muted-foreground">
-              Ready to collaborate? Let's tell your story, grow your impact, and spark something
-              new.
-            </p>
-          </div>
+      <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-muted/30 to-muted/70"></div>
+        
+        <div className="container mx-auto px-4 relative z-10 text-center">
+          <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tight mb-6 text-[#C9A961]">
+            CONTACT
+          </h1>
+          <p className="text-xl md:text-2xl font-serif italic text-muted-foreground max-w-3xl mx-auto">
+            Let us work with you to create online strategy that works
+          </p>
         </div>
       </section>
 
       {/* Contact Section */}
-      <section className="py-20">
+      <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Contact Form */}
             <div>
-              <h2 className="font-display font-bold text-3xl mb-6">Send Us a Message</h2>
+              <h2 className="text-4xl font-bold mb-6 text-[#C9A961]">Send Us a Message</h2>
               <Card className="p-8 shadow-warm">
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
@@ -77,7 +77,7 @@ const Contact = () => {
 
             {/* Contact Information */}
             <div>
-              <h2 className="font-display font-bold text-3xl mb-6">Get in Touch</h2>
+              <h2 className="text-4xl font-bold mb-6 text-[#C9A961]">Get in Touch</h2>
               <div className="space-y-6">
                 <Card className="p-6 hover:shadow-warm transition-smooth">
                   <div className="flex items-start space-x-4">
@@ -147,8 +147,6 @@ const Contact = () => {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 };
