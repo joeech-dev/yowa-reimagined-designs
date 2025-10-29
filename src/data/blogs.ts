@@ -5,6 +5,8 @@ export interface Blog {
   category: string;
   image: string;
   slug: string;
+  source_url?: string;
+  source_name?: string;
 }
 
 export const blogs: Blog[] = [

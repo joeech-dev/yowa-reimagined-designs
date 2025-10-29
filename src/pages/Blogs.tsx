@@ -5,18 +5,28 @@ import Footer from "@/components/Footer";
 import BlogCard from "@/components/BlogCard";
 import { Button } from "@/components/ui/button";
 import { blogs } from "@/data/blogs";
+import { useTrendingBlogs } from "@/hooks/useTrendingBlogs";
+import { ExternalLink } from "lucide-react";
 
 const Blogs = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryParam = searchParams.get("category");
   const [activeCategory, setActiveCategory] = useState(categoryParam || "all");
+  const { data: trendingBlogs = [], isLoading } = useTrendingBlogs();
 
-  const categories = ["all", "infrastructure", "urbanism", "livelihood"];
+  const categories = ["all", "trending", "infrastructure", "urbanism", "livelihood"];
 
-  const filteredBlogs =
-    activeCategory === "all"
-      ? blogs
-      : blogs.filter((blog) => blog.category.toLowerCase() === activeCategory);
+  // Combine static and trending blogs
+  const allBlogs = activeCategory === "trending" 
+    ? trendingBlogs.map(blog => ({
+        ...blog,
+        category: "Trending"
+      }))
+    : activeCategory === "all"
+    ? [...blogs, ...trendingBlogs.map(blog => ({ ...blog, category: "Trending" }))]
+    : blogs.filter((blog) => blog.category.toLowerCase() === activeCategory);
+
+  const filteredBlogs = allBlogs;
 
   const handleCategoryChange = (category: string) => {
     setActiveCategory(category);
@@ -68,10 +78,27 @@ const Blogs = () => {
       {/* Blog Grid */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          {filteredBlogs.length > 0 ? (
+          {isLoading && activeCategory === "trending" ? (
+            <div className="text-center py-20">
+              <p className="text-xl text-muted-foreground">Loading trending posts...</p>
+            </div>
+          ) : filteredBlogs.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredBlogs.map((blog) => (
-                <BlogCard key={blog.id} {...blog} />
+                <div key={blog.id} className="relative">
+                  <BlogCard {...blog} />
+                  {blog.category === "Trending" && blog.source_url && (
+                    <a 
+                      href={blog.source_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="absolute top-4 right-4 bg-primary text-primary-foreground p-2 rounded-full shadow-lg hover:scale-110 transition-smooth"
+                      title={blog.source_name ? `Read on ${blog.source_name}` : 'Read original'}
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  )}
+                </div>
               ))}
             </div>
           ) : (
