@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { supabaseConfig } from "@/lib/supabase";
 
 export interface TrendingBlog {
   id: string;
@@ -16,19 +17,12 @@ export const useTrendingBlogs = () => {
   return useQuery({
     queryKey: ["trending-blogs"],
     queryFn: async () => {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-      
-      if (!supabaseUrl || !supabaseAnonKey) {
-        return [];
-      }
-
       const response = await fetch(
-        `${supabaseUrl}/rest/v1/blog_posts?category=eq.trending&order=published_at.desc&limit=20`,
+        `${supabaseConfig.url}/rest/v1/blog_posts?category=eq.trending&order=published_at.desc&limit=20`,
         {
           headers: {
-            'apikey': supabaseAnonKey,
-            'Authorization': `Bearer ${supabaseAnonKey}`,
+            'apikey': supabaseConfig.anonKey,
+            'Authorization': `Bearer ${supabaseConfig.anonKey}`,
           },
         }
       );
