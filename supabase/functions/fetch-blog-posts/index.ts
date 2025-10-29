@@ -1,5 +1,3 @@
-import { createClient } from 'jsr:@supabase/supabase-js@2';
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -11,13 +9,14 @@ interface RSSItem {
   link: string;
   pubDate: string;
   image?: string;
+  source: string;
 }
 
 // Creative industry RSS feeds
 const RSS_FEEDS = [
   { url: 'https://www.creativebloq.com/feed', name: 'Creative Bloq' },
   { url: 'https://www.designboom.com/feed/', name: 'Designboom' },
-  { url: 'https://www.itsnicethat.com/feed', name: 'It\'s Nice That' },
+  { url: 'https://www.itsnicethat.com/feed', name: "It's Nice That" },
   { url: 'https://www.theverge.com/rss/design/index.xml', name: 'The Verge Design' },
 ];
 
@@ -56,6 +55,7 @@ async function parseRSS(feedUrl: string, sourceName: string): Promise<RSSItem[]>
           link: link.trim(),
           pubDate,
           image,
+          source: sourceName,
         });
       }
     }
@@ -73,10 +73,8 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
 
     console.log('Starting blog aggregation...');
     
@@ -85,34 +83,45 @@ Deno.serve(async (req) => {
     for (const feed of RSS_FEEDS) {
       console.log(`Fetching from ${feed.name}...`);
       const posts = await parseRSS(feed.url, feed.name);
-      allPosts.push(...posts.map(post => ({ ...post, source: feed.name })));
+      allPosts.push(...posts);
     }
 
     console.log(`Fetched ${allPosts.length} posts total`);
 
-    // Insert new posts into database
+    // Insert new posts into database using REST API
     let insertedCount = 0;
     for (const post of allPosts) {
       const slug = post.link.split('/').pop()?.replace(/[^a-z0-9-]/gi, '-').toLowerCase() || 
                    `post-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       
-      const { error } = await supabase
-        .from('blog_posts')
-        .upsert({
-          title: post.title,
-          excerpt: post.description,
-          category: 'trending',
-          image: post.image || 'https://images.unsplash.com/photo-1586717791821-3f44a563fa4c',
-          slug,
-          source_url: post.link,
-          source_name: (post as any).source,
-          published_at: new Date(post.pubDate).toISOString(),
-        }, {
-          onConflict: 'slug',
-          ignoreDuplicates: true,
-        });
+      const postData = {
+        title: post.title,
+        excerpt: post.description,
+        category: 'trending',
+        image: post.image || 'https://images.unsplash.com/photo-1586717791821-3f44a563fa4c',
+        slug,
+        source_url: post.link,
+        source_name: post.source,
+        published_at: new Date(post.pubDate).toISOString(),
+      };
 
-      if (!error) insertedCount++;
+      // Use Supabase REST API directly
+      const response = await fetch(`${supabaseUrl}/rest/v1/blog_posts`, {
+        method: 'POST',
+        headers: {
+          'apikey': supabaseServiceKey,
+          'Authorization': `Bearer ${supabaseServiceKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=ignore-duplicates',
+        },
+        body: JSON.stringify(postData),
+      });
+
+      if (response.ok || response.status === 409) { // 409 means duplicate (conflict)
+        insertedCount++;
+      } else {
+        console.error(`Failed to insert post: ${post.title}`, await response.text());
+      }
     }
 
     console.log(`Successfully inserted ${insertedCount} new posts`);
