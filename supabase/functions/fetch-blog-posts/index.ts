@@ -60,7 +60,7 @@ async function parseRSS(feedUrl: string, sourceName: string): Promise<RSSItem[]>
       }
     }
     
-    return items.slice(0, 5); // Get top 5 items per feed
+    return items.slice(0, 1); // Get top 1 item per feed for daily aggregation
   } catch (error) {
     console.error(`Error parsing RSS feed ${sourceName}:`, error);
     return [];
