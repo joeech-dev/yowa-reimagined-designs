@@ -3,6 +3,7 @@ CREATE OR REPLACE FUNCTION public.fetch_blog_posts_job()
 RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
   -- Call the edge function using net.http_post
