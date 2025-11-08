@@ -46,9 +46,11 @@ const Navbar = () => {
                 {link.name}
               </Link>
             ))}
-            <Button size="sm" className="gradient-warm">
-              Get Started
-            </Button>
+            <Link to="/get-started">
+              <Button size="sm" className="gradient-warm">
+                Get Started
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -74,9 +76,11 @@ const Navbar = () => {
                 {link.name}
               </Link>
             ))}
-            <Button size="sm" className="w-full gradient-warm">
-              Get Started
-            </Button>
+            <Link to="/get-started">
+              <Button size="sm" className="w-full gradient-warm">
+                Get Started
+              </Button>
+            </Link>
           </div>
         )}
       </nav>

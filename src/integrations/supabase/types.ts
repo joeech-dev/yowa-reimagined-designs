@@ -14,16 +14,125 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      leads: {
+        Row: {
+          budget: number | null
+          budget_range: string | null
+          created_at: string | null
+          email: string
+          geographic_location: string | null
+          id: string
+          industry_type: string | null
+          last_contact_date: string | null
+          name: string
+          next_followup_date: string | null
+          phone: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          budget?: number | null
+          budget_range?: string | null
+          created_at?: string | null
+          email: string
+          geographic_location?: string | null
+          id?: string
+          industry_type?: string | null
+          last_contact_date?: string | null
+          name: string
+          next_followup_date?: string | null
+          phone: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          budget?: number | null
+          budget_range?: string | null
+          created_at?: string | null
+          email?: string
+          geographic_location?: string | null
+          id?: string
+          industry_type?: string | null
+          last_contact_date?: string | null
+          name?: string
+          next_followup_date?: string | null
+          phone?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      outreach_log: {
+        Row: {
+          channel: string
+          id: string
+          lead_id: string
+          message_content: string | null
+          sent_at: string | null
+          status: string | null
+        }
+        Insert: {
+          channel: string
+          id?: string
+          lead_id: string
+          message_content?: string | null
+          sent_at?: string | null
+          status?: string | null
+        }
+        Update: {
+          channel?: string
+          id?: string
+          lead_id?: string
+          message_content?: string | null
+          sent_at?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "outreach_log_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +259,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
