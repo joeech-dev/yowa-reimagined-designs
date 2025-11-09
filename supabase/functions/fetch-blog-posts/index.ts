@@ -12,13 +12,27 @@ interface RSSItem {
   source: string;
 }
 
-// Creative industry RSS feeds
+// Film/Tech industry RSS feeds
 const RSS_FEEDS = [
-  { url: 'https://www.creativebloq.com/feed', name: 'Creative Bloq' },
-  { url: 'https://www.designboom.com/feed/', name: 'Designboom' },
-  { url: 'https://www.itsnicethat.com/feed', name: "It's Nice That" },
-  { url: 'https://www.theverge.com/rss/design/index.xml', name: 'The Verge Design' },
+  { url: 'https://www.indiewire.com/feed/', name: 'IndieWire' },
+  { url: 'https://nofilmschool.com/rss', name: 'No Film School' },
+  { url: 'https://www.premiumbeat.com/blog/feed/', name: 'PremiumBeat' },
+  { url: 'https://www.techradar.com/rss', name: 'TechRadar' },
+  { url: 'https://filmmakermagazine.com/feed/', name: 'Filmmaker Magazine' },
 ];
+
+// Keywords to filter relevant content
+const RELEVANT_KEYWORDS = [
+  'film submission', 'call for entries', 'film festival', 'funding', 'grant',
+  'african filmmaker', 'camera', 'lens', 'microphone', 'audio', 'sound',
+  'editing software', 'davinci resolve', 'premiere', 'final cut',
+  'budget', 'affordable', 'filmmaking equipment', 'production gear'
+];
+
+function isRelevantPost(title: string, description: string): boolean {
+  const content = `${title} ${description}`.toLowerCase();
+  return RELEVANT_KEYWORDS.some(keyword => content.includes(keyword.toLowerCase()));
+}
 
 async function parseRSS(feedUrl: string, sourceName: string): Promise<RSSItem[]> {
   try {
@@ -60,7 +74,7 @@ async function parseRSS(feedUrl: string, sourceName: string): Promise<RSSItem[]>
       }
     }
     
-    return items.slice(0, 1); // Get top 1 item per feed for daily aggregation
+    return items.slice(0, 2); // Get top 2 items per feed
   } catch (error) {
     console.error(`Error parsing RSS feed ${sourceName}:`, error);
     return [];
@@ -78,6 +92,22 @@ Deno.serve(async (req) => {
 
     console.log('Starting blog aggregation...');
     
+    // Delete posts older than 30 days
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const deleteResponse = await fetch(
+      `${supabaseUrl}/rest/v1/blog_posts?published_at=lt.${thirtyDaysAgo.toISOString()}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'apikey': supabaseServiceKey,
+          'Authorization': `Bearer ${supabaseServiceKey}`,
+        },
+      }
+    );
+    console.log(`Deleted old posts: ${deleteResponse.ok}`);
+    
     // Fetch all RSS feeds
     const allPosts: RSSItem[] = [];
     for (const feed of RSS_FEEDS) {
@@ -88,9 +118,21 @@ Deno.serve(async (req) => {
 
     console.log(`Fetched ${allPosts.length} posts total`);
 
+    // Filter for relevant posts
+    const relevantPosts = allPosts.filter(post => 
+      isRelevantPost(post.title, post.description)
+    );
+    console.log(`Filtered to ${relevantPosts.length} relevant posts`);
+
+    // Limit to 2 posts per day
+    const postsToInsert = relevantPosts.slice(0, 2);
+
     // Insert new posts into database using REST API
     let insertedCount = 0;
-    for (const post of allPosts) {
+    const insertedPostIds: string[] = [];
+    
+    for (let i = 0; i < postsToInsert.length; i++) {
+      const post = postsToInsert[i];
       const slug = post.link.split('/').pop()?.replace(/[^a-z0-9-]/gi, '-').toLowerCase() || 
                    `post-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       
@@ -103,34 +145,144 @@ Deno.serve(async (req) => {
         source_url: post.link,
         source_name: post.source,
         published_at: new Date(post.pubDate).toISOString(),
+        daily_post_order: i + 1,
+        auto_posted_to_social: false,
       };
 
-      // Use Supabase REST API directly
       const response = await fetch(`${supabaseUrl}/rest/v1/blog_posts`, {
         method: 'POST',
         headers: {
           'apikey': supabaseServiceKey,
           'Authorization': `Bearer ${supabaseServiceKey}`,
           'Content-Type': 'application/json',
-          'Prefer': 'resolution=ignore-duplicates',
+          'Prefer': 'resolution=ignore-duplicates,return=representation',
         },
         body: JSON.stringify(postData),
       });
 
-      if (response.ok || response.status === 409) { // 409 means duplicate (conflict)
+      if (response.ok) {
         insertedCount++;
-      } else {
+        const data = await response.json();
+        if (data && data[0]?.id) {
+          insertedPostIds.push(data[0].id);
+        }
+      } else if (response.status !== 409) {
         console.error(`Failed to insert post: ${post.title}`, await response.text());
       }
     }
 
     console.log(`Successfully inserted ${insertedCount} new posts`);
 
+    // Auto-post to social media
+    if (insertedPostIds.length > 0) {
+      console.log('Starting auto-posting to social media...');
+      
+      // Fetch active webhooks
+      const webhooksResponse = await fetch(
+        `${supabaseUrl}/rest/v1/social_media_webhooks?is_active=eq.true&select=*`,
+        {
+          headers: {
+            'apikey': supabaseServiceKey,
+            'Authorization': `Bearer ${supabaseServiceKey}`,
+          },
+        }
+      );
+
+      if (webhooksResponse.ok) {
+        const webhooks = await webhooksResponse.json();
+        console.log(`Found ${webhooks.length} active webhooks`);
+
+        // Fetch the inserted posts
+        const postsResponse = await fetch(
+          `${supabaseUrl}/rest/v1/blog_posts?id=in.(${insertedPostIds.join(',')})&select=*`,
+          {
+            headers: {
+              'apikey': supabaseServiceKey,
+              'Authorization': `Bearer ${supabaseServiceKey}`,
+            },
+          }
+        );
+
+        if (postsResponse.ok) {
+          const posts = await postsResponse.json();
+          
+          for (const webhook of webhooks) {
+            for (const post of posts) {
+              try {
+                const postPayload = {
+                  platform: webhook.platform,
+                  title: post.title,
+                  excerpt: post.excerpt,
+                  url: post.source_url,
+                  image: post.image,
+                };
+
+                const webhookResponse = await fetch(webhook.webhook_url, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(postPayload),
+                });
+
+                console.log(`Posted to ${webhook.platform}: ${webhookResponse.ok}`);
+              } catch (error) {
+                console.error(`Failed to post to ${webhook.platform}:`, error);
+              }
+            }
+          }
+
+          // Mark posts as auto-posted
+          for (const postId of insertedPostIds) {
+            await fetch(`${supabaseUrl}/rest/v1/blog_posts?id=eq.${postId}`, {
+              method: 'PATCH',
+              headers: {
+                'apikey': supabaseServiceKey,
+                'Authorization': `Bearer ${supabaseServiceKey}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ auto_posted_to_social: true }),
+            });
+          }
+        }
+      }
+    }
+
+    // Keep only top 20 posts
+    const countResponse = await fetch(
+      `${supabaseUrl}/rest/v1/blog_posts?category=eq.trending&select=id&order=published_at.desc`,
+      {
+        headers: {
+          'apikey': supabaseServiceKey,
+          'Authorization': `Bearer ${supabaseServiceKey}`,
+        },
+      }
+    );
+
+    if (countResponse.ok) {
+      const allTrendingPosts = await countResponse.json();
+      if (allTrendingPosts.length > 20) {
+        const postsToDelete = allTrendingPosts.slice(20);
+        const idsToDelete = postsToDelete.map((p: any) => p.id).join(',');
+        
+        await fetch(
+          `${supabaseUrl}/rest/v1/blog_posts?id=in.(${idsToDelete})`,
+          {
+            method: 'DELETE',
+            headers: {
+              'apikey': supabaseServiceKey,
+              'Authorization': `Bearer ${supabaseServiceKey}`,
+            },
+          }
+        );
+        console.log(`Trimmed to top 20 posts`);
+      }
+    }
+
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: `Aggregated ${insertedCount} new posts`,
-        total: allPosts.length 
+        message: `Aggregated ${insertedCount} new posts and auto-posted to social media`,
+        total: postsToInsert.length,
+        posted_to_social: insertedPostIds.length 
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
