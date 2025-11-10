@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabaseConfig } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface TrendingBlog {
   id: string;
@@ -14,26 +14,22 @@ export interface TrendingBlog {
 }
 
 export const useTrendingBlogs = () => {
-  return useQuery({
+  return useQuery<TrendingBlog[]>({
     queryKey: ["trending-blogs"],
     queryFn: async () => {
-      const response = await fetch(
-        `${supabaseConfig.url}/rest/v1/blog_posts?category=eq.trending&order=published_at.desc&limit=20`,
-        {
-          headers: {
-            'apikey': supabaseConfig.anonKey,
-            'Authorization': `Bearer ${supabaseConfig.anonKey}`,
-          },
-        }
-      );
+      const { data, error } = await (supabase as any)
+        .from("blog_posts")
+        .select("id, title, excerpt, category, image, slug, source_url, source_name, published_at")
+        .eq("category", "trending")
+        .order("published_at", { ascending: false })
+        .limit(20);
 
-      if (!response.ok) {
-        console.error('Failed to fetch trending blogs');
+      if (error) {
+        console.error("Failed to fetch trending blogs", error);
         return [];
       }
 
-      const data = await response.json();
-      return data as TrendingBlog[];
+      return (data || []) as TrendingBlog[];
     },
   });
 };
