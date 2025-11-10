@@ -64,13 +64,17 @@ const Index = () => {
               We create. We connect. We innovate.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="gradient-warm text-lg shadow-warm">
-                Get Started
-                <ArrowRight className="ml-2" />
-              </Button>
-              <Button size="lg" variant="outline">
-                Learn More
-              </Button>
+              <Link to="/get-started">
+                <Button size="lg" className="gradient-warm text-lg shadow-warm">
+                  Get Started
+                  <ArrowRight className="ml-2" />
+                </Button>
+              </Link>
+              <Link to="/about">
+                <Button size="lg" variant="outline">
+                  Learn More
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
