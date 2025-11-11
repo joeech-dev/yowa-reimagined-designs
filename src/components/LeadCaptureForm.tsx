@@ -56,6 +56,27 @@ export const LeadCaptureForm = () => {
 
       if (error) throw error;
 
+      // Add contact to systeme.io for welcome email automation
+      try {
+        await supabase.functions.invoke('systeme-add-contact', {
+          body: {
+            email: data.email,
+            name: data.name,
+            phone: data.phone,
+            fields: [
+              { slug: 'budget', value: data.budget },
+              { slug: 'industry_type', value: data.industry_type },
+              { slug: 'budget_range', value: data.budget_range },
+              { slug: 'geographic_location', value: data.geographic_location },
+            ],
+            tags: ['new-lead', 'website-form'],
+          },
+        });
+      } catch (emailError) {
+        console.error('Email automation error:', emailError);
+        // Don't fail the whole submission if email fails
+      }
+
       toast.success("Thank you! We'll be in touch soon.");
       
       // Open Facebook Messenger
