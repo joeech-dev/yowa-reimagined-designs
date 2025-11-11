@@ -226,33 +226,9 @@ export const LeadCaptureForm = () => {
               {isSubmitting ? "Submitting..." : "Submit"}
             </Button>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <Button
-                type="button"
-                variant="outline"
-                className="flex items-center gap-2"
-                onClick={() => {
-                  const message = encodeURIComponent(
-                    `Welcome to Yowa Innovations! 👋\nLet's create something amazing together.\n\nWhat service are you interested in?\n🎬 Documentary Production\n📱 Digital Marketing\n🎨 Content Creation`
-                  );
-                  window.open(`https://wa.me/+256779180984?text=${message}`, "_blank");
-                }}
-              >
-                <MessageSquare className="h-4 w-4" />
-                Chat on WhatsApp
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                className="flex items-center gap-2"
-                onClick={() =>
-                  window.open("https://m.me/102134759442547", "_blank")
-                }
-              >
-                <MessageCircle className="h-4 w-4" />
-                Chat on Messenger
-              </Button>
-            </div>
+            <p className="text-sm text-muted-foreground">
+              Prefer chatting? Use the chat bubble at the bottom-right.
+            </p>
           </form>
         </Form>
       </CardContent>
