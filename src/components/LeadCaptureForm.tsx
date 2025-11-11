@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, MessageSquare } from "lucide-react";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(100),
@@ -78,13 +78,6 @@ export const LeadCaptureForm = () => {
       }
 
       toast.success("Thank you! We'll be in touch soon.");
-      
-      // Open Facebook Messenger
-      const messengerUrl = `https://m.me/102134759442547?text=${encodeURIComponent(
-        `Hi! I just submitted a lead form. My name is ${data.name}.`
-      )}`;
-      window.open(messengerUrl, "_blank");
-      
       form.reset();
     } catch (error: any) {
       console.error("Error submitting form:", error);
@@ -229,9 +222,24 @@ export const LeadCaptureForm = () => {
               />
             </div>
 
-            <div className="flex gap-4">
-              <Button type="submit" className="flex-1" disabled={isSubmitting}>
-                {isSubmitting ? "Submitting..." : "Submit"}
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "Submitting..." : "Submit"}
+            </Button>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <Button
+                type="button"
+                variant="outline"
+                className="flex items-center gap-2"
+                onClick={() => {
+                  const message = encodeURIComponent(
+                    `Welcome to Yowa Innovations! 👋\nLet's create something amazing together.\n\nWhat service are you interested in?\n🎬 Documentary Production\n📱 Digital Marketing\n🎨 Content Creation`
+                  );
+                  window.open(`https://wa.me/+256779180984?text=${message}`, "_blank");
+                }}
+              >
+                <MessageSquare className="h-4 w-4" />
+                Chat on WhatsApp
               </Button>
               <Button
                 type="button"
