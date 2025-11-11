@@ -39,7 +39,10 @@ const handler = async (req: Request): Promise<Response> => {
       contactFields.push({ slug: "phone_number", value: phone });
     }
 
-    // Create contact in systeme.io
+    // Try to create contact in systeme.io
+    let contactData;
+    let isNewContact = true;
+    
     const contactResponse = await fetch(`${SYSTEME_IO_API_URL}/contacts`, {
       method: "POST",
       headers: {
@@ -54,12 +57,56 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (!contactResponse.ok) {
       const errorText = await contactResponse.text();
-      console.error("Systeme.io contact creation error:", errorText);
-      throw new Error(`Failed to create contact: ${contactResponse.status} ${errorText}`);
+      
+      // Check if error is due to duplicate email
+      if (contactResponse.status === 422 && errorText.includes("email: This value is already used")) {
+        console.log("Contact already exists, searching for existing contact...");
+        isNewContact = false;
+        
+        // Search for existing contact by email
+        const searchResponse = await fetch(`${SYSTEME_IO_API_URL}/contacts?email=${encodeURIComponent(email)}`, {
+          headers: {
+            "X-API-Key": SYSTEME_IO_API_KEY!,
+          },
+        });
+        
+        if (searchResponse.ok) {
+          const searchData = await searchResponse.json();
+          if (searchData.items && searchData.items.length > 0) {
+            contactData = searchData.items[0];
+            console.log("Found existing contact:", contactData.id);
+            
+            // Update the existing contact with new fields if provided
+            if (contactFields.length > 0) {
+              const updateResponse = await fetch(`${SYSTEME_IO_API_URL}/contacts/${contactData.id}`, {
+                method: "PATCH",
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-API-Key": SYSTEME_IO_API_KEY!,
+                },
+                body: JSON.stringify({
+                  fields: contactFields,
+                }),
+              });
+              
+              if (updateResponse.ok) {
+                console.log("Updated existing contact with new information");
+              }
+            }
+          } else {
+            throw new Error("Contact exists but could not be found");
+          }
+        } else {
+          throw new Error("Failed to search for existing contact");
+        }
+      } else {
+        console.error("Systeme.io contact creation error:", errorText);
+        throw new Error(`Failed to create contact: ${contactResponse.status} ${errorText}`);
+      }
+    } else {
+      contactData = await contactResponse.json();
+      console.log("Contact created successfully:", contactData);
     }
-
-    const contactData = await contactResponse.json();
-    console.log("Contact created successfully:", contactData);
 
     // Add tags if provided
     if (tags.length > 0) {
