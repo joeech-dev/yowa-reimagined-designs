@@ -63,13 +63,13 @@ export const LeadCaptureForm = () => {
             email: data.email,
             name: data.name,
             phone: data.phone,
-            fields: [
-              { slug: 'budget', value: data.budget },
-              { slug: 'industry_type', value: data.industry_type },
-              { slug: 'budget_range', value: data.budget_range },
-              { slug: 'geographic_location', value: data.geographic_location },
+            tags: [
+              'new-lead',
+              'website-form',
+              `budget-${data.budget_range}`,
+              `industry-${data.industry_type}`,
+              `location-${data.geographic_location.toLowerCase().replace(/\s+/g, '-')}`,
             ],
-            tags: ['new-lead', 'website-form'],
           },
         });
       } catch (emailError) {

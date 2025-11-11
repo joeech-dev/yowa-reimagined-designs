@@ -30,6 +30,15 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Adding contact to systeme.io:", { email, name });
 
+    // Build contact fields with only standard fields
+    const contactFields = [];
+    if (name) {
+      contactFields.push({ slug: "first_name", value: name });
+    }
+    if (phone) {
+      contactFields.push({ slug: "phone_number", value: phone });
+    }
+
     // Create contact in systeme.io
     const contactResponse = await fetch(`${SYSTEME_IO_API_URL}/contacts`, {
       method: "POST",
@@ -39,11 +48,7 @@ const handler = async (req: Request): Promise<Response> => {
       },
       body: JSON.stringify({
         email,
-        fields: [
-          ...(name ? [{ slug: "first_name", value: name }] : []),
-          ...(phone ? [{ slug: "phone_number", value: phone }] : []),
-          ...fields,
-        ],
+        fields: contactFields,
       }),
     });
 
@@ -60,7 +65,7 @@ const handler = async (req: Request): Promise<Response> => {
     if (tags.length > 0) {
       for (const tagName of tags) {
         try {
-          // First, try to get or create the tag
+          // First, try to create the tag (will return existing if already exists)
           const tagResponse = await fetch(`${SYSTEME_IO_API_URL}/tags`, {
             method: "POST",
             headers: {
