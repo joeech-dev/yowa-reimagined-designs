@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,6 +16,11 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Contact Us - Yowa Innovations"
+        description="Get in touch with Yowa Innovations. Ready to collaborate? Let's tell your story, grow your impact, and spark something new."
+        keywords="contact yowa innovations, Uganda creative agency contact, content creation inquiry, video production Uganda"
+      />
       <Navbar />
 
       {/* Hero Section */}
@@ -43,19 +49,19 @@ const Contact = () => {
                     <label htmlFor="name" className="block text-sm font-medium mb-2">
                       Your Name
                     </label>
-                    <Input id="name" placeholder="John Doe" required />
+                    <Input id="name" placeholder="John Doe" required aria-required="true" />
                   </div>
                   <div>
                     <label htmlFor="email" className="block text-sm font-medium mb-2">
                       Email Address
                     </label>
-                    <Input id="email" type="email" placeholder="john@example.com" required />
+                    <Input id="email" type="email" placeholder="john@example.com" required aria-required="true" />
                   </div>
                   <div>
                     <label htmlFor="subject" className="block text-sm font-medium mb-2">
                       Subject
                     </label>
-                    <Input id="subject" placeholder="How can we help?" required />
+                    <Input id="subject" placeholder="How can we help?" required aria-required="true" />
                   </div>
                   <div>
                     <label htmlFor="message" className="block text-sm font-medium mb-2">
@@ -66,9 +72,10 @@ const Contact = () => {
                       placeholder="Tell us about your project..."
                       rows={6}
                       required
+                      aria-required="true"
                     />
                   </div>
-                  <Button type="submit" className="w-full gradient-warm" size="lg">
+                  <Button type="submit" className="w-full gradient-warm hover:scale-105 transition-smooth" size="lg">
                     Send Message
                   </Button>
                 </form>

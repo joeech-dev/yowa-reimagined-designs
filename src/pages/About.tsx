@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 import { Card } from "@/components/ui/card";
 import { Target, Heart, Users, Sparkles } from "lucide-react";
 
@@ -29,6 +30,11 @@ const About = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title="About Us - Yowa Innovations"
+        description="Learn about Yowa Innovations, a Ugandan creative agency using media, technology, and creativity to drive meaningful change in agriculture, environment, and education."
+        keywords="about yowa innovations, creative agency Uganda, media production, social impact, storytelling, documentary filmmaking"
+      />
       <Navbar />
 
       {/* Hero Section */}

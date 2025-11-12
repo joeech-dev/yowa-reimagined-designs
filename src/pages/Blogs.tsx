@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 import BlogCard from "@/components/BlogCard";
 import { Button } from "@/components/ui/button";
 import { blogs } from "@/data/blogs";
@@ -39,6 +40,11 @@ const Blogs = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Blog - Yowa Innovations"
+        description="Insights, stories, and perspectives on innovation, sustainability, and impact. Explore trending topics in urbanism, livelihood, infrastructure, and more."
+        keywords="innovation blog, sustainability, urbanism, livelihood, infrastructure, Uganda development, creative insights"
+      />
       <Navbar />
 
       {/* Hero Section */}

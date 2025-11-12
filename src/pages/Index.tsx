@@ -2,10 +2,15 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Video, Camera, Lightbulb, Share2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 import BlogCard from "@/components/BlogCard";
+import PartnersSection from "@/components/PartnersSection";
+import TestimonialsSection from "@/components/TestimonialsSection";
+import StatsSection from "@/components/StatsSection";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { blogs } from "@/data/blogs";
+import yowaLogo from "@/assets/Yowa_Logo_1.png";
 
 const Index = () => {
   const latestBlogs = blogs.slice(0, 3);
@@ -41,6 +46,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO />
       <Navbar />
 
       {/* Hero Section */}
@@ -48,6 +54,13 @@ const Index = () => {
         <div className="absolute inset-0 gradient-hero opacity-10"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
+            <div className="mb-8 flex justify-center">
+              <img
+                src={yowaLogo}
+                alt="Yowa Innovations Logo"
+                className="h-24 md:h-32 w-auto animate-fade-in"
+              />
+            </div>
             <h1 className="font-display font-bold text-5xl md:text-7xl mb-6 bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
               Yowa Innovations
             </h1>
@@ -65,13 +78,13 @@ const Index = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/get-started">
-                <Button size="lg" className="gradient-warm text-lg shadow-warm">
+                <Button size="lg" className="gradient-warm text-lg shadow-warm hover:scale-105 transition-smooth">
                   Get Started
                   <ArrowRight className="ml-2" />
                 </Button>
               </Link>
               <Link to="/about">
-                <Button size="lg" variant="outline">
+                <Button size="lg" variant="outline" className="hover:border-primary hover:text-primary transition-smooth">
                   Learn More
                 </Button>
               </Link>
@@ -79,6 +92,12 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Stats Section */}
+      <StatsSection />
+
+      {/* Partners Section */}
+      <PartnersSection />
 
       {/* Latest Blog Posts */}
       <section className="py-16 bg-muted/30">
@@ -159,6 +178,28 @@ const Index = () => {
               <BlogCard key={blog.id} {...blog} />
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <TestimonialsSection />
+
+      {/* CTA Section */}
+      <section className="py-16 bg-primary text-primary-foreground">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="font-display font-bold text-3xl md:text-4xl mb-4">
+            See Our Work in Action
+          </h2>
+          <p className="text-lg mb-8 max-w-2xl mx-auto opacity-90">
+            Explore our portfolio of transformative projects that have made a difference across
+            communities and industries.
+          </p>
+          <Button size="lg" variant="secondary" asChild className="hover:scale-105 transition-smooth">
+            <Link to="/portfolio">
+              View Portfolio
+              <ArrowRight className="ml-2" />
+            </Link>
+          </Button>
         </div>
       </section>
 
