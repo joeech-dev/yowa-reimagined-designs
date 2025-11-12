@@ -54,13 +54,6 @@ const Index = () => {
         <div className="absolute inset-0 gradient-hero opacity-10"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="mb-8 flex justify-center">
-              <img
-                src={yowaLogo}
-                alt="Yowa Innovations Logo"
-                className="h-24 md:h-32 w-auto animate-fade-in"
-              />
-            </div>
             <h1 className="font-display font-bold text-5xl md:text-7xl mb-6 bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
               Yowa Innovations
             </h1>

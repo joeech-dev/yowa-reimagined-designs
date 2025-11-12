@@ -12,7 +12,7 @@ import LeadGeneration from "./pages/LeadGeneration";
 import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
-import ChatWidget from "@/components/ChatWidget";
+import ContactFormWidget from "@/components/ContactFormWidget";
 
 const queryClient = new QueryClient();
 
@@ -34,7 +34,7 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-        <ChatWidget />
+        <ContactFormWidget />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

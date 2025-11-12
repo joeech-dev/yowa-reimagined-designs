@@ -5,15 +5,15 @@ import SEO from "@/components/SEO";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Play, Image as ImageIcon } from "lucide-react";
+
 
 interface Project {
   id: number;
   title: string;
   category: string;
-  type: "video" | "photo";
+  type: "video";
   description: string;
-  image: string;
+  videoUrl: string;
   client: string;
   year: string;
 }
@@ -21,73 +21,67 @@ interface Project {
 const projects: Project[] = [
   {
     id: 1,
-    title: "Sustainable Agriculture Documentary",
+    title: "SSA Uganda Project",
     category: "Documentary",
     type: "video",
-    description:
-      "A 30-minute documentary showcasing innovative farming techniques transforming rural communities across Uganda.",
-    image: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=800",
-    client: "Agricultural Development NGO",
+    description: "Impactful documentary showcasing social impact initiatives across Uganda.",
+    videoUrl: "https://www.youtube.com/embed/Nxe5EMEdX0M",
+    client: "SSA Uganda",
     year: "2024",
   },
   {
     id: 2,
-    title: "Urban Housing Campaign",
-    category: "Digital Marketing",
-    type: "photo",
-    description:
-      "Multi-platform campaign highlighting affordable housing solutions for urban communities.",
-    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800",
-    client: "Uganda Housing Cooperative Union",
-    year: "2023",
+    title: "Wakisa Ministry",
+    category: "Documentary",
+    type: "video",
+    description: "Heartfelt storytelling highlighting the transformative work of Wakisa Ministry.",
+    videoUrl: "https://www.youtube.com/embed/d3WQQw6R3IY",
+    client: "Wakisa Ministry",
+    year: "2024",
   },
   {
     id: 3,
-    title: "Environmental Conservation Series",
-    category: "Photography",
-    type: "photo",
-    description:
-      "Visual storytelling capturing the beauty and fragility of Uganda's natural ecosystems.",
-    image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-    client: "Environmental Conservation Organization",
+    title: "Friedrich Ebert Stiftung - Community Voices",
+    category: "Video Production",
+    type: "video",
+    description: "Documentary capturing community engagement and democratic dialogue initiatives.",
+    videoUrl: "https://www.youtube.com/embed/9ue9TNEm3WI",
+    client: "Friedrich Ebert Stiftung",
     year: "2024",
   },
   {
     id: 4,
-    title: "Education Access Promotional Video",
+    title: "Friedrich Ebert Stiftung - Impact Stories",
     category: "Video Production",
     type: "video",
-    description:
-      "Compelling narrative showcasing the impact of education programs in underserved communities.",
-    image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800",
-    client: "Education Development Foundation",
-    year: "2023",
+    description: "Compelling narratives showcasing social development and civic engagement projects.",
+    videoUrl: "https://www.youtube.com/embed/5HaPFKc3ePs",
+    client: "Friedrich Ebert Stiftung",
+    year: "2024",
   },
   {
     id: 5,
-    title: "Social Enterprise Brand Launch",
-    category: "Creative Strategy",
-    type: "photo",
-    description:
-      "Comprehensive brand identity and launch campaign for a youth-led social enterprise.",
-    image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800",
-    client: "Youth Entrepreneurship Initiative",
+    title: "COSL Project",
+    category: "Documentary",
+    type: "video",
+    description: "Documentary highlighting cooperative development and community empowerment.",
+    videoUrl: "https://www.youtube.com/embed/vAJ2sLemCK8",
+    client: "COSL",
     year: "2024",
   },
   {
     id: 6,
-    title: "Community Development Stories",
-    category: "Documentary",
+    title: "Asaak Campaign",
+    category: "Digital Marketing",
     type: "video",
-    description:
-      "Short-form documentary series highlighting grassroots development initiatives.",
-    image: "https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=800",
-    client: "International Development Partner",
-    year: "2023",
+    description: "Dynamic promotional campaign showcasing financial inclusion and entrepreneurship.",
+    videoUrl: "https://www.youtube.com/embed/mRwFm6qtL10",
+    client: "Asaak",
+    year: "2024",
   },
 ];
 
-const categories = ["All", "Documentary", "Video Production", "Photography", "Digital Marketing", "Creative Strategy"];
+const categories = ["All", "Documentary", "Video Production", "Digital Marketing"];
 
 const Portfolio = () => {
   const [activeCategory, setActiveCategory] = useState("All");
@@ -149,22 +143,14 @@ const Portfolio = () => {
                 key={project.id}
                 className="group overflow-hidden border-border hover:shadow-warm transition-smooth"
               >
-                <div className="relative aspect-[4/3] overflow-hidden">
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-smooth"
+                <div className="relative aspect-video overflow-hidden bg-muted">
+                  <iframe
+                    src={project.videoUrl}
+                    title={project.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-smooth flex items-center justify-center">
-                    {project.type === "video" ? (
-                      <Play className="text-white" size={48} />
-                    ) : (
-                      <ImageIcon className="text-white" size={48} />
-                    )}
-                  </div>
-                  <Badge className="absolute top-4 right-4 bg-primary text-primary-foreground">
-                    {project.type === "video" ? "Video" : "Photo"}
-                  </Badge>
                 </div>
                 <div className="p-6">
                   <Badge variant="secondary" className="mb-3">

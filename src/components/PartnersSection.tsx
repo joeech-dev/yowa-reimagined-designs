@@ -18,7 +18,7 @@ const partners = [
 
 const PartnersSection = () => {
   return (
-    <section className="py-16 bg-muted/20">
+    <section className="py-16 bg-muted/20 overflow-hidden">
       <div className="container mx-auto px-4">
         <h2 className="font-display font-bold text-3xl md:text-4xl mb-4 text-center">
           Trusted by Leading Organizations
@@ -27,19 +27,21 @@ const PartnersSection = () => {
           We've partnered with renowned institutions and organizations to deliver impactful content
           that drives change.
         </p>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 items-center">
-          {partners.map((partner) => (
-            <div
-              key={partner.name}
-              className="flex items-center justify-center p-6 transition-smooth hover:scale-105 grayscale hover:grayscale-0 opacity-70 hover:opacity-100"
-            >
-              <img
-                src={partner.logo}
-                alt={`${partner.name} logo`}
-                className="max-h-20 w-auto object-contain"
-              />
-            </div>
-          ))}
+        <div className="relative">
+          <div className="flex animate-scroll">
+            {[...partners, ...partners].map((partner, index) => (
+              <div
+                key={`${partner.name}-${index}`}
+                className="flex-shrink-0 mx-8 grayscale hover:grayscale-0 opacity-70 hover:opacity-100 transition-smooth"
+              >
+                <img
+                  src={partner.logo}
+                  alt={`${partner.name} logo`}
+                  className="h-16 w-auto object-contain"
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

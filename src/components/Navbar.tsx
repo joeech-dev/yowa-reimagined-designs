@@ -24,14 +24,14 @@ const Navbar = () => {
             <img 
               src={logoLight} 
               alt="Yowa Innovations Logo" 
-              className="w-10 h-10 dark:hidden"
+              className="h-14 w-auto dark:hidden"
             />
             <img 
               src={logoDark} 
               alt="Yowa Innovations Logo" 
-              className="w-10 h-10 hidden dark:block"
+              className="h-14 w-auto hidden dark:block"
             />
-            <span className="font-display font-bold text-xl text-foreground">
+            <span className="font-display font-bold text-2xl text-foreground">
               Yowa Innovations
             </span>
           </Link>

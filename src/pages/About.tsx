@@ -133,6 +133,35 @@ const About = () => {
         </div>
       </section>
 
+      {/* Team Section */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="font-display font-bold text-3xl md:text-4xl mb-12 text-center">
+              Meet Our Team
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {[
+                { name: "Joel Ongwech", role: "Co-Founder/CEO" },
+                { name: "Lubangakene Keneth", role: "CFO" },
+                { name: "Derick Muwanguzi", role: "Creative Editor" },
+                { name: "Clair Akajunua", role: "PR/Voice Over Artist" },
+              ].map((member, index) => (
+                <Card key={index} className="overflow-hidden hover:shadow-warm transition-smooth">
+                  <div className="aspect-square bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                    <Users className="w-24 h-24 text-muted-foreground/30" />
+                  </div>
+                  <div className="p-6 text-center">
+                    <h3 className="font-display font-semibold text-lg mb-1">{member.name}</h3>
+                    <p className="text-sm text-muted-foreground">{member.role}</p>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </div>
   );
