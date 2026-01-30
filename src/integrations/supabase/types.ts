@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      blog_posts: {
+        Row: {
+          auto_posted_to_social: boolean | null
+          category: string
+          created_at: string | null
+          daily_post_order: number | null
+          excerpt: string | null
+          id: string
+          image: string | null
+          published_at: string
+          slug: string
+          source_name: string
+          source_url: string
+          title: string
+        }
+        Insert: {
+          auto_posted_to_social?: boolean | null
+          category: string
+          created_at?: string | null
+          daily_post_order?: number | null
+          excerpt?: string | null
+          id?: string
+          image?: string | null
+          published_at?: string
+          slug: string
+          source_name: string
+          source_url: string
+          title: string
+        }
+        Update: {
+          auto_posted_to_social?: boolean | null
+          category?: string
+          created_at?: string | null
+          daily_post_order?: number | null
+          excerpt?: string | null
+          id?: string
+          image?: string | null
+          published_at?: string
+          slug?: string
+          source_name?: string
+          source_url?: string
+          title?: string
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           budget: number | null
@@ -96,6 +141,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      social_media_webhooks: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          platform: string
+          updated_at: string | null
+          webhook_url: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          platform: string
+          updated_at?: string | null
+          webhook_url: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          platform?: string
+          updated_at?: string | null
+          webhook_url?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
