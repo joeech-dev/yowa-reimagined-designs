@@ -20,20 +20,17 @@ const Navbar = () => {
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
       <nav className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-3">
+          <Link to="/" className="flex items-center">
             <img 
               src={logoLight} 
-              alt="Yowa Innovations Logo" 
-              className="h-14 w-auto dark:hidden"
+              alt="Yowa Innovations" 
+              className="h-16 w-auto dark:hidden"
             />
             <img 
               src={logoDark} 
-              alt="Yowa Innovations Logo" 
-              className="h-14 w-auto hidden dark:block"
+              alt="Yowa Innovations" 
+              className="h-16 w-auto hidden dark:block"
             />
-            <span className="font-display font-bold text-2xl text-foreground">
-              Yowa Innovations
-            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -48,7 +45,7 @@ const Navbar = () => {
               </Link>
             ))}
             <Link to="/get-started">
-              <Button size="sm" className="gradient-warm">
+              <Button size="sm" className="bg-primary hover:bg-primary/90">
                 Get Started
               </Button>
             </Link>
@@ -79,7 +76,7 @@ const Navbar = () => {
               </Link>
             ))}
             <Link to="/get-started">
-              <Button size="sm" className="w-full gradient-warm">
+              <Button size="sm" className="w-full bg-primary hover:bg-primary/90">
                 Get Started
               </Button>
             </Link>

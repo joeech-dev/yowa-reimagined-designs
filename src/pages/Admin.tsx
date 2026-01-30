@@ -1,34 +1,151 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Routes, Route, Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
-import { Button } from "@/components/ui/button";
+import AdminSidebar from "@/components/admin/AdminSidebar";
+import DashboardStats from "@/components/admin/DashboardStats";
+import BlogsManagement from "@/components/admin/BlogsManagement";
+import PartnersManagement from "@/components/admin/PartnersManagement";
+import LeadsManagement from "@/components/admin/LeadsManagement";
+import AnalyticsDashboard from "@/components/admin/AnalyticsDashboard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
-import { LogOut, Mail, Phone, TrendingUp } from "lucide-react";
+import { Sparkles, Clock, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
-interface Lead {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  budget: number;
-  industry_type: string;
-  budget_range: string;
-  geographic_location: string;
-  status: string;
-  last_contact_date: string;
-  next_followup_date: string;
-  created_at: string;
-}
+const AdminDashboardHome = () => {
+  const [stats, setStats] = useState({
+    leadsCount: 0,
+    blogsCount: 0,
+    partnersCount: 0,
+    newLeadsThisMonth: 0,
+  });
 
-const Admin = () => {
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const fetchStats = async () => {
+    const [leadsRes, blogsRes, partnersRes] = await Promise.all([
+      supabase.from("leads").select("id, created_at", { count: "exact" }),
+      supabase.from("blog_posts").select("id", { count: "exact" }),
+      supabase.from("partner_brands").select("id", { count: "exact" }),
+    ]);
+
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
+    const newLeadsCount = leadsRes.data?.filter(
+      (lead) => new Date(lead.created_at || "") >= startOfMonth
+    ).length || 0;
+
+    setStats({
+      leadsCount: leadsRes.count || 0,
+      blogsCount: blogsRes.count || 0,
+      partnersCount: partnersRes.count || 0,
+      newLeadsThisMonth: newLeadsCount,
+    });
+  };
+
+  return (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+        <p className="text-muted-foreground mt-1">Welcome back! Here's an overview of your business.</p>
+      </div>
+
+      <DashboardStats {...stats} />
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="hover:shadow-primary transition-smooth cursor-pointer">
+          <Link to="/admin/leads">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center justify-between">
+                Recent Leads
+                <ArrowRight className="h-4 w-4" />
+              </CardTitle>
+              <CardDescription>View and manage new inquiries</CardDescription>
+            </CardHeader>
+          </Link>
+        </Card>
+
+        <Card className="hover:shadow-primary transition-smooth cursor-pointer">
+          <Link to="/admin/blogs">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center justify-between">
+                Content Hub
+                <ArrowRight className="h-4 w-4" />
+              </CardTitle>
+              <CardDescription>Create and manage blog posts</CardDescription>
+            </CardHeader>
+          </Link>
+        </Card>
+
+        <Card className="hover:shadow-primary transition-smooth cursor-pointer">
+          <Link to="/admin/analytics">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center justify-between">
+                Analytics
+                <ArrowRight className="h-4 w-4" />
+              </CardTitle>
+              <CardDescription>View business insights</CardDescription>
+            </CardHeader>
+          </Link>
+        </Card>
+      </div>
+
+      {/* AI Assistant Card */}
+      <Card className="bg-primary/5 border-primary/20">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-secondary" />
+            AI Assistant
+          </CardTitle>
+          <CardDescription>Your intelligent business companion</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-start gap-4">
+            <div className="flex-1">
+              <p className="text-sm text-muted-foreground mb-4">
+                The AI assistant can help you with content creation, lead analysis, 
+                and business recommendations. It's integrated throughout the dashboard.
+              </p>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm">
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Generate Blog Post
+                </Button>
+                <Button variant="outline" size="sm">
+                  <Clock className="h-4 w-4 mr-2" />
+                  Schedule Followups
+                </Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+const AdminSettings = () => (
+  <Card>
+    <CardHeader>
+      <CardTitle>Settings</CardTitle>
+      <CardDescription>Configure your dashboard preferences</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <p className="text-muted-foreground">Settings panel coming soon...</p>
+    </CardContent>
+  </Card>
+);
+
+const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -64,73 +181,24 @@ const Admin = () => {
       .eq("role", "admin")
       .maybeSingle();
 
-    if (error) {
-      console.error("Error checking admin role:", error);
-      toast.error("Access denied");
-      navigate("/");
-      return;
-    }
-
-    if (!data) {
-      toast.error("You must be an admin to access this page");
+    if (error || !data) {
       navigate("/");
       return;
     }
 
     setIsAdmin(true);
-    fetchLeads();
-  };
-
-  const fetchLeads = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("leads")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setLeads(data || []);
-    } catch (error) {
-      console.error("Error fetching leads:", error);
-      toast.error("Failed to load leads");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate("/");
-  };
-
-  const updateLeadStatus = async (leadId: string, newStatus: string) => {
-    try {
-      const { error } = await supabase
-        .from("leads")
-        .update({ status: newStatus })
-        .eq("id", leadId);
-
-      if (error) throw error;
-      toast.success("Lead status updated");
-      fetchLeads();
-    } catch (error) {
-      console.error("Error updating lead:", error);
-      toast.error("Failed to update lead");
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "new": return "bg-blue-500";
-      case "contacted": return "bg-yellow-500";
-      case "qualified": return "bg-green-500";
-      case "closed": return "bg-gray-500";
-      default: return "bg-gray-500";
-    }
+    setLoading(false);
   };
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading dashboard...</p>
+        </div>
+      </div>
+    );
   }
 
   if (!isAdmin) {
@@ -138,112 +206,28 @@ const Admin = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-4xl font-bold text-primary">Admin Dashboard</h1>
-            <p className="text-muted-foreground mt-2">Manage your leads and track performance</p>
-          </div>
-          <Button onClick={handleSignOut} variant="outline">
-            <LogOut className="mr-2 h-4 w-4" />
-            Sign Out
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Leads</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{leads.length}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">New Leads</CardTitle>
-              <Mail className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {leads.filter(l => l.status === "new").length}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Qualified</CardTitle>
-              <Phone className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {leads.filter(l => l.status === "qualified").length}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Lead Management</CardTitle>
-            <CardDescription>View and manage all incoming leads</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Industry</TableHead>
-                  <TableHead>Budget</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Next Followup</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {leads.map((lead) => (
-                  <TableRow key={lead.id}>
-                    <TableCell className="font-medium">{lead.name}</TableCell>
-                    <TableCell>{lead.email}</TableCell>
-                    <TableCell>{lead.phone}</TableCell>
-                    <TableCell>{lead.industry_type}</TableCell>
-                    <TableCell>{lead.budget_range}</TableCell>
-                    <TableCell>{lead.geographic_location}</TableCell>
-                    <TableCell>
-                      <Badge className={getStatusColor(lead.status)}>
-                        {lead.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {new Date(lead.next_followup_date).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>
-                      <select
-                        value={lead.status}
-                        onChange={(e) => updateLeadStatus(lead.id, e.target.value)}
-                        className="px-2 py-1 border rounded"
-                      >
-                        <option value="new">New</option>
-                        <option value="contacted">Contacted</option>
-                        <option value="qualified">Qualified</option>
-                        <option value="closed">Closed</option>
-                      </select>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </div>
+    <div className="flex min-h-screen bg-background">
+      <AdminSidebar />
+      <main className="flex-1 p-8 overflow-auto">
+        {children}
+      </main>
     </div>
+  );
+};
+
+const Admin = () => {
+  return (
+    <AdminLayout>
+      <Routes>
+        <Route index element={<AdminDashboardHome />} />
+        <Route path="blogs" element={<BlogsManagement />} />
+        <Route path="partners" element={<PartnersManagement />} />
+        <Route path="leads" element={<LeadsManagement />} />
+        <Route path="analytics" element={<AnalyticsDashboard />} />
+        <Route path="settings" element={<AdminSettings />} />
+        <Route path="*" element={<Navigate to="/admin" replace />} />
+      </Routes>
+    </AdminLayout>
   );
 };
 
