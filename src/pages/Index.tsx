@@ -10,7 +10,6 @@ import StatsSection from "@/components/StatsSection";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { blogs } from "@/data/blogs";
-import yowaLogo from "@/assets/Yowa_Logo_1.png";
 
 const Index = () => {
   const latestBlogs = blogs.slice(0, 3);
@@ -51,37 +50,37 @@ const Index = () => {
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden">
-        <div className="absolute inset-0 gradient-hero opacity-10"></div>
+        <div className="absolute inset-0 bg-primary/5"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="font-display font-bold text-5xl md:text-7xl mb-6 bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+            <h1 className="font-display font-bold text-5xl md:text-7xl mb-6 text-primary">
               Yowa Innovations
             </h1>
             <p className="text-2xl md:text-3xl font-display font-semibold mb-6">
-              Innovating Reality. Inspiring Impact.
-            </p>
-            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-              Welcome to <strong>Yowa Innovations.</strong> A content creation and advertising
-              agency that reimagines the everyday. We turn bold ideas into visual stories, using
-              media, technology, and creativity to spark transformation in agriculture, the
-              environment, education, and beyond.
-            </p>
-            <p className="text-xl font-semibold mb-8">
-              We create. We connect. We innovate.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/get-started">
-                <Button size="lg" className="gradient-warm text-lg shadow-warm hover:scale-105 transition-smooth">
-                  Get Started
-                  <ArrowRight className="ml-2" />
-                </Button>
-              </Link>
-              <Link to="/about">
-                <Button size="lg" variant="outline" className="hover:border-primary hover:text-primary transition-smooth">
-                  Learn More
-                </Button>
-              </Link>
-            </div>
+61:               Innovating Reality. Inspiring Impact.
+62:             </p>
+63:             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+64:               Welcome to <strong>Yowa Innovations.</strong> A content creation and advertising
+65:               agency that reimagines the everyday. We turn bold ideas into visual stories, using
+66:               media, technology, and creativity to spark transformation in agriculture, the
+67:               environment, education, and beyond.
+68:             </p>
+69:             <p className="text-xl font-semibold mb-8">
+70:               We create. We connect. We innovate.
+71:             </p>
+72:             <div className="flex flex-col sm:flex-row gap-4 justify-center">
+73:               <Link to="/get-started">
+74:                 <Button size="lg" className="bg-primary hover:bg-primary/90 text-lg shadow-primary hover:scale-105 transition-smooth">
+75:                   Get Started
+76:                   <ArrowRight className="ml-2" />
+77:                 </Button>
+78:               </Link>
+79:               <Link to="/about">
+80:                 <Button size="lg" variant="outline" className="hover:border-primary hover:text-primary transition-smooth">
+81:                   Learn More
+82:                 </Button>
+83:               </Link>
+84:             </div>
           </div>
         </div>
       </section>
@@ -130,9 +129,9 @@ const Index = () => {
               return (
                 <Card
                   key={index}
-                  className="p-6 hover:shadow-warm transition-smooth border-border group"
+                  className="p-6 hover:shadow-primary transition-smooth border-border group"
                 >
-                  <div className="w-12 h-12 rounded-lg gradient-warm flex items-center justify-center mb-4 group-hover:scale-110 transition-smooth">
+                  <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-smooth">
                     <Icon className="text-primary-foreground" size={24} />
                   </div>
                   <h3 className="font-display font-semibold text-xl mb-3">{service.title}</h3>
