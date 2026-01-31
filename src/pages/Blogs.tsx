@@ -41,9 +41,11 @@ const Blogs = () => {
   return (
     <div className="min-h-screen">
       <SEO
-        title="Blog - Yowa Innovations"
-        description="Insights, stories, and perspectives on innovation, sustainability, and impact. Explore trending topics in urbanism, livelihood, infrastructure, and more."
-        keywords="innovation blog, sustainability, urbanism, livelihood, infrastructure, Uganda development, creative insights"
+        title="Blog | Yowa Innovations - Insights on Innovation, Sustainability & Impact"
+        description="Expert insights on innovation, sustainability & social impact in East Africa. Read about urbanism, livelihood development, infrastructure & creative storytelling trends."
+        keywords="innovation blog Uganda, sustainability insights, urbanism development Africa, livelihood programs, infrastructure development East Africa, social impact stories"
+        url="https://yowainnovations.com/blogs"
+        type="website"
       />
       <Navbar />
 

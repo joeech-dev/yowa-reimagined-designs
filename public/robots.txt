@@ -1,3 +1,6 @@
+# Robots.txt for Yowa Innovations
+# https://yowainnovations.com
+
 User-agent: Googlebot
 Allow: /
 
@@ -10,5 +13,19 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
 User-agent: *
 Allow: /
+
+# Disallow admin and auth pages from indexing
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /auth
+
+# Sitemap location
+Sitemap: https://yowainnovations.com/sitemap.xml
