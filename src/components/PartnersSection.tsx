@@ -27,9 +27,10 @@ const PartnersSection = () => {
           We've partnered with renowned institutions and organizations to deliver impactful content
           that drives change.
         </p>
-        <div className="relative">
-          <div className="flex animate-scroll">
-            {[...partners, ...partners].map((partner, index) => (
+        <div className="relative overflow-hidden">
+          {/* Continuous infinite scroll - duplicated 3x for seamless loop */}
+          <div className="flex animate-marquee">
+            {[...partners, ...partners, ...partners].map((partner, index) => (
               <div
                 key={`${partner.name}-${index}`}
                 className="flex-shrink-0 mx-8 grayscale hover:grayscale-0 opacity-70 hover:opacity-100 transition-smooth"
