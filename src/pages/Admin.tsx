@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Sparkles, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 const AdminDashboardHome = () => {
   const [stats, setStats] = useState({
@@ -147,48 +148,74 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+
+    const checkAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!isMounted) return;
+        
+        if (!session?.user) {
+          navigate("/auth", { replace: true });
+          return;
+        }
+        
+        setUser(session.user);
+        
+        // Check admin role
+        const { data: roleData } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", session.user.id)
+          .eq("role", "admin")
+          .maybeSingle();
+        
+        if (!isMounted) return;
+        
+        if (!roleData) {
+          toast.error("You don't have admin access");
+          navigate("/", { replace: true });
+          return;
+        }
+        
+        setIsAdmin(true);
+        setAuthChecked(true);
+      } catch (error) {
+        console.error("Auth check error:", error);
+        if (isMounted) {
+          navigate("/auth", { replace: true });
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
     checkAuth();
-    
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-      if (!session?.user) {
-        navigate("/auth");
-      } else {
-        checkAdminRole(session.user.id);
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!isMounted) return;
+      
+      if (event === 'SIGNED_OUT') {
+        navigate("/auth", { replace: true });
+        return;
+      }
+      
+      if (session?.user && !authChecked) {
+        setUser(session.user);
       }
     });
 
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.user) {
-      navigate("/auth");
-      return;
-    }
-    setUser(session.user);
-    await checkAdminRole(session.user.id);
-  };
-
-  const checkAdminRole = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId)
-      .eq("role", "admin")
-      .maybeSingle();
-
-    if (error || !data) {
-      navigate("/");
-      return;
-    }
-
-    setIsAdmin(true);
-    setLoading(false);
-  };
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, [navigate, authChecked]);
 
   if (loading) {
     return (
