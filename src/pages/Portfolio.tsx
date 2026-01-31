@@ -94,9 +94,10 @@ const Portfolio = () => {
   return (
     <div className="min-h-screen">
       <SEO
-        title="Portfolio - Yowa Innovations"
-        description="Explore our portfolio of impactful projects including documentaries, digital campaigns, and creative content that drives meaningful change across communities."
-        keywords="portfolio, case studies, documentary projects, creative campaigns, video production portfolio, Uganda media projects"
+        title="Portfolio | Yowa Innovations - Documentary & Video Production Projects"
+        description="View our award-winning portfolio of documentaries, video productions & digital campaigns. 50+ projects for NGOs, corporates & startups across East Africa."
+        keywords="video production portfolio Uganda, documentary projects East Africa, creative campaigns portfolio, NGO video production, corporate video Uganda, media production samples"
+        url="https://yowainnovations.com/portfolio"
       />
       <Navbar />
 

@@ -17,9 +17,10 @@ const Contact = () => {
   return (
     <div className="min-h-screen">
       <SEO
-        title="Contact Us - Yowa Innovations"
-        description="Get in touch with Yowa Innovations. Ready to collaborate? Let's tell your story, grow your impact, and spark something new."
-        keywords="contact yowa innovations, Uganda creative agency contact, content creation inquiry, video production Uganda"
+        title="Contact Yowa Innovations | Get a Free Consultation - Uganda Creative Agency"
+        description="Contact Yowa Innovations for video production, photography & digital marketing services. Free consultation available. Based in Kampala, serving all of East Africa."
+        keywords="contact yowa innovations, Uganda creative agency contact, video production inquiry Kampala, content creation consultation, digital marketing Uganda"
+        url="https://yowainnovations.com/contact"
       />
       <Navbar />
 
