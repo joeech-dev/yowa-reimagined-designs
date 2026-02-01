@@ -7,7 +7,8 @@ import {
   BarChart3, 
   Settings,
   LogOut,
-  Sparkles
+  Sparkles,
+  Video
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,6 +22,7 @@ const AdminSidebar = () => {
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/admin" },
     { icon: FileText, label: "Blog Posts", path: "/admin/blogs" },
+    { icon: Video, label: "Portfolio", path: "/admin/portfolio" },
     { icon: Building2, label: "Partner Brands", path: "/admin/partners" },
     { icon: Users, label: "Leads", path: "/admin/leads" },
     { icon: BarChart3, label: "Analytics", path: "/admin/analytics" },
@@ -33,14 +35,14 @@ const AdminSidebar = () => {
   };
 
   return (
-    <aside className="w-64 min-h-screen bg-sidebar-background text-sidebar-foreground flex flex-col">
+    <aside className="w-64 min-h-screen bg-foreground flex flex-col">
       {/* Logo */}
-      <div className="p-6 border-b border-sidebar-border">
+      <div className="p-6 border-b border-white/10">
         <Link to="/" className="flex items-center gap-3">
           <img src={logo} alt="Yowa" className="h-10 w-auto" />
           <div>
-            <span className="font-bold text-lg">Yowa</span>
-            <div className="flex items-center gap-1 text-xs text-sidebar-primary">
+            <span className="font-bold text-lg text-white">Yowa</span>
+            <div className="flex items-center gap-1 text-xs text-secondary">
               <Sparkles className="h-3 w-3" />
               <span>AI Dashboard</span>
             </div>
@@ -61,8 +63,8 @@ const AdminSidebar = () => {
               className={cn(
                 "flex items-center gap-3 px-4 py-3 rounded-lg transition-smooth",
                 isActive 
-                  ? "bg-sidebar-accent text-sidebar-primary font-medium" 
-                  : "hover:bg-sidebar-accent/50 text-sidebar-foreground/80"
+                  ? "bg-primary text-white font-medium" 
+                  : "hover:bg-white/10 text-white/90"
               )}
             >
               <Icon className="h-5 w-5" />
@@ -73,10 +75,10 @@ const AdminSidebar = () => {
       </nav>
 
       {/* Sign Out */}
-      <div className="p-4 border-t border-sidebar-border">
+      <div className="p-4 border-t border-white/10">
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-3 px-4 py-3 rounded-lg w-full hover:bg-sidebar-accent/50 text-sidebar-foreground/80 transition-smooth"
+          className="flex items-center gap-3 px-4 py-3 rounded-lg w-full hover:bg-white/10 text-white/90 transition-smooth"
         >
           <LogOut className="h-5 w-5" />
           <span>Sign Out</span>
