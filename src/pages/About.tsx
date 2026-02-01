@@ -2,7 +2,35 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import { Card } from "@/components/ui/card";
-import { Target, Heart, Users, Sparkles } from "lucide-react";
+import { Target, Heart, Users, Sparkles, Linkedin } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+const teamMembers = [
+  { 
+    name: "Joel Ongwech", 
+    role: "Co-Founder/CEO",
+    linkedin: "https://www.linkedin.com/in/joel-ongwech-75873323/",
+    image: "https://media.licdn.com/dms/image/v2/D4D03AQHG6OP7LplEXA/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1719832419412?e=1744243200&v=beta&t=placeholder"
+  },
+  { 
+    name: "Lubangakene Keneth", 
+    role: "CFO",
+    linkedin: "https://www.linkedin.com/in/lubangakene-keneth-a6140b19a/",
+    image: "https://media.licdn.com/dms/image/v2/placeholder"
+  },
+  { 
+    name: "Derick Muwanguzi", 
+    role: "Creative Editor",
+    linkedin: null,
+    image: null
+  },
+  { 
+    name: "Clair Akajunua", 
+    role: "PR/Voice Over Artist",
+    linkedin: "https://www.linkedin.com/in/claire-akajunwa-450157188/",
+    image: "https://media.licdn.com/dms/image/v2/placeholder"
+  },
+];
 
 const About = () => {
   const values = [
@@ -142,19 +170,42 @@ const About = () => {
               Meet Our Team
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {[
-                { name: "Joel Ongwech", role: "Co-Founder/CEO" },
-                { name: "Lubangakene Keneth", role: "CFO" },
-                { name: "Derick Muwanguzi", role: "Creative Editor" },
-                { name: "Clair Akajunua", role: "PR/Voice Over Artist" },
-              ].map((member, index) => (
-                <Card key={index} className="overflow-hidden hover:shadow-warm transition-smooth">
-                  <div className="aspect-square bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                    <Users className="w-24 h-24 text-muted-foreground/30" />
+              {teamMembers.map((member, index) => (
+                <Card key={index} className="overflow-hidden hover:shadow-warm transition-smooth group">
+                  <div className="aspect-square bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center overflow-hidden">
+                    {member.image ? (
+                      <img 
+                        src={member.image} 
+                        alt={member.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-smooth"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                        }}
+                      />
+                    ) : null}
+                    <Users className={`w-24 h-24 text-muted-foreground/30 ${member.image ? 'hidden' : ''}`} />
                   </div>
                   <div className="p-6 text-center">
                     <h3 className="font-display font-semibold text-lg mb-1">{member.name}</h3>
-                    <p className="text-sm text-muted-foreground">{member.role}</p>
+                    <p className="text-sm text-muted-foreground mb-3">{member.role}</p>
+                    {member.linkedin && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        asChild
+                        className="gap-2"
+                      >
+                        <a 
+                          href={member.linkedin} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                        >
+                          <Linkedin className="h-4 w-4" />
+                          LinkedIn
+                        </a>
+                      </Button>
+                    )}
                   </div>
                 </Card>
               ))}

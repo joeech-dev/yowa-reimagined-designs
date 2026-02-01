@@ -148,12 +148,49 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
 
-    const checkAuth = async () => {
+    const checkAdminRole = async (userId: string): Promise<boolean> => {
+      try {
+        const { data } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", userId)
+          .eq("role", "admin")
+          .maybeSingle();
+        return !!data;
+      } catch (error) {
+        console.error("Error checking admin role:", error);
+        return false;
+      }
+    };
+
+    // Set up auth listener FIRST (for ongoing changes)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (!isMounted) return;
+        
+        if (event === 'SIGNED_OUT') {
+          setUser(null);
+          setIsAdmin(false);
+          navigate("/auth", { replace: true });
+          return;
+        }
+        
+        if (session?.user) {
+          setUser(session.user);
+          // Don't block on role check for listener
+          checkAdminRole(session.user.id).then(hasAdmin => {
+            if (isMounted) setIsAdmin(hasAdmin);
+          });
+        }
+      }
+    );
+
+    // THEN do initial load (controls loading state)
+    const initializeAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         
@@ -166,24 +203,18 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
         
         setUser(session.user);
         
-        // Check admin role
-        const { data: roleData } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", session.user.id)
-          .eq("role", "admin")
-          .maybeSingle();
+        // AWAIT role check before setting loading false
+        const hasAdminRole = await checkAdminRole(session.user.id);
         
         if (!isMounted) return;
         
-        if (!roleData) {
+        if (!hasAdminRole) {
           toast.error("You don't have admin access");
           navigate("/", { replace: true });
           return;
         }
         
         setIsAdmin(true);
-        setAuthChecked(true);
       } catch (error) {
         console.error("Auth check error:", error);
         if (isMounted) {
@@ -196,26 +227,13 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
       }
     };
 
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!isMounted) return;
-      
-      if (event === 'SIGNED_OUT') {
-        navigate("/auth", { replace: true });
-        return;
-      }
-      
-      if (session?.user && !authChecked) {
-        setUser(session.user);
-      }
-    });
+    initializeAuth();
 
     return () => {
       isMounted = false;
       subscription.unsubscribe();
     };
-  }, [navigate, authChecked]);
+  }, [navigate]);
 
   if (loading) {
     return (
