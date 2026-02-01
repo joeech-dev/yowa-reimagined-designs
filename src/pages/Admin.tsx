@@ -5,6 +5,7 @@ import { User } from "@supabase/supabase-js";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import DashboardStats from "@/components/admin/DashboardStats";
 import BlogsManagement from "@/components/admin/BlogsManagement";
+import PortfolioManagement from "@/components/admin/PortfolioManagement";
 import PartnersManagement from "@/components/admin/PartnersManagement";
 import LeadsManagement from "@/components/admin/LeadsManagement";
 import AnalyticsDashboard from "@/components/admin/AnalyticsDashboard";
@@ -266,6 +267,7 @@ const Admin = () => {
       <Routes>
         <Route index element={<AdminDashboardHome />} />
         <Route path="blogs" element={<BlogsManagement />} />
+        <Route path="portfolio" element={<PortfolioManagement />} />
         <Route path="partners" element={<PartnersManagement />} />
         <Route path="leads" element={<LeadsManagement />} />
         <Route path="analytics" element={<AnalyticsDashboard />} />

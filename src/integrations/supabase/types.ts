@@ -175,6 +175,48 @@ export type Database = {
         }
         Relationships: []
       }
+      portfolio_projects: {
+        Row: {
+          category: string
+          client: string | null
+          created_at: string
+          description: string | null
+          display_order: number | null
+          id: string
+          is_active: boolean | null
+          title: string
+          updated_at: string
+          video_url: string
+          year: string | null
+        }
+        Insert: {
+          category: string
+          client?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          title: string
+          updated_at?: string
+          video_url: string
+          year?: string | null
+        }
+        Update: {
+          category?: string
+          client?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          title?: string
+          updated_at?: string
+          video_url?: string
+          year?: string | null
+        }
+        Relationships: []
+      }
       social_media_webhooks: {
         Row: {
           created_at: string | null
