@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
@@ -6,85 +7,41 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-
 interface Project {
-  id: number;
+  id: string;
   title: string;
   category: string;
-  type: "video";
-  description: string;
-  videoUrl: string;
-  client: string;
-  year: string;
+  description: string | null;
+  video_url: string;
+  client: string | null;
+  year: string | null;
 }
-
-const projects: Project[] = [
-  {
-    id: 1,
-    title: "SSA Uganda Project",
-    category: "Documentary",
-    type: "video",
-    description: "Impactful documentary showcasing social impact initiatives across Uganda.",
-    videoUrl: "https://www.youtube.com/embed/Nxe5EMEdX0M",
-    client: "SSA Uganda",
-    year: "2024",
-  },
-  {
-    id: 2,
-    title: "Wakisa Ministry",
-    category: "Documentary",
-    type: "video",
-    description: "Heartfelt storytelling highlighting the transformative work of Wakisa Ministry.",
-    videoUrl: "https://www.youtube.com/embed/d3WQQw6R3IY",
-    client: "Wakisa Ministry",
-    year: "2024",
-  },
-  {
-    id: 3,
-    title: "Friedrich Ebert Stiftung - Community Voices",
-    category: "Video Production",
-    type: "video",
-    description: "Documentary capturing community engagement and democratic dialogue initiatives.",
-    videoUrl: "https://www.youtube.com/embed/9ue9TNEm3WI",
-    client: "Friedrich Ebert Stiftung",
-    year: "2024",
-  },
-  {
-    id: 4,
-    title: "Friedrich Ebert Stiftung - Impact Stories",
-    category: "Video Production",
-    type: "video",
-    description: "Compelling narratives showcasing social development and civic engagement projects.",
-    videoUrl: "https://www.youtube.com/embed/5HaPFKc3ePs",
-    client: "Friedrich Ebert Stiftung",
-    year: "2024",
-  },
-  {
-    id: 5,
-    title: "COSL Project",
-    category: "Documentary",
-    type: "video",
-    description: "Documentary highlighting cooperative development and community empowerment.",
-    videoUrl: "https://www.youtube.com/embed/vAJ2sLemCK8",
-    client: "COSL",
-    year: "2024",
-  },
-  {
-    id: 6,
-    title: "Asaak Campaign",
-    category: "Digital Marketing",
-    type: "video",
-    description: "Dynamic promotional campaign showcasing financial inclusion and entrepreneurship.",
-    videoUrl: "https://www.youtube.com/embed/mRwFm6qtL10",
-    client: "Asaak",
-    year: "2024",
-  },
-];
 
 const categories = ["All", "Documentary", "Video Production", "Digital Marketing"];
 
 const Portfolio = () => {
   const [activeCategory, setActiveCategory] = useState("All");
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    const { data, error } = await supabase
+      .from("portfolio_projects")
+      .select("*")
+      .eq("is_active", true)
+      .order("display_order", { ascending: true });
+
+    if (error) {
+      console.error("Error fetching projects:", error);
+    } else {
+      setProjects(data || []);
+    }
+    setLoading(false);
+  };
 
   const filteredProjects =
     activeCategory === "All"
@@ -138,39 +95,52 @@ const Portfolio = () => {
       {/* Portfolio Grid */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProjects.map((project) => (
-              <Card
-                key={project.id}
-                className="group overflow-hidden border-border hover:shadow-warm transition-smooth"
-              >
-                <div className="relative aspect-video overflow-hidden bg-muted">
-                  <iframe
-                    src={project.videoUrl}
-                    title={project.title}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="w-full h-full"
-                  />
-                </div>
-                <div className="p-6">
-                  <Badge variant="secondary" className="mb-3">
-                    {project.category}
-                  </Badge>
-                  <h3 className="font-display font-semibold text-xl mb-2 group-hover:text-primary transition-smooth">
-                    {project.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
-                    {project.description}
-                  </p>
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <span>{project.client}</span>
-                    <span>{project.year}</span>
+          {loading ? (
+            <div className="text-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
+              <p className="text-muted-foreground">Loading projects...</p>
+            </div>
+          ) : filteredProjects.length === 0 ? (
+            <div className="text-center py-20">
+              <p className="text-xl text-muted-foreground">
+                No projects found in this category.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredProjects.map((project) => (
+                <Card
+                  key={project.id}
+                  className="group overflow-hidden border-border hover:shadow-warm transition-smooth"
+                >
+                  <div className="relative aspect-video overflow-hidden bg-muted">
+                    <iframe
+                      src={project.video_url}
+                      title={project.title}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full"
+                    />
                   </div>
-                </div>
-              </Card>
-            ))}
-          </div>
+                  <div className="p-6">
+                    <Badge variant="secondary" className="mb-3">
+                      {project.category}
+                    </Badge>
+                    <h3 className="font-display font-semibold text-xl mb-2 group-hover:text-primary transition-smooth">
+                      {project.title}
+                    </h3>
+                    <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
+                      {project.description}
+                    </p>
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <span>{project.client}</span>
+                      <span>{project.year}</span>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
