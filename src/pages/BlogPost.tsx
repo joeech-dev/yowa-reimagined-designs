@@ -1,61 +1,17 @@
 import { useParams, Link } from "react-router-dom";
-import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, ExternalLink, Calendar } from "lucide-react";
-import { blogs, Blog } from "@/data/blogs";
-import { supabase } from "@/integrations/supabase/client";
-
-interface DatabaseBlog {
-  id: string;
-  title: string;
-  excerpt: string | null;
-  category: string;
-  image: string | null;
-  slug: string;
-  source_url: string;
-  source_name: string;
-  published_at: string;
-}
+import { useBlogBySlug } from "@/hooks/useBlogs";
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
-  const [blog, setBlog] = useState<Blog | DatabaseBlog | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [isFromDatabase, setIsFromDatabase] = useState(false);
+  const { data: blog, isLoading } = useBlogBySlug(slug);
 
-  useEffect(() => {
-    const findBlog = async () => {
-      // First check static blogs
-      const staticBlog = blogs.find((b) => b.slug === slug);
-      if (staticBlog) {
-        setBlog(staticBlog);
-        setIsFromDatabase(false);
-        setLoading(false);
-        return;
-      }
-
-      // Then check database
-      const { data, error } = await supabase
-        .from("blog_posts")
-        .select("*")
-        .eq("slug", slug)
-        .maybeSingle();
-
-      if (data) {
-        setBlog(data);
-        setIsFromDatabase(true);
-      }
-      setLoading(false);
-    };
-
-    findBlog();
-  }, [slug]);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
@@ -86,10 +42,6 @@ const BlogPost = () => {
     );
   }
 
-  const sourceUrl = "source_url" in blog ? blog.source_url : undefined;
-  const sourceName = "source_name" in blog ? blog.source_name : undefined;
-  const publishedAt = "published_at" in blog ? blog.published_at : undefined;
-
   return (
     <div className="min-h-screen">
       <SEO
@@ -119,10 +71,10 @@ const BlogPost = () => {
               <h1 className="font-display font-bold text-3xl md:text-5xl mb-4 leading-tight">
                 {blog.title}
               </h1>
-              {publishedAt && (
+              {blog.published_at && (
                 <div className="flex items-center gap-2 text-muted-foreground text-sm">
                   <Calendar className="h-4 w-4" />
-                  <span>{new Date(publishedAt).toLocaleDateString("en-US", { 
+                  <span>{new Date(blog.published_at).toLocaleDateString("en-US", { 
                     year: "numeric", 
                     month: "long", 
                     day: "numeric" 
@@ -144,38 +96,29 @@ const BlogPost = () => {
 
             {/* Content */}
             <div className="prose prose-lg max-w-none">
-              <p className="text-xl text-muted-foreground leading-relaxed mb-8">
-                {blog.excerpt}
-              </p>
+              {blog.content ? (
+                <div 
+                  className="text-foreground leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: blog.content.replace(/\n/g, '<br />') }}
+                />
+              ) : (
+                <p className="text-xl text-muted-foreground leading-relaxed mb-8">
+                  {blog.excerpt}
+                </p>
+              )}
 
-              {/* For database posts, link to full article */}
-              {isFromDatabase && sourceUrl && (
+              {/* Link to full article if external source */}
+              {blog.source_url && blog.source_url !== "yowainnovations.com" && (
                 <div className="bg-muted/50 rounded-xl p-6 my-8">
                   <p className="text-foreground mb-4">
-                    This is a curated article. Read the full story on {sourceName || "the original source"}.
+                    Read the full story on {blog.source_name || "the original source"}.
                   </p>
                   <Button asChild>
-                    <a href={sourceUrl} target="_blank" rel="noopener noreferrer">
+                    <a href={blog.source_url} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="mr-2 h-4 w-4" />
                       Read Full Article
                     </a>
                   </Button>
-                </div>
-              )}
-
-              {/* For static blogs, show placeholder content */}
-              {!isFromDatabase && (
-                <div className="space-y-6">
-                  <p>
-                    This article explores important topics related to {blog.category.toLowerCase()} 
-                    and innovation in East Africa. The insights shared here reflect our commitment 
-                    to sustainable development and community empowerment.
-                  </p>
-                  <p>
-                    At Yowa Innovations, we believe in the power of storytelling to drive meaningful 
-                    change. Through our documentaries and digital content, we aim to amplify voices 
-                    that matter and showcase the transformative work happening across the region.
-                  </p>
                 </div>
               )}
             </div>

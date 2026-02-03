@@ -5,27 +5,16 @@ import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import BlogCard from "@/components/BlogCard";
 import { Button } from "@/components/ui/button";
-import { blogs } from "@/data/blogs";
-import { useTrendingBlogs } from "@/hooks/useTrendingBlogs";
+import { useBlogs } from "@/hooks/useBlogs";
 import { ExternalLink } from "lucide-react";
 
 const Blogs = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryParam = searchParams.get("category");
   const [activeCategory, setActiveCategory] = useState(categoryParam || "all");
-  const { data: trendingBlogs = [], isLoading } = useTrendingBlogs();
+  const { data: allBlogs = [], isLoading } = useBlogs(activeCategory === "all" ? undefined : activeCategory);
 
   const categories = ["all", "trending", "infrastructure", "urbanism", "livelihood"];
-
-  // Combine static and trending blogs
-  const allBlogs = activeCategory === "trending" 
-    ? trendingBlogs.map(blog => ({
-        ...blog,
-        category: "Trending"
-      }))
-    : activeCategory === "all"
-    ? [...blogs, ...trendingBlogs.map(blog => ({ ...blog, category: "Trending" }))]
-    : blogs.filter((blog) => blog.category.toLowerCase() === activeCategory);
 
   const filteredBlogs = allBlogs;
 
@@ -86,7 +75,7 @@ const Blogs = () => {
       {/* Blog Grid */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          {isLoading && activeCategory === "trending" ? (
+          {isLoading ? (
             <div className="text-center py-20">
               <p className="text-xl text-muted-foreground">Loading trending posts...</p>
             </div>
@@ -94,8 +83,14 @@ const Blogs = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredBlogs.map((blog) => (
                 <div key={blog.id} className="relative">
-                  <BlogCard {...blog} />
-                  {blog.category === "Trending" && blog.source_url && (
+                  <BlogCard 
+                    title={blog.title}
+                    excerpt={blog.excerpt}
+                    category={blog.category}
+                    image={blog.image}
+                    slug={blog.slug}
+                  />
+                  {blog.source_url && !blog.source_url.includes("yowainnovations") && (
                     <a 
                       href={blog.source_url} 
                       target="_blank" 

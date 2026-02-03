@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Video, Camera, Lightbulb, Share2 } from "lucide-react";
+import { ArrowRight, Video, Camera, Lightbulb, Share2, Footprints, Film } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
@@ -9,12 +9,14 @@ import TestimonialsSection from "@/components/TestimonialsSection";
 import StatsSection from "@/components/StatsSection";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { blogs } from "@/data/blogs";
+import { useBlogs } from "@/hooks/useBlogs";
 
 const Index = () => {
-  const latestBlogs = blogs.slice(0, 3);
-  const urbanismBlogs = blogs.filter((b) => b.category === "Urbanism").slice(0, 2);
-  const livelihoodBlogs = blogs.filter((b) => b.category === "Livelihood").slice(0, 2);
+  const { data: allBlogs = [] } = useBlogs();
+  
+  const latestBlogs = allBlogs.slice(0, 3);
+  const urbanismBlogs = allBlogs.filter((b) => b.category.toLowerCase() === "urbanism").slice(0, 2);
+  const livelihoodBlogs = allBlogs.filter((b) => b.category.toLowerCase() === "livelihood").slice(0, 2);
 
   const services = [
     {
@@ -28,6 +30,18 @@ const Index = () => {
       title: "Photography",
       description:
         "From promotional portraits to on-ground reportage, our photography services provide both aesthetic flair and narrative depth.",
+    },
+    {
+      icon: Footprints,
+      title: "Photowalk",
+      description:
+        "Guided urban exploration capturing authentic stories, architecture, and community life through immersive photography experiences.",
+    },
+    {
+      icon: Film,
+      title: "Post Production",
+      description:
+        "Professional editing, color grading, sound design, and visual effects that transform raw footage into polished, cinematic content.",
     },
     {
       icon: Lightbulb,
@@ -123,7 +137,7 @@ const Index = () => {
             Whether you're an NGO, corporate brand, or startup, we're your go-to partner for
             impactful storytelling and creative campaigns.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {services.map((service, index) => {
               const Icon = service.icon;
               return (
