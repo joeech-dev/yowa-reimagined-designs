@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           auto_posted_to_social: boolean | null
           category: string
+          content: string | null
           created_at: string | null
           daily_post_order: number | null
           excerpt: string | null
@@ -32,6 +33,7 @@ export type Database = {
         Insert: {
           auto_posted_to_social?: boolean | null
           category: string
+          content?: string | null
           created_at?: string | null
           daily_post_order?: number | null
           excerpt?: string | null
@@ -46,6 +48,7 @@ export type Database = {
         Update: {
           auto_posted_to_social?: boolean | null
           category?: string
+          content?: string | null
           created_at?: string | null
           daily_post_order?: number | null
           excerpt?: string | null
