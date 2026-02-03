@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, ExternalLink, Sparkles } from "lucide-react";
+import { Plus, Pencil, Trash2, ExternalLink, Sparkles, Image, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,7 +16,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -24,6 +23,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import RichTextEditor from "./RichTextEditor";
 
 interface BlogPost {
   id: string;
@@ -31,6 +32,7 @@ interface BlogPost {
   slug: string;
   category: string;
   excerpt: string | null;
+  content: string | null;
   image: string | null;
   source_url: string;
   source_name: string;
@@ -46,11 +48,14 @@ const BlogsManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBlog, setEditingBlog] = useState<BlogPost | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const featuredImageRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     title: "",
     slug: "",
     category: "Technology",
     excerpt: "",
+    content: "",
     image: "",
     source_url: "",
     source_name: "",
@@ -87,6 +92,7 @@ const BlogsManagement = () => {
             slug: formData.slug,
             category: formData.category,
             excerpt: formData.excerpt || null,
+            content: formData.content || null,
             image: formData.image || null,
             source_url: formData.source_url,
             source_name: formData.source_name,
@@ -103,6 +109,7 @@ const BlogsManagement = () => {
             slug: formData.slug,
             category: formData.category,
             excerpt: formData.excerpt || null,
+            content: formData.content || null,
             image: formData.image || null,
             source_url: formData.source_url,
             source_name: formData.source_name,
@@ -147,6 +154,7 @@ const BlogsManagement = () => {
       slug: blog.slug,
       category: blog.category,
       excerpt: blog.excerpt || "",
+      content: blog.content || "",
       image: blog.image || "",
       source_url: blog.source_url,
       source_name: blog.source_name,
@@ -161,10 +169,42 @@ const BlogsManagement = () => {
       slug: "",
       category: "Technology",
       excerpt: "",
+      content: "",
       image: "",
       source_url: "",
       source_name: "",
     });
+  };
+
+  const handleFeaturedImageUpload = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    setUploadingImage(true);
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `featured/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("blog-images")
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("blog-images")
+        .getPublicUrl(fileName);
+
+      setFormData({ ...formData, image: publicUrl });
+      toast.success("Featured image uploaded");
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast.error("Failed to upload image");
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   const filteredBlogs = blogs.filter(blog =>
@@ -258,7 +298,7 @@ const BlogsManagement = () => {
       </CardContent>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingBlog ? "Edit Blog Post" : "Create New Blog Post"}</DialogTitle>
             <DialogDescription>
@@ -266,92 +306,142 @@ const BlogsManagement = () => {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="title">Title</Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => {
-                  setFormData({ 
-                    ...formData, 
-                    title: e.target.value,
-                    slug: generateSlug(e.target.value)
-                  });
-                }}
-                placeholder="Enter blog title"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
+          <Tabs defaultValue="details" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="details">Details</TabsTrigger>
+              <TabsTrigger value="content">Content</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="details" className="space-y-4 mt-4">
               <div className="grid gap-2">
-                <Label htmlFor="slug">Slug</Label>
+                <Label htmlFor="title">Title</Label>
                 <Input
-                  id="slug"
-                  value={formData.slug}
-                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                  placeholder="blog-post-slug"
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) => {
+                    setFormData({ 
+                      ...formData, 
+                      title: e.target.value,
+                      slug: generateSlug(e.target.value)
+                    });
+                  }}
+                  placeholder="Enter blog title"
                 />
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="category">Category</Label>
-                <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="slug">Slug</Label>
+                  <Input
+                    id="slug"
+                    value={formData.slug}
+                    onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                    placeholder="blog-post-slug"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="category">Category</Label>
+                  <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-            </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="excerpt">Excerpt</Label>
-              <Textarea
-                id="excerpt"
-                value={formData.excerpt}
-                onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                placeholder="Brief description of the blog post"
-                rows={3}
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="image">Featured Image URL</Label>
-              <Input
-                id="image"
-                value={formData.image}
-                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                placeholder="https://example.com/image.jpg"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="source_url">Source URL</Label>
+                <Label htmlFor="excerpt">Excerpt</Label>
                 <Input
-                  id="source_url"
-                  value={formData.source_url}
-                  onChange={(e) => setFormData({ ...formData, source_url: e.target.value })}
-                  placeholder="https://..."
+                  id="excerpt"
+                  value={formData.excerpt}
+                  onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+                  placeholder="Brief description of the blog post"
                 />
               </div>
+
               <div className="grid gap-2">
-                <Label htmlFor="source_name">Source Name</Label>
-                <Input
-                  id="source_name"
-                  value={formData.source_name}
-                  onChange={(e) => setFormData({ ...formData, source_name: e.target.value })}
-                  placeholder="Yowa Innovations"
+                <Label>Featured Image</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={formData.image}
+                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                    placeholder="Image URL or upload"
+                    className="flex-1"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => featuredImageRef.current?.click()}
+                    disabled={uploadingImage}
+                  >
+                    {uploadingImage ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Image className="h-4 w-4" />
+                    )}
+                    <span className="ml-2">Upload</span>
+                  </Button>
+                </div>
+                {formData.image && (
+                  <img 
+                    src={formData.image} 
+                    alt="Featured preview" 
+                    className="mt-2 max-h-40 rounded-md object-cover"
+                  />
+                )}
+                <input
+                  ref={featuredImageRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleFeaturedImageUpload(file);
+                    e.target.value = "";
+                  }}
                 />
               </div>
-            </div>
-          </div>
 
-          <DialogFooter>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="source_url">Source URL</Label>
+                  <Input
+                    id="source_url"
+                    value={formData.source_url}
+                    onChange={(e) => setFormData({ ...formData, source_url: e.target.value })}
+                    placeholder="https://..."
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="source_name">Source Name</Label>
+                  <Input
+                    id="source_name"
+                    value={formData.source_name}
+                    onChange={(e) => setFormData({ ...formData, source_name: e.target.value })}
+                    placeholder="Yowa Innovations"
+                  />
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="content" className="mt-4">
+              <div className="grid gap-2">
+                <Label>Full Content (Markdown)</Label>
+                <RichTextEditor
+                  value={formData.content}
+                  onChange={(value) => setFormData({ ...formData, content: value })}
+                  placeholder="Write your full blog post content here..."
+                />
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          <DialogFooter className="mt-4">
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
             <Button onClick={handleSubmit} className="bg-primary hover:bg-primary/90">
               {editingBlog ? "Update" : "Create"} Post
