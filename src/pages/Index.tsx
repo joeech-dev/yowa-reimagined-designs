@@ -22,36 +22,42 @@ const Index = () => {
     {
       icon: Video,
       title: "Video Production",
+      slug: "video-production",
       description:
         "From narrative-driven documentaries to dynamic promotional reels, we capture the heart of your message and turn it into visual impact.",
     },
     {
       icon: Camera,
       title: "Photography",
+      slug: "photography",
       description:
         "From promotional portraits to on-ground reportage, our photography services provide both aesthetic flair and narrative depth.",
     },
     {
       icon: Footprints,
       title: "Photowalk",
+      slug: "photowalk",
       description:
         "Guided urban exploration capturing authentic stories, architecture, and community life through immersive photography experiences.",
     },
     {
       icon: Film,
       title: "Post Production",
+      slug: "post-production",
       description:
         "Professional editing, color grading, sound design, and visual effects that transform raw footage into polished, cinematic content.",
     },
     {
       icon: Lightbulb,
       title: "Creative Strategy",
+      slug: "creative-strategy",
       description:
         "Crafting a roadmap to turn vision into reality—bridging brand identity and audience engagement.",
     },
     {
       icon: Share2,
       title: "Digital Marketing",
+      slug: "digital-marketing",
       description:
         "From targeted campaigns to influencer collaborations, we ensure your content reaches the right audience.",
     },
@@ -143,15 +149,21 @@ const Index = () => {
               return (
                 <Card
                   key={index}
-                  className="p-6 hover:shadow-primary transition-smooth border-border group"
+                  className="p-6 hover:shadow-primary transition-smooth border-border group flex flex-col"
                 >
                   <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-smooth">
                     <Icon className="text-primary-foreground" size={24} />
                   </div>
                   <h3 className="font-display font-semibold text-xl mb-3">{service.title}</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">
+                  <p className="text-muted-foreground text-sm leading-relaxed flex-1">
                     {service.description}
                   </p>
+                  <Link to={`/get-started?service=${service.slug}`}>
+                    <Button variant="outline" size="sm" className="mt-4 w-full group-hover:bg-primary group-hover:text-primary-foreground transition-smooth">
+                      Get Started
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
                 </Card>
               );
             })}
