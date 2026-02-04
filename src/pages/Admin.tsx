@@ -9,8 +9,10 @@ import PortfolioManagement from "@/components/admin/PortfolioManagement";
 import PartnersManagement from "@/components/admin/PartnersManagement";
 import LeadsManagement from "@/components/admin/LeadsManagement";
 import AnalyticsDashboard from "@/components/admin/AnalyticsDashboard";
+import FinanceManagement from "@/components/admin/FinanceManagement";
+import ProjectsManagement from "@/components/admin/ProjectsManagement";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sparkles, Clock, ArrowRight } from "lucide-react";
+import { Sparkles, Clock, ArrowRight, FolderKanban, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -60,7 +62,31 @@ const AdminDashboardHome = () => {
       <DashboardStats {...stats} />
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="hover:shadow-primary transition-smooth cursor-pointer">
+          <Link to="/admin/projects">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center justify-between">
+                <span className="flex items-center gap-2"><FolderKanban className="h-4 w-4" /> Projects</span>
+                <ArrowRight className="h-4 w-4" />
+              </CardTitle>
+              <CardDescription>Manage active projects</CardDescription>
+            </CardHeader>
+          </Link>
+        </Card>
+
+        <Card className="hover:shadow-primary transition-smooth cursor-pointer">
+          <Link to="/admin/finance">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center justify-between">
+                <span className="flex items-center gap-2"><DollarSign className="h-4 w-4" /> Finance</span>
+                <ArrowRight className="h-4 w-4" />
+              </CardTitle>
+              <CardDescription>Track income & expenses</CardDescription>
+            </CardHeader>
+          </Link>
+        </Card>
+
         <Card className="hover:shadow-primary transition-smooth cursor-pointer">
           <Link to="/admin/leads">
             <CardHeader>
@@ -69,18 +95,6 @@ const AdminDashboardHome = () => {
                 <ArrowRight className="h-4 w-4" />
               </CardTitle>
               <CardDescription>View and manage new inquiries</CardDescription>
-            </CardHeader>
-          </Link>
-        </Card>
-
-        <Card className="hover:shadow-primary transition-smooth cursor-pointer">
-          <Link to="/admin/blogs">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center justify-between">
-                Content Hub
-                <ArrowRight className="h-4 w-4" />
-              </CardTitle>
-              <CardDescription>Create and manage blog posts</CardDescription>
             </CardHeader>
           </Link>
         </Card>
@@ -266,6 +280,8 @@ const Admin = () => {
     <AdminLayout>
       <Routes>
         <Route index element={<AdminDashboardHome />} />
+        <Route path="projects" element={<ProjectsManagement />} />
+        <Route path="finance" element={<FinanceManagement />} />
         <Route path="blogs" element={<BlogsManagement />} />
         <Route path="portfolio" element={<PortfolioManagement />} />
         <Route path="partners" element={<PartnersManagement />} />
