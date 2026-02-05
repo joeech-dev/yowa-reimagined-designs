@@ -48,14 +48,14 @@ const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorProps) =
     }, 0);
   }, [value, onChange]);
 
-  const formatBold = () => insertAtCursor("**", "**");
-  const formatItalic = () => insertAtCursor("*", "*");
-  const formatH1 = () => insertAtCursor("\n# ", "\n");
-  const formatH2 = () => insertAtCursor("\n## ", "\n");
-  const formatList = () => insertAtCursor("\n- ");
-  const formatOrderedList = () => insertAtCursor("\n1. ");
-  const formatQuote = () => insertAtCursor("\n> ");
-  const formatCode = () => insertAtCursor("`", "`");
+ const formatBold = () => insertAtCursor("**", "**");
+ const formatItalic = () => insertAtCursor("*", "*");
+ const formatH1 = () => insertAtCursor("# ", "");
+ const formatH2 = () => insertAtCursor("## ", "");
+ const formatList = () => insertAtCursor("- ", "");
+ const formatOrderedList = () => insertAtCursor("1. ", "");
+ const formatQuote = () => insertAtCursor("> ", "");
+ const formatCode = () => insertAtCursor("`", "`");
   const formatLink = () => {
     const url = prompt("Enter URL:");
     if (url) {

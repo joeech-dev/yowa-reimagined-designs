@@ -10,6 +10,7 @@ import StatsSection from "@/components/StatsSection";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useBlogs } from "@/hooks/useBlogs";
+ import heroBackground from "@/assets/hero-background.jpg";
 
 const Index = () => {
   const { data: allBlogs = [] } = useBlogs();
@@ -69,8 +70,12 @@ const Index = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 overflow-hidden">
-        <div className="absolute inset-0 bg-primary/5"></div>
+       <section className="relative pt-32 pb-20 overflow-hidden min-h-[80vh] flex items-center">
+         <div 
+           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+           style={{ backgroundImage: `url(${heroBackground})` }}
+         />
+         <div className="absolute inset-0 bg-background/85 backdrop-blur-sm"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="font-display font-bold text-5xl md:text-7xl mb-6 text-primary">
