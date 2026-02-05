@@ -212,10 +212,10 @@ const FinanceManagement = () => {
               </div>
               <div>
                 <Label>Linked Project (Optional)</Label>
-                <Select value={formData.project_id} onValueChange={(v) => setFormData({ ...formData, project_id: v })}>
+                <Select value={formData.project_id || "none"} onValueChange={(v) => setFormData({ ...formData, project_id: v === "none" ? "" : v })}>
                   <SelectTrigger><SelectValue placeholder="Select project" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">None</SelectItem>
+                    <SelectItem value="none">None</SelectItem>
                     {projects.map((p) => (
                       <SelectItem key={p.id} value={p.id}>{p.title}</SelectItem>
                     ))}
