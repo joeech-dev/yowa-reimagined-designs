@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, ExternalLink, Calendar } from "lucide-react";
 import { useBlogBySlug } from "@/hooks/useBlogs";
+ import ReactMarkdown from "react-markdown";
+ import remarkGfm from "remark-gfm";
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -95,12 +97,46 @@ const BlogPost = () => {
             )}
 
             {/* Content */}
-            <div className="prose prose-lg max-w-none">
+             <div className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-a:text-primary">
               {blog.content ? (
-                <div 
-                  className="text-foreground leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: blog.content.replace(/\n/g, '<br />') }}
-                />
+                 <ReactMarkdown 
+                   remarkPlugins={[remarkGfm]}
+                   components={{
+                     img: ({ src, alt }) => (
+                       <img 
+                         src={src} 
+                         alt={alt || ''} 
+                         className="rounded-lg max-w-full h-auto my-4"
+                       />
+                     ),
+                     h1: ({ children }) => (
+                       <h1 className="font-display font-bold text-3xl mt-8 mb-4">{children}</h1>
+                     ),
+                     h2: ({ children }) => (
+                       <h2 className="font-display font-bold text-2xl mt-6 mb-3">{children}</h2>
+                     ),
+                     p: ({ children }) => (
+                       <p className="text-foreground leading-relaxed mb-4">{children}</p>
+                     ),
+                     strong: ({ children }) => (
+                       <strong className="font-bold text-foreground">{children}</strong>
+                     ),
+                     ul: ({ children }) => (
+                       <ul className="list-disc list-inside mb-4 space-y-2">{children}</ul>
+                     ),
+                     ol: ({ children }) => (
+                       <ol className="list-decimal list-inside mb-4 space-y-2">{children}</ol>
+                     ),
+                     blockquote: ({ children }) => (
+                       <blockquote className="border-l-4 border-primary pl-4 italic my-4 text-muted-foreground">{children}</blockquote>
+                     ),
+                     code: ({ children }) => (
+                       <code className="bg-muted px-1.5 py-0.5 rounded text-sm">{children}</code>
+                     ),
+                   }}
+                 >
+                   {blog.content}
+                 </ReactMarkdown>
               ) : (
                 <p className="text-xl text-muted-foreground leading-relaxed mb-8">
                   {blog.excerpt}
