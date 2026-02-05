@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Facebook, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Twitter, Youtube, Cookie, FileText } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -41,18 +41,26 @@ const Footer = () => {
 
           {/* Categories */}
           <div>
-            <h3 className="font-display font-semibold text-lg mb-4">Categories</h3>
+            <h3 className="font-display font-semibold text-lg mb-4">Policies</h3>
             <ul className="space-y-2">
-              {["Infrastructure", "Urbanism", "Livelihood"].map((category) => (
-                <li key={category}>
-                  <Link
-                    to={`/blogs?category=${category.toLowerCase()}`}
-                    className="text-sm opacity-90 hover:opacity-100 hover:text-primary transition-smooth"
-                  >
-                    {category}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <Link
+                  to="/cookie-policy"
+                  className="text-sm opacity-90 hover:opacity-100 hover:text-primary transition-smooth flex items-center gap-2"
+                >
+                  <Cookie size={14} />
+                  Cookie Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/content-policy"
+                  className="text-sm opacity-90 hover:opacity-100 hover:text-primary transition-smooth flex items-center gap-2"
+                >
+                  <FileText size={14} />
+                  Content Use Policy
+                </Link>
+              </li>
             </ul>
           </div>
 
