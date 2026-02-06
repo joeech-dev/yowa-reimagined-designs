@@ -26,7 +26,6 @@ const AdminSidebar = () => {
     { icon: FolderKanban, label: "Projects", path: "/admin/projects" },
     { icon: DollarSign, label: "Finance", path: "/admin/finance" },
     { icon: FileText, label: "Blog Posts", path: "/admin/blogs" },
-    { icon: Video, label: "Portfolio", path: "/admin/portfolio" },
     { icon: Building2, label: "Partner Brands", path: "/admin/partners" },
     { icon: Users, label: "Leads", path: "/admin/leads" },
     { icon: BarChart3, label: "Analytics", path: "/admin/analytics" },

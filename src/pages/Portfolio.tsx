@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -10,51 +11,41 @@ import { Badge } from "@/components/ui/badge";
 interface Project {
   id: string;
   title: string;
-  category: string;
   description: string | null;
-  video_url: string;
-  client: string | null;
-  year: string | null;
+  client_name: string;
+  video_url: string | null;
+  budget: number | null;
+  start_date: string | null;
+  deadline: string | null;
+  completed_at: string | null;
 }
 
-const categories = ["All", "Documentary", "Video Production", "Digital Marketing"];
-
 const Portfolio = () => {
-  const [activeCategory, setActiveCategory] = useState("All");
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: projects = [], isLoading } = useQuery({
+    queryKey: ["public-projects"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("projects")
+        .select("id, title, description, client_name, video_url, budget, start_date, deadline, completed_at")
+        .eq("show_on_website", true)
+        .eq("status", "completed")
+        .order("completed_at", { ascending: false });
 
-  useEffect(() => {
-    fetchProjects();
-  }, []);
-
-  const fetchProjects = async () => {
-    const { data, error } = await supabase
-      .from("portfolio_projects")
-      .select("*")
-      .eq("is_active", true)
-      .order("display_order", { ascending: true });
-
-    if (error) {
-      console.error("Error fetching projects:", error);
-    } else {
-      setProjects(data || []);
-    }
-    setLoading(false);
-  };
-
-  const filteredProjects =
-    activeCategory === "All"
-      ? projects
-      : projects.filter((project) => project.category === activeCategory);
+      if (error) {
+        console.error("Error fetching projects:", error);
+        return [];
+      }
+      return data || [];
+    },
+  });
 
   return (
     <div className="min-h-screen">
       <SEO
-        title="Portfolio | Yowa Innovations - Documentary & Video Production Projects"
-        description="View our award-winning portfolio of documentaries, video productions & digital campaigns. 50+ projects for NGOs, corporates & startups across East Africa."
-        keywords="video production portfolio Uganda, documentary projects East Africa, creative campaigns portfolio, NGO video production, corporate video Uganda, media production samples"
-        url="https://yowainnovations.com/portfolio"
+        title="Projects | Yowa Innovations - Our Completed Work"
+        description="View our completed projects — documentaries, video productions & digital campaigns. 50+ projects for NGOs, corporates & startups across East Africa."
+        keywords="video production projects Uganda, documentary projects East Africa, creative campaigns, NGO video production, corporate video Uganda"
+        url="https://yowainnovations.com/projects"
       />
       <Navbar />
 
@@ -63,7 +54,7 @@ const Portfolio = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="font-display font-bold text-4xl md:text-6xl mb-6">
-              Our Portfolio
+              Our Projects
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed">
               Explore our collection of impactful projects—from powerful documentaries to engaging
@@ -74,67 +65,55 @@ const Portfolio = () => {
         </div>
       </section>
 
-      {/* Filter Section */}
-      <section className="py-8 border-b border-border sticky top-0 bg-background/95 backdrop-blur-sm z-40">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-wrap gap-3 justify-center">
-            {categories.map((category) => (
-              <Button
-                key={category}
-                variant={activeCategory === category ? "default" : "outline"}
-                onClick={() => setActiveCategory(category)}
-                className={activeCategory === category ? "gradient-warm" : ""}
-              >
-                {category}
-              </Button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Portfolio Grid */}
+      {/* Projects Grid */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          {loading ? (
+          {isLoading ? (
             <div className="text-center py-20">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
               <p className="text-muted-foreground">Loading projects...</p>
             </div>
-          ) : filteredProjects.length === 0 ? (
+          ) : projects.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-xl text-muted-foreground">
-                No projects found in this category.
+                No projects to display yet. Check back soon!
               </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredProjects.map((project) => (
+              {projects.map((project) => (
                 <Card
                   key={project.id}
                   className="group overflow-hidden border-border hover:shadow-warm transition-smooth"
                 >
-                  <div className="relative aspect-video overflow-hidden bg-muted">
-                    <iframe
-                      src={project.video_url}
-                      title={project.title}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      className="w-full h-full"
-                    />
-                  </div>
+                  {project.video_url && (
+                    <div className="relative aspect-video overflow-hidden bg-muted">
+                      <iframe
+                        src={project.video_url}
+                        title={project.title}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        className="w-full h-full"
+                      />
+                    </div>
+                  )}
                   <div className="p-6">
                     <Badge variant="secondary" className="mb-3">
-                      {project.category}
+                      Completed
                     </Badge>
                     <h3 className="font-display font-semibold text-xl mb-2 group-hover:text-primary transition-smooth">
                       {project.title}
                     </h3>
-                    <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
-                      {project.description}
-                    </p>
+                    {project.description && (
+                      <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
+                        {project.description}
+                      </p>
+                    )}
                     <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <span>{project.client}</span>
-                      <span>{project.year}</span>
+                      <span>{project.client_name}</span>
+                      {project.completed_at && (
+                        <span>{new Date(project.completed_at).getFullYear()}</span>
+                      )}
                     </div>
                   </div>
                 </Card>
