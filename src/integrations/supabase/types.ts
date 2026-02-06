@@ -314,10 +314,12 @@ export type Database = {
           description: string | null
           id: string
           lead_id: string | null
+          show_on_website: boolean
           start_date: string | null
           status: Database["public"]["Enums"]["project_status"]
           title: string
           updated_at: string
+          video_url: string | null
         }
         Insert: {
           budget?: number | null
@@ -330,10 +332,12 @@ export type Database = {
           description?: string | null
           id?: string
           lead_id?: string | null
+          show_on_website?: boolean
           start_date?: string | null
           status?: Database["public"]["Enums"]["project_status"]
           title: string
           updated_at?: string
+          video_url?: string | null
         }
         Update: {
           budget?: number | null
@@ -346,10 +350,12 @@ export type Database = {
           description?: string | null
           id?: string
           lead_id?: string | null
+          show_on_website?: boolean
           start_date?: string | null
           status?: Database["public"]["Enums"]["project_status"]
           title?: string
           updated_at?: string
+          video_url?: string | null
         }
         Relationships: [
           {
@@ -423,7 +429,13 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "user"
+      app_role:
+        | "admin"
+        | "user"
+        | "finance"
+        | "project_team"
+        | "sales_marketing"
+        | "super_admin"
       project_status: "lead" | "in_progress" | "completed" | "cancelled"
       transaction_type: "income" | "expense"
     }
@@ -553,7 +565,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "user"],
+      app_role: [
+        "admin",
+        "user",
+        "finance",
+        "project_team",
+        "sales_marketing",
+        "super_admin",
+      ],
       project_status: ["lead", "in_progress", "completed", "cancelled"],
       transaction_type: ["income", "expense"],
     },
