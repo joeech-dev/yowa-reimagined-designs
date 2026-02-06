@@ -76,6 +76,8 @@ const ProjectsManagement = () => {
     budget: "",
     start_date: "",
     deadline: "",
+    video_url: "",
+    show_on_website: false,
   });
   const [teamForm, setTeamForm] = useState({ name: "", role: "", email: "", phone: "" });
 
@@ -130,6 +132,8 @@ const ProjectsManagement = () => {
         budget: data.budget ? parseFloat(data.budget) : null,
         start_date: data.start_date || null,
         deadline: data.deadline || null,
+        video_url: data.video_url || null,
+        show_on_website: data.show_on_website,
       }]);
       if (error) throw error;
     },
@@ -153,6 +157,8 @@ const ProjectsManagement = () => {
         budget: data.budget ? parseFloat(data.budget) : null,
         start_date: data.start_date || null,
         deadline: data.deadline || null,
+        video_url: data.video_url || null,
+        show_on_website: data.show_on_website,
       };
       if (data.status === "completed") {
         updateData.completed_at = new Date().toISOString();
@@ -234,7 +240,7 @@ const ProjectsManagement = () => {
   });
 
   const resetForm = () => {
-    setFormData({ title: "", description: "", client_name: "", client_email: "", client_phone: "", status: "lead", budget: "", start_date: "", deadline: "" });
+    setFormData({ title: "", description: "", client_name: "", client_email: "", client_phone: "", status: "lead", budget: "", start_date: "", deadline: "", video_url: "", show_on_website: false });
     setEditingProject(null);
     setIsDialogOpen(false);
   };
@@ -251,6 +257,8 @@ const ProjectsManagement = () => {
       budget: project.budget?.toString() || "",
       start_date: project.start_date || "",
       deadline: project.deadline || "",
+      video_url: (project as any).video_url || "",
+      show_on_website: (project as any).show_on_website || false,
     });
     setIsDialogOpen(true);
   };
@@ -336,6 +344,14 @@ const ProjectsManagement = () => {
                   <Label>Description</Label>
                   <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
                 </div>
+                <div className="col-span-2">
+                  <Label>Video URL (YouTube embed)</Label>
+                  <Input value={formData.video_url} onChange={(e) => setFormData({ ...formData, video_url: e.target.value })} placeholder="https://www.youtube.com/embed/..." />
+                </div>
+                <div className="col-span-2 flex items-center gap-3">
+                  <input type="checkbox" id="show_on_website" checked={formData.show_on_website} onChange={(e) => setFormData({ ...formData, show_on_website: e.target.checked })} className="h-4 w-4" />
+                  <Label htmlFor="show_on_website">Show on website (only completed projects will display)</Label>
+                </div>
               </div>
               <Button type="submit" className="w-full">{editingProject ? "Update" : "Create"} Project</Button>
             </form>
@@ -367,6 +383,7 @@ const ProjectsManagement = () => {
                       <TableHead>Project</TableHead>
                       <TableHead>Client</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead>Website</TableHead>
                       <TableHead>Budget</TableHead>
                       <TableHead>Deadline</TableHead>
                       <TableHead>Actions</TableHead>
@@ -378,6 +395,11 @@ const ProjectsManagement = () => {
                         <TableCell className="font-medium">{p.title}</TableCell>
                         <TableCell>{p.client_name}</TableCell>
                         <TableCell><Badge className={statusColors[p.status]}>{p.status.replace("_", " ")}</Badge></TableCell>
+                        <TableCell>
+                          <span className={`px-2 py-1 rounded-full text-xs ${(p as any).show_on_website ? "bg-primary/20 text-primary" : "text-muted-foreground"}`}>
+                            {(p as any).show_on_website ? "Visible" : "Hidden"}
+                          </span>
+                        </TableCell>
                         <TableCell>{p.budget ? `$${Number(p.budget).toLocaleString()}` : "-"}</TableCell>
                         <TableCell>{p.deadline ? format(new Date(p.deadline), "MMM d, yyyy") : "-"}</TableCell>
                         <TableCell>

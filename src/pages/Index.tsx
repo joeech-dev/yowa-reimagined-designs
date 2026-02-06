@@ -214,12 +214,12 @@ const Index = () => {
             See Our Work in Action
           </h2>
           <p className="text-lg mb-8 max-w-2xl mx-auto opacity-90">
-            Explore our portfolio of transformative projects that have made a difference across
+            Explore our projects that have made a difference across
             communities and industries.
           </p>
           <Button size="lg" variant="secondary" asChild className="hover:scale-105 transition-smooth">
-            <Link to="/portfolio">
-              View Portfolio
+            <Link to="/projects">
+              View Projects
               <ArrowRight className="ml-2" />
             </Link>
           </Button>
