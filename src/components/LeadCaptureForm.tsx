@@ -17,6 +17,7 @@ const formSchema = z.object({
   phone: z.string().min(10, "Phone must be at least 10 characters").max(20),
   service: z.string().min(1, "Please select a service"),
   geographic_location: z.string().min(2, "Location is required").max(100),
+  website: z.string().max(0, "").optional(), // honeypot field
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -43,10 +44,18 @@ export const LeadCaptureForm = () => {
       phone: "",
       service: preselectedService,
       geographic_location: "",
+      website: "",
     },
   });
 
   const onSubmit = async (data: FormData) => {
+    // Honeypot check - bots fill hidden fields
+    if (data.website) {
+      toast.success("Thank you! We'll be in touch soon.");
+      form.reset();
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -177,6 +186,20 @@ export const LeadCaptureForm = () => {
                     <Input placeholder="City, Country" {...field} />
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Honeypot field - hidden from humans, filled by bots */}
+            <FormField
+              control={form.control}
+              name="website"
+              render={({ field }) => (
+                <FormItem className="hidden" aria-hidden="true">
+                  <FormLabel>Website</FormLabel>
+                  <FormControl>
+                    <Input tabIndex={-1} autoComplete="off" {...field} />
+                  </FormControl>
                 </FormItem>
               )}
             />
