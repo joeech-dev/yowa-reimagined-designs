@@ -32,6 +32,7 @@ const AdminSidebar = () => {
     { icon: Users, label: "Leads", path: "/admin/leads" },
     { icon: BarChart3, label: "Analytics", path: "/admin/analytics" },
     { icon: Sparkles, label: "AI Assistant", path: "/admin/ai-assistant" },
+    { icon: Users, label: "Users", path: "/admin/users" },
     { icon: Settings, label: "Settings", path: "/admin/settings" },
   ];
 
