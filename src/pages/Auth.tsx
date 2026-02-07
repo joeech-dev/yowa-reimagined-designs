@@ -21,34 +21,23 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    checkUser();
-    
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    // Check if already logged in on mount
+    const checkExistingSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
-        const hasRole = await checkUserRole(session.user.id);
-        navigate(hasRole ? "/admin" : "/");
+        navigate("/admin");
+      }
+    };
+    checkExistingSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        navigate("/admin");
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
-
-  const checkUserRole = async (userId: string): Promise<boolean> => {
-    const { data } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId)
-      .maybeSingle();
-    return !!data;
-  };
-
-  const checkUser = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user) {
-      const hasRole = await checkUserRole(session.user.id);
-      navigate(hasRole ? "/admin" : "/");
-    }
-  };
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,22 +66,14 @@ const Auth = () => {
         if (error) throw error;
         toast.success("Account created! Please check your email to verify.");
       } else {
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
 
         if (error) throw error;
-        
-        // Check role and redirect accordingly
-        const hasRole = await checkUserRole(data.user.id);
-        if (hasRole) {
-          toast.success("Signed in successfully!");
-          navigate("/admin");
-        } else {
-          toast.error("You don't have dashboard access. Contact an admin to get a role assigned.");
-          await supabase.auth.signOut();
-        }
+        toast.success("Signed in successfully!");
+        // Navigation handled by onAuthStateChange listener
       }
     } catch (error: any) {
       console.error("Auth error:", error);

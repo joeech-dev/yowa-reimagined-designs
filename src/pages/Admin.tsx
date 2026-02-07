@@ -166,19 +166,33 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     let isMounted = true;
 
-    const checkAdminRole = async (userId: string): Promise<boolean> => {
-      try {
-        const { data } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", userId)
-          .in("role", ["admin", "super_admin", "finance", "project_team", "sales_marketing"])
-          .maybeSingle();
-        return !!data;
-      } catch (error) {
-        console.error("Error checking admin role:", error);
-        return false;
+    const checkAdminRole = async (userId: string, retries = 3): Promise<boolean> => {
+      for (let i = 0; i < retries; i++) {
+        try {
+          const { data, error } = await supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", userId)
+            .maybeSingle();
+          if (error) {
+            console.error("Role check error (attempt " + (i + 1) + "):", error);
+            if (i < retries - 1) {
+              await new Promise(r => setTimeout(r, 500 * (i + 1)));
+              continue;
+            }
+            return false;
+          }
+          return !!data;
+        } catch (error) {
+          console.error("Error checking role:", error);
+          if (i < retries - 1) {
+            await new Promise(r => setTimeout(r, 500 * (i + 1)));
+            continue;
+          }
+          return false;
+        }
       }
+      return false;
     };
 
     // Set up auth listener FIRST (for ongoing changes)
