@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Facebook, Instagram, Linkedin, Twitter, Youtube, Cookie, FileText } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Twitter, Youtube, Cookie, FileText, Shield, ScrollText } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import logo from "@/assets/Yowa_Logo_1.png";
 import { Button } from "@/components/ui/button";
@@ -58,6 +58,24 @@ const Footer = () => {
                 >
                   <FileText size={14} />
                   Content Use Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/privacy-policy"
+                  className="text-sm opacity-90 hover:opacity-100 hover:text-primary transition-smooth flex items-center gap-2"
+                >
+                  <Shield size={14} />
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/terms-of-service"
+                  className="text-sm opacity-90 hover:opacity-100 hover:text-primary transition-smooth flex items-center gap-2"
+                >
+                  <ScrollText size={14} />
+                  Terms of Service
                 </Link>
               </li>
             </ul>

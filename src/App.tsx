@@ -17,6 +17,8 @@ import ContactFormWidget from "@/components/ContactFormWidget";
 import CookieConsent from "@/components/CookieConsent";
 import CookiePolicy from "./pages/CookiePolicy";
 import ContentPolicy from "./pages/ContentPolicy";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import useGoogleAnalytics from "@/hooks/useGoogleAnalytics";
 
 const queryClient = new QueryClient();
@@ -46,6 +48,8 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/cookie-policy" element={<CookiePolicy />} />
           <Route path="/content-policy" element={<ContentPolicy />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
