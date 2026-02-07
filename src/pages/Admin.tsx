@@ -11,7 +11,6 @@ import AnalyticsDashboard from "@/components/admin/AnalyticsDashboard";
 import FinanceManagement from "@/components/admin/FinanceManagement";
 import ProjectsManagement from "@/components/admin/ProjectsManagement";
 import AIAssistantPanel from "@/components/admin/AIAssistantPanel";
-import ExpenseRequisitionForm from "@/components/admin/ExpenseRequisitionForm";
 import UserManagement from "@/components/admin/UserManagement";
 import OnlineUsersWidget from "@/components/admin/OnlineUsersWidget";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { useUserRole } from "@/hooks/useUserRole";
 
 const AdminDashboardHome = () => {
   const [stats, setStats] = useState({
@@ -28,6 +28,7 @@ const AdminDashboardHome = () => {
     partnersCount: 0,
     newLeadsThisMonth: 0,
   });
+  const { canView } = useUserRole();
 
   useEffect(() => {
     fetchStats();
@@ -65,81 +66,89 @@ const AdminDashboardHome = () => {
 
       <DashboardStats {...stats} />
 
-      {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="hover:shadow-primary transition-smooth cursor-pointer">
-          <Link to="/admin/projects">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center justify-between">
-                <span className="flex items-center gap-2"><FolderKanban className="h-4 w-4" /> Projects</span>
-                <ArrowRight className="h-4 w-4" />
-              </CardTitle>
-              <CardDescription>Manage active projects</CardDescription>
-            </CardHeader>
-          </Link>
-        </Card>
+        {canView("projects") && (
+          <Card className="hover:shadow-primary transition-smooth cursor-pointer">
+            <Link to="/admin/projects">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center justify-between">
+                  <span className="flex items-center gap-2"><FolderKanban className="h-4 w-4" /> Projects</span>
+                  <ArrowRight className="h-4 w-4" />
+                </CardTitle>
+                <CardDescription>Manage active projects</CardDescription>
+              </CardHeader>
+            </Link>
+          </Card>
+        )}
 
-        <Card className="hover:shadow-primary transition-smooth cursor-pointer">
-          <Link to="/admin/finance">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center justify-between">
-                <span className="flex items-center gap-2"><DollarSign className="h-4 w-4" /> Finance</span>
-                <ArrowRight className="h-4 w-4" />
-              </CardTitle>
-              <CardDescription>Track income & expenses</CardDescription>
-            </CardHeader>
-          </Link>
-        </Card>
+        {canView("finance") && (
+          <Card className="hover:shadow-primary transition-smooth cursor-pointer">
+            <Link to="/admin/finance">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center justify-between">
+                  <span className="flex items-center gap-2"><DollarSign className="h-4 w-4" /> Finance</span>
+                  <ArrowRight className="h-4 w-4" />
+                </CardTitle>
+                <CardDescription>Track income & expenses</CardDescription>
+              </CardHeader>
+            </Link>
+          </Card>
+        )}
 
-        <Card className="hover:shadow-primary transition-smooth cursor-pointer">
-          <Link to="/admin/leads">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center justify-between">
-                Recent Leads
-                <ArrowRight className="h-4 w-4" />
-              </CardTitle>
-              <CardDescription>View and manage new inquiries</CardDescription>
-            </CardHeader>
-          </Link>
-        </Card>
+        {canView("leads") && (
+          <Card className="hover:shadow-primary transition-smooth cursor-pointer">
+            <Link to="/admin/leads">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center justify-between">
+                  Recent Leads
+                  <ArrowRight className="h-4 w-4" />
+                </CardTitle>
+                <CardDescription>View and manage new inquiries</CardDescription>
+              </CardHeader>
+            </Link>
+          </Card>
+        )}
 
-        <Card className="hover:shadow-primary transition-smooth cursor-pointer">
-          <Link to="/admin/analytics">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center justify-between">
-                Analytics
-                <ArrowRight className="h-4 w-4" />
-              </CardTitle>
-              <CardDescription>View business insights</CardDescription>
-            </CardHeader>
-          </Link>
-        </Card>
+        {canView("analytics") && (
+          <Card className="hover:shadow-primary transition-smooth cursor-pointer">
+            <Link to="/admin/analytics">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center justify-between">
+                  Analytics
+                  <ArrowRight className="h-4 w-4" />
+                </CardTitle>
+                <CardDescription>View business insights</CardDescription>
+              </CardHeader>
+            </Link>
+          </Card>
+        )}
       </div>
 
-      {/* Online Users + AI Assistant Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <OnlineUsersWidget />
-        <Card className="lg:col-span-2 bg-primary/5 border-primary/20 cursor-pointer hover:shadow-md transition-all" onClick={() => window.location.href = "/admin/ai-assistant"}>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-secondary" />
-              AI Assistant
-              <Badge variant="secondary" className="text-xs">Active</Badge>
-            </CardTitle>
-            <CardDescription>Your intelligent business companion</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground mb-4">
-              Generate blog posts, analyze leads, schedule follow-ups, and convert projects into content — all powered by AI.
-            </p>
-            <Button variant="outline" size="sm" asChild>
-              <Link to="/admin/ai-assistant">
-                <Sparkles className="h-4 w-4 mr-2" />
-                Open AI Assistant
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
+        {canView("ai-assistant") && (
+          <Card className="lg:col-span-2 bg-primary/5 border-primary/20 cursor-pointer hover:shadow-md transition-all" onClick={() => window.location.href = "/admin/ai-assistant"}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-secondary" />
+                AI Assistant
+                <Badge variant="secondary" className="text-xs">Active</Badge>
+              </CardTitle>
+              <CardDescription>Your intelligent business companion</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Generate blog posts, analyze leads, schedule follow-ups, and convert projects into content — all powered by AI.
+              </p>
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/admin/ai-assistant">
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Open AI Assistant
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
@@ -195,21 +204,17 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
       return false;
     };
 
-    // Set up auth listener FIRST (for ongoing changes)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (!isMounted) return;
-        
         if (event === 'SIGNED_OUT') {
           setUser(null);
           setIsAdmin(false);
           navigate("/auth", { replace: true });
           return;
         }
-        
         if (session?.user) {
           setUser(session.user);
-          // Don't block on role check for listener
           checkAdminRole(session.user.id).then(hasAdmin => {
             if (isMounted) setIsAdmin(hasAdmin);
           });
@@ -217,41 +222,28 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
       }
     );
 
-    // THEN do initial load (controls loading state)
     const initializeAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
-        
         if (!isMounted) return;
-        
         if (!session?.user) {
           navigate("/auth", { replace: true });
           return;
         }
-        
         setUser(session.user);
-        
-        // AWAIT role check before setting loading false
         const hasAdminRole = await checkAdminRole(session.user.id);
-        
         if (!isMounted) return;
-        
         if (!hasAdminRole) {
           toast.error("You don't have admin access");
           navigate("/", { replace: true });
           return;
         }
-        
         setIsAdmin(true);
       } catch (error) {
         console.error("Auth check error:", error);
-        if (isMounted) {
-          navigate("/auth", { replace: true });
-        }
+        if (isMounted) navigate("/auth", { replace: true });
       } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
+        if (isMounted) setLoading(false);
       }
     };
 
@@ -274,9 +266,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  if (!isAdmin) {
-    return null;
-  }
+  if (!isAdmin) return null;
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -295,7 +285,6 @@ const Admin = () => {
         <Route index element={<AdminDashboardHome />} />
         <Route path="projects" element={<ProjectsManagement />} />
         <Route path="finance" element={<FinanceManagement />} />
-        <Route path="requisitions" element={<ExpenseRequisitionForm />} />
         <Route path="blogs" element={<BlogsManagement />} />
         <Route path="partners" element={<PartnersManagement />} />
         <Route path="leads" element={<LeadsManagement />} />
