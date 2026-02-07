@@ -16,6 +16,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import logo from "@/assets/Yowa_Logo_1.png";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useProfile } from "@/hooks/useProfile";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { User } from "lucide-react";
 
 const allMenuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/admin", section: "dashboard" },
@@ -33,7 +36,8 @@ const allMenuItems = [
 const AdminSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { canView } = useUserRole();
+  const { canView, role } = useUserRole();
+  const { profile } = useProfile();
 
   const menuItems = allMenuItems.filter(item => canView(item.section));
 
@@ -42,8 +46,16 @@ const AdminSidebar = () => {
     navigate("/");
   };
 
+  const initials = profile?.full_name
+    ?.split(" ")
+    .map(n => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2) || "?";
+
   return (
     <aside className="w-64 min-h-screen bg-foreground flex flex-col">
+      {/* Logo */}
       <div className="p-6 border-b border-white/10">
         <Link to="/" className="flex items-center gap-3">
           <img src={logo} alt="Yowa" className="h-10 w-auto" />
@@ -57,6 +69,29 @@ const AdminSidebar = () => {
         </Link>
       </div>
 
+      {/* User Profile */}
+      {profile && (
+        <div className="px-4 py-4 border-b border-white/10">
+          <div className="flex items-center gap-3">
+            <Avatar className="h-9 w-9 border border-white/20">
+              <AvatarImage src={profile.avatar_url || undefined} />
+              <AvatarFallback className="bg-primary text-white text-xs">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-white truncate">
+                {profile.full_name || "Team Member"}
+              </p>
+              <p className="text-xs text-white/50 truncate">
+                {profile.position || role?.replace("_", " ") || ""}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Navigation */}
       <nav className="flex-1 p-4 space-y-1">
         {menuItems.map((item) => {
           const Icon = item.icon;
@@ -80,6 +115,7 @@ const AdminSidebar = () => {
         })}
       </nav>
 
+      {/* Sign Out */}
       <div className="p-4 border-t border-white/10">
         <button
           onClick={handleSignOut}
