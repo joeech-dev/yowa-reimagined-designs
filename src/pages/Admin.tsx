@@ -16,7 +16,8 @@ import AIAssistantPanel from "@/components/admin/AIAssistantPanel";
 import UserManagement from "@/components/admin/UserManagement";
 import OnlineUsersWidget from "@/components/admin/OnlineUsersWidget";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sparkles, ArrowRight, FolderKanban, DollarSign } from "lucide-react";
+import { Sparkles, ArrowRight, FolderKanban, DollarSign, Plus } from "lucide-react";
+import NewRequisitionButton from "@/components/admin/NewRequisitionButton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -61,9 +62,12 @@ const AdminDashboardHome = () => {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">Welcome back! Here's an overview of your business.</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-muted-foreground mt-1">Welcome back! Here's an overview of your business.</p>
+        </div>
+        <NewRequisitionButton label="Expense Requisition" />
       </div>
 
       <DashboardStats {...stats} />
