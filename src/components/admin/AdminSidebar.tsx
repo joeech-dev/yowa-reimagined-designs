@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, 
@@ -10,6 +11,7 @@ import {
   Sparkles,
   DollarSign,
   FolderKanban,
+  MessageCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,6 +21,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { useProfile } from "@/hooks/useProfile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "lucide-react";
+import MessagingPanel from "./MessagingPanel";
 
 const allMenuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/admin", section: "dashboard" },
@@ -38,6 +41,7 @@ const AdminSidebar = () => {
   const navigate = useNavigate();
   const { canView, role } = useUserRole();
   const { profile } = useProfile();
+  const [messagingOpen, setMessagingOpen] = useState(false);
 
   const menuItems = allMenuItems.filter(item => canView(item.section));
 
@@ -115,8 +119,15 @@ const AdminSidebar = () => {
         })}
       </nav>
 
-      {/* Sign Out */}
-      <div className="p-4 border-t border-white/10">
+      {/* Messaging + Sign Out */}
+      <div className="p-4 border-t border-white/10 space-y-1">
+        <button
+          onClick={() => setMessagingOpen(!messagingOpen)}
+          className="flex items-center gap-3 px-4 py-3 rounded-lg w-full hover:bg-white/10 text-white/90 transition-smooth"
+        >
+          <MessageCircle className="h-5 w-5" />
+          <span>Messages</span>
+        </button>
         <button
           onClick={handleSignOut}
           className="flex items-center gap-3 px-4 py-3 rounded-lg w-full hover:bg-white/10 text-white/90 transition-smooth"
@@ -125,6 +136,9 @@ const AdminSidebar = () => {
           <span>Sign Out</span>
         </button>
       </div>
+
+      {/* Messaging Panel */}
+      <MessagingPanel open={messagingOpen} onClose={() => setMessagingOpen(false)} />
     </aside>
   );
 };
