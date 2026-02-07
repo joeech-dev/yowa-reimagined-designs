@@ -12,6 +12,7 @@ import FinanceManagement from "@/components/admin/FinanceManagement";
 import ProjectsManagement from "@/components/admin/ProjectsManagement";
 import AIAssistantPanel from "@/components/admin/AIAssistantPanel";
 import ExpenseRequisitionForm from "@/components/admin/ExpenseRequisitionForm";
+import UserManagement from "@/components/admin/UserManagement";
 import OnlineUsersWidget from "@/components/admin/OnlineUsersWidget";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sparkles, ArrowRight, FolderKanban, DollarSign } from "lucide-react";
@@ -286,6 +287,7 @@ const Admin = () => {
         <Route path="leads" element={<LeadsManagement />} />
         <Route path="analytics" element={<AnalyticsDashboard />} />
         <Route path="ai-assistant" element={<AIAssistantPanel />} />
+        <Route path="users" element={<UserManagement />} />
         <Route path="settings" element={<AdminSettings />} />
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Routes>
