@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Facebook, Instagram, Linkedin, Twitter, Youtube, Cookie, FileText } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import logo from "@/assets/Yowa_Logo_1.png";
 import { Button } from "@/components/ui/button";
 
 const Footer = () => {
@@ -11,9 +12,7 @@ const Footer = () => {
           {/* About Section */}
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-10 h-10 rounded-lg gradient-warm flex items-center justify-center">
-                <span className="text-primary-foreground font-display font-bold text-xl">Y</span>
-              </div>
+              <img src={logo} alt="Yowa Innovations" className="h-10 w-auto brightness-0 invert" />
               <span className="font-display font-bold text-lg">Yowa Innovations</span>
             </div>
             <p className="text-sm opacity-90 leading-relaxed">
