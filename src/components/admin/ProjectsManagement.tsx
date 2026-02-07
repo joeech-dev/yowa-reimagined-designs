@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Plus, Users, Trash2, Edit, ArrowRight, FolderKanban, FileText } from "lucide-react";
+import NewRequisitionButton from "./NewRequisitionButton";
 import { format } from "date-fns";
 
 type ProjectStatus = "lead" | "in_progress" | "completed" | "cancelled";
@@ -310,7 +311,9 @@ const ProjectsManagement = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Projects Management</h2>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <div className="flex gap-2">
+          <NewRequisitionButton variant="outline" label="Expense Requisition" />
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={() => resetForm()}>
               <Plus className="mr-2 h-4 w-4" /> New Project
@@ -379,6 +382,7 @@ const ProjectsManagement = () => {
             </form>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {/* Stats */}

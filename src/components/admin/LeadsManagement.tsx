@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Mail, Phone, MapPin, Calendar, Sparkles, Send, Eye } from "lucide-react";
+import NewRequisitionButton from "./NewRequisitionButton";
 import {
   Dialog,
   DialogContent,
@@ -127,7 +128,8 @@ const LeadsManagement = () => {
             </CardTitle>
             <CardDescription>Track and manage potential clients with AI-powered insights</CardDescription>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-3 items-center">
+            <NewRequisitionButton variant="outline" size="sm" label="Expense Requisition" />
             <Input
               placeholder="Search leads..."
               value={searchTerm}
