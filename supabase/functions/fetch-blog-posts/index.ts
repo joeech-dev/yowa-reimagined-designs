@@ -86,6 +86,16 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Verify secret token to prevent unauthorized access
+  const authToken = req.headers.get('X-Function-Token');
+  const expectedToken = Deno.env.get('FETCH_BLOG_POSTS_TOKEN');
+  if (!expectedToken || !authToken || authToken !== expectedToken) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
