@@ -11,8 +11,10 @@ import AnalyticsDashboard from "@/components/admin/AnalyticsDashboard";
 import FinanceManagement from "@/components/admin/FinanceManagement";
 import ProjectsManagement from "@/components/admin/ProjectsManagement";
 import AIAssistantPanel from "@/components/admin/AIAssistantPanel";
+import ExpenseRequisitionForm from "@/components/admin/ExpenseRequisitionForm";
+import OnlineUsersWidget from "@/components/admin/OnlineUsersWidget";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sparkles, Clock, ArrowRight, FolderKanban, DollarSign } from "lucide-react";
+import { Sparkles, ArrowRight, FolderKanban, DollarSign } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -113,34 +115,31 @@ const AdminDashboardHome = () => {
         </Card>
       </div>
 
-      {/* AI Assistant Card */}
-      <Card className="bg-primary/5 border-primary/20 cursor-pointer hover:shadow-md transition-all" onClick={() => window.location.href = "/admin/ai-assistant"}>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-secondary" />
-            AI Assistant
-            <Badge variant="secondary" className="text-xs">Active</Badge>
-          </CardTitle>
-          <CardDescription>Your intelligent business companion</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-start gap-4">
-            <div className="flex-1">
-              <p className="text-sm text-muted-foreground mb-4">
-                Generate blog posts, analyze leads, schedule follow-ups, and convert projects into content — all powered by AI.
-              </p>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" asChild>
-                  <Link to="/admin/ai-assistant">
-                    <Sparkles className="h-4 w-4 mr-2" />
-                    Open AI Assistant
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Online Users + AI Assistant Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <OnlineUsersWidget />
+        <Card className="lg:col-span-2 bg-primary/5 border-primary/20 cursor-pointer hover:shadow-md transition-all" onClick={() => window.location.href = "/admin/ai-assistant"}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-secondary" />
+              AI Assistant
+              <Badge variant="secondary" className="text-xs">Active</Badge>
+            </CardTitle>
+            <CardDescription>Your intelligent business companion</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Generate blog posts, analyze leads, schedule follow-ups, and convert projects into content — all powered by AI.
+            </p>
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/admin/ai-assistant">
+                <Sparkles className="h-4 w-4 mr-2" />
+                Open AI Assistant
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
@@ -281,6 +280,7 @@ const Admin = () => {
         <Route index element={<AdminDashboardHome />} />
         <Route path="projects" element={<ProjectsManagement />} />
         <Route path="finance" element={<FinanceManagement />} />
+        <Route path="requisitions" element={<ExpenseRequisitionForm />} />
         <Route path="blogs" element={<BlogsManagement />} />
         <Route path="partners" element={<PartnersManagement />} />
         <Route path="leads" element={<LeadsManagement />} />

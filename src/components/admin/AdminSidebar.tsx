@@ -10,7 +10,8 @@ import {
   Sparkles,
   Video,
   DollarSign,
-  FolderKanban
+  FolderKanban,
+  Receipt
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,6 +26,7 @@ const AdminSidebar = () => {
     { icon: LayoutDashboard, label: "Dashboard", path: "/admin" },
     { icon: FolderKanban, label: "Projects", path: "/admin/projects" },
     { icon: DollarSign, label: "Finance", path: "/admin/finance" },
+    { icon: Receipt, label: "Requisitions", path: "/admin/requisitions" },
     { icon: FileText, label: "Blog Posts", path: "/admin/blogs" },
     { icon: Building2, label: "Partner Brands", path: "/admin/partners" },
     { icon: Users, label: "Leads", path: "/admin/leads" },

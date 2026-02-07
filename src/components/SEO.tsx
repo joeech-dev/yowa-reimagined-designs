@@ -75,7 +75,7 @@ const SEO = ({
     image: "https://yowainnovations.com/logo.png",
     description: "Content creation and advertising agency specializing in video production, photography, digital marketing, and creative strategy.",
     url: "https://yowainnovations.com",
-    telephone: "+256-XXX-XXXXXX",
+    telephone: "+256786155557",
     priceRange: "$$",
     address: {
       "@type": "PostalAddress",
