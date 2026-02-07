@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, GripVertical, ExternalLink } from "lucide-react";
+import { Plus, Pencil, Trash2, GripVertical, ExternalLink, Upload } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +17,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface PartnerBrand {
   id: string;
@@ -40,6 +41,8 @@ const PartnersManagement = () => {
     display_order: 0,
     is_active: true,
   });
+  const [uploading, setUploading] = useState(false);
+  const [logoInputMode, setLogoInputMode] = useState<"url" | "upload">("upload");
 
   useEffect(() => {
     fetchPartners();
@@ -157,6 +160,41 @@ const PartnersManagement = () => {
       display_order: partners.length,
       is_active: true,
     });
+    setLogoInputMode("upload");
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("partner-logos")
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("partner-logos")
+        .getPublicUrl(fileName);
+
+      setFormData(prev => ({ ...prev, logo_url: publicUrl }));
+      toast.success("Logo uploaded successfully");
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Failed to upload logo");
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -273,13 +311,29 @@ const PartnersManagement = () => {
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="logo_url">Logo URL</Label>
-              <Input
-                id="logo_url"
-                value={formData.logo_url}
-                onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
-                placeholder="https://example.com/logo.png"
-              />
+              <Label>Logo</Label>
+              <Tabs value={logoInputMode} onValueChange={(v) => setLogoInputMode(v as "url" | "upload")}>
+                <TabsList className="w-full">
+                  <TabsTrigger value="upload" className="flex-1"><Upload className="h-3 w-3 mr-1" />Upload</TabsTrigger>
+                  <TabsTrigger value="url" className="flex-1">URL</TabsTrigger>
+                </TabsList>
+                <TabsContent value="upload" className="mt-2">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    disabled={uploading}
+                  />
+                  {uploading && <p className="text-sm text-muted-foreground mt-1">Uploading...</p>}
+                </TabsContent>
+                <TabsContent value="url" className="mt-2">
+                  <Input
+                    value={formData.logo_url}
+                    onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
+                    placeholder="https://example.com/logo.png"
+                  />
+                </TabsContent>
+              </Tabs>
               {formData.logo_url && (
                 <div className="p-4 bg-muted rounded-lg flex justify-center">
                   <img 
