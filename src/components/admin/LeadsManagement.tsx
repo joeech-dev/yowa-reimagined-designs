@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Mail, Phone, MapPin, Calendar, Sparkles, Send, Eye } from "lucide-react";
 import NewRequisitionButton from "./NewRequisitionButton";
+import WebsiteMessagesInbox from "./WebsiteMessagesInbox";
 import {
   Dialog,
   DialogContent,
@@ -115,6 +116,8 @@ const LeadsManagement = () => {
   };
 
   return (
+    <div className="space-y-6">
+    <WebsiteMessagesInbox />
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between flex-wrap gap-4">
@@ -316,6 +319,7 @@ const LeadsManagement = () => {
         </DialogContent>
       </Dialog>
     </Card>
+    </div>
   );
 };
 
