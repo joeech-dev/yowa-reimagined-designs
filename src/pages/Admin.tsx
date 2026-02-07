@@ -10,8 +10,10 @@ import LeadsManagement from "@/components/admin/LeadsManagement";
 import AnalyticsDashboard from "@/components/admin/AnalyticsDashboard";
 import FinanceManagement from "@/components/admin/FinanceManagement";
 import ProjectsManagement from "@/components/admin/ProjectsManagement";
+import AIAssistantPanel from "@/components/admin/AIAssistantPanel";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sparkles, Clock, ArrowRight, FolderKanban, DollarSign } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -112,11 +114,12 @@ const AdminDashboardHome = () => {
       </div>
 
       {/* AI Assistant Card */}
-      <Card className="bg-primary/5 border-primary/20">
+      <Card className="bg-primary/5 border-primary/20 cursor-pointer hover:shadow-md transition-all" onClick={() => window.location.href = "/admin/ai-assistant"}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-secondary" />
             AI Assistant
+            <Badge variant="secondary" className="text-xs">Active</Badge>
           </CardTitle>
           <CardDescription>Your intelligent business companion</CardDescription>
         </CardHeader>
@@ -124,17 +127,14 @@ const AdminDashboardHome = () => {
           <div className="flex items-start gap-4">
             <div className="flex-1">
               <p className="text-sm text-muted-foreground mb-4">
-                The AI assistant can help you with content creation, lead analysis, 
-                and business recommendations. It's integrated throughout the dashboard.
+                Generate blog posts, analyze leads, schedule follow-ups, and convert projects into content — all powered by AI.
               </p>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm">
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  Generate Blog Post
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Clock className="h-4 w-4 mr-2" />
-                  Schedule Followups
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/admin/ai-assistant">
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Open AI Assistant
+                  </Link>
                 </Button>
               </div>
             </div>
@@ -285,6 +285,7 @@ const Admin = () => {
         <Route path="partners" element={<PartnersManagement />} />
         <Route path="leads" element={<LeadsManagement />} />
         <Route path="analytics" element={<AnalyticsDashboard />} />
+        <Route path="ai-assistant" element={<AIAssistantPanel />} />
         <Route path="settings" element={<AdminSettings />} />
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Routes>
