@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Plus, Users, Trash2, Edit, ArrowRight, FolderKanban } from "lucide-react";
+import { Plus, Users, Trash2, Edit, ArrowRight, FolderKanban, FileText } from "lucide-react";
 import { format } from "date-fns";
 
 type ProjectStatus = "lead" | "in_progress" | "completed" | "cancelled";
@@ -228,6 +228,28 @@ const ProjectsManagement = () => {
     onError: (error) => toast.error(`Error: ${error.message}`),
   });
 
+  const postAsBlogMutation = useMutation({
+    mutationFn: async (project: Project) => {
+      const slug = project.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+      const { error } = await supabase.from("blog_posts").insert([{
+        title: project.title,
+        slug,
+        category: "Technology",
+        excerpt: project.description?.substring(0, 200) || `Project showcase: ${project.title}`,
+        content: `# ${project.title}\n\n${project.description || "Project details coming soon."}\n\n**Client:** ${project.client_name}\n\n${(project as any).video_url ? `## Watch\n\n${(project as any).video_url}` : ""}`,
+        source_url: (project as any).video_url || "#",
+        source_name: "Yowa Innovations",
+        published_at: new Date().toISOString(),
+      }]);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["blogs"] });
+      toast.success("Project posted as blog draft! Go to Blog Posts to review.");
+    },
+    onError: (error) => toast.error(`Error: ${error.message}`),
+  });
+
   const removeTeamMemberMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase.from("project_team_members").delete().eq("id", id);
@@ -404,9 +426,14 @@ const ProjectsManagement = () => {
                         <TableCell>{p.deadline ? format(new Date(p.deadline), "MMM d, yyyy") : "-"}</TableCell>
                         <TableCell>
                           <div className="flex gap-1">
-                            <Button variant="ghost" size="sm" onClick={() => openTeamDialog(p.id)}><Users className="h-4 w-4" /></Button>
-                            <Button variant="ghost" size="sm" onClick={() => handleEdit(p)}><Edit className="h-4 w-4" /></Button>
-                            <Button variant="ghost" size="sm" onClick={() => deleteMutation.mutate(p.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                            <Button variant="ghost" size="sm" onClick={() => openTeamDialog(p.id)} title="Team"><Users className="h-4 w-4" /></Button>
+                            <Button variant="ghost" size="sm" onClick={() => handleEdit(p)} title="Edit"><Edit className="h-4 w-4" /></Button>
+                            {p.status === "completed" && (
+                              <Button variant="ghost" size="sm" onClick={() => postAsBlogMutation.mutate(p)} title="Post as Blog">
+                                <FileText className="h-4 w-4 text-secondary" />
+                              </Button>
+                            )}
+                            <Button variant="ghost" size="sm" onClick={() => deleteMutation.mutate(p.id)} title="Delete"><Trash2 className="h-4 w-4 text-destructive" /></Button>
                           </div>
                         </TableCell>
                       </TableRow>

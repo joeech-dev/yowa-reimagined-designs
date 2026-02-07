@@ -29,6 +29,7 @@ const AdminSidebar = () => {
     { icon: Building2, label: "Partner Brands", path: "/admin/partners" },
     { icon: Users, label: "Leads", path: "/admin/leads" },
     { icon: BarChart3, label: "Analytics", path: "/admin/analytics" },
+    { icon: Sparkles, label: "AI Assistant", path: "/admin/ai-assistant" },
     { icon: Settings, label: "Settings", path: "/admin/settings" },
   ];
 
