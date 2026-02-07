@@ -1,10 +1,17 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 import { LeadCaptureForm } from "@/components/LeadCaptureForm";
 
 const LeadGeneration = () => {
   return (
     <div className="min-h-screen flex flex-col">
+      <SEO
+        title="Get Started with Yowa Innovations | Free Consultation - Uganda Creative Agency"
+        description="Start your project with Yowa Innovations. Get a free consultation for video production, photography, digital marketing & creative strategy in Uganda and East Africa."
+        keywords="hire creative agency Uganda, video production quote Kampala, content creation consultation, digital marketing services East Africa"
+        url="https://yowainnovations.com/get-started"
+      />
       <Navbar />
       
       <main className="flex-1 bg-background">

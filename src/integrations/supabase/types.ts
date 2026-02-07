@@ -62,6 +62,74 @@ export type Database = {
         }
         Relationships: []
       }
+      expense_requisitions: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          description: string
+          finance_approved_at: string | null
+          finance_approved_by: string | null
+          id: string
+          project_id: string | null
+          rejected_at: string | null
+          rejected_by: string | null
+          rejection_reason: string | null
+          requester_id: string
+          status: string
+          super_admin_approved_at: string | null
+          super_admin_approved_by: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          description: string
+          finance_approved_at?: string | null
+          finance_approved_by?: string | null
+          id?: string
+          project_id?: string | null
+          rejected_at?: string | null
+          rejected_by?: string | null
+          rejection_reason?: string | null
+          requester_id: string
+          status?: string
+          super_admin_approved_at?: string | null
+          super_admin_approved_by?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          description?: string
+          finance_approved_at?: string | null
+          finance_approved_by?: string | null
+          id?: string
+          project_id?: string | null
+          rejected_at?: string | null
+          rejected_by?: string | null
+          rejection_reason?: string | null
+          requester_id?: string
+          status?: string
+          super_admin_approved_at?: string | null
+          super_admin_approved_by?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expense_requisitions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       finance_transactions: {
         Row: {
           amount: number
@@ -391,6 +459,36 @@ export type Database = {
           platform?: string
           updated_at?: string | null
           webhook_url?: string
+        }
+        Relationships: []
+      }
+      user_presence: {
+        Row: {
+          display_name: string | null
+          email: string | null
+          id: string
+          is_online: boolean
+          last_seen_at: string
+          role: string | null
+          user_id: string
+        }
+        Insert: {
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          is_online?: boolean
+          last_seen_at?: string
+          role?: string | null
+          user_id: string
+        }
+        Update: {
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          is_online?: boolean
+          last_seen_at?: string
+          role?: string | null
+          user_id?: string
         }
         Relationships: []
       }

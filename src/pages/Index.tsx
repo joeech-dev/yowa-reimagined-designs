@@ -68,6 +68,7 @@ const Index = () => {
     <div className="min-h-screen">
       <SEO />
       <Navbar />
+      <main>
 
       {/* Hero Section */}
        <section className="relative pt-32 pb-20 overflow-hidden min-h-[80vh] flex items-center">
@@ -226,6 +227,7 @@ const Index = () => {
         </div>
       </section>
 
+      </main>
       <Footer />
     </div>
   );
