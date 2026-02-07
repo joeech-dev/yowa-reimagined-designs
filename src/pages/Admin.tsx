@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Routes, Route, Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import CompleteProfile from "@/components/admin/CompleteProfile";
+import { useProfile } from "@/hooks/useProfile";
 import { User } from "@supabase/supabase-js";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import DashboardStats from "@/components/admin/DashboardStats";
@@ -171,6 +173,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const { profile, loading: profileLoading, refetch: refetchProfile } = useProfile();
 
   useEffect(() => {
     let isMounted = true;
@@ -255,7 +258,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     };
   }, [navigate]);
 
-  if (loading) {
+  if (loading || profileLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="text-center">
@@ -267,6 +270,11 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (!isAdmin) return null;
+
+  // Show profile completion form if profile is incomplete
+  if (profile && !profile.is_profile_complete) {
+    return <CompleteProfile onComplete={refetchProfile} />;
+  }
 
   return (
     <div className="flex min-h-screen bg-background">
