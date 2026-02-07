@@ -17,8 +17,14 @@ import ContactFormWidget from "@/components/ContactFormWidget";
 import CookieConsent from "@/components/CookieConsent";
 import CookiePolicy from "./pages/CookiePolicy";
 import ContentPolicy from "./pages/ContentPolicy";
+import useGoogleAnalytics from "@/hooks/useGoogleAnalytics";
 
 const queryClient = new QueryClient();
+
+const AnalyticsProvider = () => {
+  useGoogleAnalytics();
+  return null;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -26,6 +32,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <AnalyticsProvider />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
