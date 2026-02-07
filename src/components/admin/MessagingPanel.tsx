@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { MessageCircle, Send, ArrowLeft, Plus, Users, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
@@ -67,21 +68,33 @@ const MessagingPanel = ({ open, onClose }: MessagingPanelProps) => {
 
   const handleSend = () => {
     if (!messageInput.trim() || !activeConversationId) return;
-    sendMessage({ conversationId: activeConversationId, content: messageInput.trim() });
+    sendMessage(
+      { conversationId: activeConversationId, content: messageInput.trim() },
+      {
+        onError: (error) => {
+          toast.error("Failed to send message: " + error.message);
+        },
+      }
+    );
     setMessageInput("");
   };
 
   const handleCreateConversation = async () => {
     if (selectedUsers.length === 0) return;
     const type = selectedUsers.length > 1 ? "group" : "direct";
-    await createConversation({
-      type,
-      name: type === "group" ? groupName || "Group Chat" : undefined,
-      participantIds: selectedUsers,
-    });
-    setNewChatOpen(false);
-    setSelectedUsers([]);
-    setGroupName("");
+    try {
+      await createConversation({
+        type,
+        name: type === "group" ? groupName || "Group Chat" : undefined,
+        participantIds: selectedUsers,
+      });
+      setNewChatOpen(false);
+      setSelectedUsers([]);
+      setGroupName("");
+    } catch (error: any) {
+      console.error("Failed to create conversation:", error);
+      toast.error("Failed to start conversation: " + (error?.message || "Unknown error"));
+    }
   };
 
   const getConversationName = (convo: Conversation) => {
@@ -233,7 +246,7 @@ const MessagingPanel = ({ open, onClose }: MessagingPanelProps) => {
 
       {/* New Chat Dialog */}
       <Dialog open={newChatOpen} onOpenChange={setNewChatOpen}>
-        <DialogContent className="max-w-sm">
+        <DialogContent className="max-w-sm z-[60]">
           <DialogHeader>
             <DialogTitle>New Conversation</DialogTitle>
           </DialogHeader>
