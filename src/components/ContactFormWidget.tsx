@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -8,12 +9,18 @@ import { MessageCircle, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export const ContactFormWidget = () => {
+  const location = useLocation();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+
+  // Hide on admin and auth routes
+  if (location.pathname.startsWith("/admin") || location.pathname.startsWith("/auth")) {
+    return null;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
