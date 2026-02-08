@@ -89,7 +89,14 @@ const Portfolio = () => {
                   {project.video_url && (
                     <div className="relative aspect-video overflow-hidden bg-muted">
                       <iframe
-                        src={`${project.video_url}${project.video_url.includes('?') ? '&' : '?'}modestbranding=1&showinfo=0&rel=0&iv_load_policy=3`}
+                        src={(() => {
+                          let url = project.video_url || '';
+                          // Convert youtube.com/embed to youtube-nocookie.com/embed
+                          url = url.replace('www.youtube.com/embed', 'www.youtube-nocookie.com/embed');
+                          url = url.replace('youtube.com/embed', 'www.youtube-nocookie.com/embed');
+                          const separator = url.includes('?') ? '&' : '?';
+                          return `${url}${separator}modestbranding=1&showinfo=0&rel=0&iv_load_policy=3&controls=1&fs=1`;
+                        })()}
                         title={project.title}
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
