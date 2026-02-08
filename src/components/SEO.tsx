@@ -17,7 +17,7 @@ const SEO = ({
   description = "Award-winning content creation and advertising agency in Uganda. We specialize in video production, photography, digital marketing, and creative strategy for NGOs, corporates, and startups across East Africa.",
   keywords = "content creation agency Uganda, advertising agency Kampala, video production East Africa, documentary production, digital marketing Uganda, creative agency Africa, visual storytelling, photography services, NGO communications, corporate video production",
   ogImage = "/og-image.png",
-  url = "https://yowainnovations.com",
+  url = "https://yowa.us",
   type = "website",
   publishedTime,
   modifiedTime,
@@ -29,8 +29,8 @@ const SEO = ({
     "@type": "Organization",
     name: "Yowa Innovations",
     alternateName: "Yowa Innovations Ltd",
-    url: "https://yowainnovations.com",
-    logo: "https://yowainnovations.com/logo.png",
+    url: "https://yowa.us",
+    logo: "https://yowa.us/logo.png",
     description: "Content creation and advertising agency in Uganda specializing in video production, photography, and digital marketing.",
     foundingDate: "2018",
     founders: [
@@ -70,11 +70,11 @@ const SEO = ({
   const localBusinessSchema = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "@id": "https://yowainnovations.com/#business",
+    "@id": "https://yowa.us/#business",
     name: "Yowa Innovations",
-    image: "https://yowainnovations.com/logo.png",
+    image: "https://yowa.us/logo.png",
     description: "Content creation and advertising agency specializing in video production, photography, digital marketing, and creative strategy.",
-    url: "https://yowainnovations.com",
+    url: "https://yowa.us",
     telephone: "+256786155557",
     priceRange: "$$",
     address: {
@@ -198,12 +198,12 @@ const SEO = ({
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "Yowa Innovations",
-    url: "https://yowainnovations.com",
+    url: "https://yowa.us",
     potentialAction: {
       "@type": "SearchAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: "https://yowainnovations.com/blogs?search={search_term_string}"
+        urlTemplate: "https://yowa.us/blogs?search={search_term_string}"
       },
       "query-input": "required name=search_term_string"
     }
