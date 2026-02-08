@@ -9,6 +9,8 @@ import { toast } from "sonner";
 import { Mail, Phone, MapPin, Calendar, Sparkles, Send, Eye } from "lucide-react";
 import NewRequisitionButton from "./NewRequisitionButton";
 import WebsiteMessagesInbox from "./WebsiteMessagesInbox";
+import FollowupSequencesManager from "./FollowupSequencesManager";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -118,6 +120,15 @@ const LeadsManagement = () => {
   return (
     <div className="space-y-6">
     <WebsiteMessagesInbox />
+    <Tabs defaultValue="leads">
+      <TabsList>
+        <TabsTrigger value="leads">Leads</TabsTrigger>
+        <TabsTrigger value="sequences">Follow-up Sequences</TabsTrigger>
+      </TabsList>
+      <TabsContent value="sequences">
+        <FollowupSequencesManager />
+      </TabsContent>
+      <TabsContent value="leads">
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between flex-wrap gap-4">
@@ -319,6 +330,8 @@ const LeadsManagement = () => {
         </DialogContent>
       </Dialog>
     </Card>
+      </TabsContent>
+    </Tabs>
     </div>
   );
 };

@@ -260,6 +260,87 @@ export type Database = {
           },
         ]
       }
+      followup_sequences: {
+        Row: {
+          auto_assign_new_leads: boolean
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          auto_assign_new_leads?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          auto_assign_new_leads?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      lead_sequence_assignments: {
+        Row: {
+          completed_at: string | null
+          current_step_order: number
+          id: string
+          last_step_executed_at: string | null
+          lead_id: string
+          next_step_due_at: string | null
+          sequence_id: string
+          started_at: string
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          current_step_order?: number
+          id?: string
+          last_step_executed_at?: string | null
+          lead_id: string
+          next_step_due_at?: string | null
+          sequence_id: string
+          started_at?: string
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          current_step_order?: number
+          id?: string
+          last_step_executed_at?: string | null
+          lead_id?: string
+          next_step_due_at?: string | null
+          sequence_id?: string
+          started_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_sequence_assignments_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_sequence_assignments_sequence_id_fkey"
+            columns: ["sequence_id"]
+            isOneToOne: false
+            referencedRelation: "followup_sequences"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           budget: number | null
@@ -582,6 +663,47 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sequence_steps: {
+        Row: {
+          created_at: string
+          delay_days: number
+          description: string | null
+          email_subject: string | null
+          id: string
+          sequence_id: string
+          step_order: number
+          tag_name: string
+        }
+        Insert: {
+          created_at?: string
+          delay_days?: number
+          description?: string | null
+          email_subject?: string | null
+          id?: string
+          sequence_id: string
+          step_order?: number
+          tag_name: string
+        }
+        Update: {
+          created_at?: string
+          delay_days?: number
+          description?: string | null
+          email_subject?: string | null
+          id?: string
+          sequence_id?: string
+          step_order?: number
+          tag_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sequence_steps_sequence_id_fkey"
+            columns: ["sequence_id"]
+            isOneToOne: false
+            referencedRelation: "followup_sequences"
             referencedColumns: ["id"]
           },
         ]
