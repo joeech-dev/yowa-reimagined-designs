@@ -89,7 +89,7 @@ const Portfolio = () => {
                   {project.video_url && (
                     <div className="relative aspect-video overflow-hidden bg-muted">
                       <iframe
-                        src={project.video_url}
+                        src={`${project.video_url}${project.video_url.includes('?') ? '&' : '?'}modestbranding=1&showinfo=0&rel=0&iv_load_policy=3`}
                         title={project.title}
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
