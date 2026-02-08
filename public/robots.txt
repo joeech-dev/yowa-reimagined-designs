@@ -1,5 +1,5 @@
 # Robots.txt for Yowa Innovations
-# https://yowainnovations.com
+# https://yowa.us
 
 User-agent: Googlebot
 Allow: /
@@ -28,4 +28,4 @@ Disallow: /admin/*
 Disallow: /auth
 
 # Sitemap location
-Sitemap: https://yowainnovations.com/sitemap.xml
+Sitemap: https://yowa.us/sitemap.xml
