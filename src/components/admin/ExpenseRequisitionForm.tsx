@@ -13,11 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Plus, CheckCircle, XCircle, Clock, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
-
-const expenseCategories = [
-  "Equipment", "Software", "Travel", "Marketing", "Salaries",
-  "Utilities", "Production Costs", "Office Supplies", "Other"
-];
+import { useExpenseCategories } from "@/hooks/useExpenseCategories";
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: any }> = {
   pending: { label: "Pending", variant: "outline", icon: Clock },
@@ -88,6 +84,8 @@ const ExpenseRequisitionForm = () => {
       return data as ExpenseRequisition[];
     },
   });
+
+  const { data: expenseCategories = [] } = useExpenseCategories();
 
   const { data: projects = [] } = useQuery({
     queryKey: ["projects-for-requisition"],
@@ -248,7 +246,7 @@ const ExpenseRequisitionForm = () => {
                   <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
                   <SelectContent>
                     {expenseCategories.map((cat) => (
-                      <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                      <SelectItem key={cat.id} value={cat.name}>{cat.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

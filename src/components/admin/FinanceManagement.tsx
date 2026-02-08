@@ -15,6 +15,8 @@ import { Plus, TrendingUp, TrendingDown, DollarSign, Trash2, Edit } from "lucide
 import { format } from "date-fns";
 import { useUserRole } from "@/hooks/useUserRole";
 import ExpenseRequisitionForm from "./ExpenseRequisitionForm";
+import ExpenseCategoriesManager from "./ExpenseCategoriesManager";
+import ExpenseExportButton from "./ExpenseExportButton";
 
 type TransactionType = "income" | "expense";
 
@@ -179,6 +181,7 @@ const FinanceManagement = () => {
         <TabsList>
           <TabsTrigger value="transactions">Transactions</TabsTrigger>
           <TabsTrigger value="requisitions">Requisitions</TabsTrigger>
+          {canEditFinance && <TabsTrigger value="categories">Expense Categories</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="transactions" className="space-y-6 mt-4">
@@ -332,8 +335,17 @@ const FinanceManagement = () => {
         </TabsContent>
 
         <TabsContent value="requisitions" className="mt-4">
+          <div className="flex justify-end mb-4">
+            <ExpenseExportButton />
+          </div>
           <ExpenseRequisitionForm />
         </TabsContent>
+
+        {canEditFinance && (
+          <TabsContent value="categories" className="mt-4">
+            <ExpenseCategoriesManager />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );
