@@ -9,11 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Plus, AlertTriangle } from "lucide-react";
-
-const expenseCategories = [
-  "Equipment", "Software", "Travel", "Marketing", "Salaries",
-  "Utilities", "Production Costs", "Office Supplies", "Other"
-];
+import { useExpenseCategories } from "@/hooks/useExpenseCategories";
 
 interface NewRequisitionButtonProps {
   variant?: "default" | "outline" | "secondary" | "ghost";
@@ -32,6 +28,8 @@ const NewRequisitionButton = ({ variant = "outline", size = "default", className
     category: "",
     project_id: "",
   });
+
+  const { data: expenseCategories = [] } = useExpenseCategories();
 
   const { data: projects = [] } = useQuery({
     queryKey: ["projects-for-requisition"],
@@ -99,7 +97,7 @@ const NewRequisitionButton = ({ variant = "outline", size = "default", className
               <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
               <SelectContent>
                 {expenseCategories.map((cat) => (
-                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                  <SelectItem key={cat.id} value={cat.name}>{cat.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
