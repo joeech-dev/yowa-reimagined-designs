@@ -83,13 +83,10 @@ const Index = () => {
               Yowa Innovations
             </h1>
             <p className="text-2xl md:text-3xl font-display font-semibold mb-6 text-white">
-              Innovating Reality. Inspiring Impact.
+              We Turn Impact into Stories That Create Opportunity
             </p>
             <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Welcome to <strong>Yowa Innovations.</strong> A content creation and advertising
-              agency that reimagines the everyday. We turn bold ideas into visual stories, using
-              media, technology, and creativity to spark transformation in agriculture, the
-              environment, education, and beyond.
+              We help NGOs and social impact organisations communicate their work clearly while empowering young creatives with practical skills, income opportunities, and visibility.
             </p>
             <p className="text-xl font-semibold mb-8 text-white">
               We create. We connect. We innovate.
