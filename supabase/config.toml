@@ -12,4 +12,7 @@ verify_jwt = false
 [functions.create-user]
 verify_jwt = false
 
+[functions.ga4-analytics]
+verify_jwt = false
+
 
