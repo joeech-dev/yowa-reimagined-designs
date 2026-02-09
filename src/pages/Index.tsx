@@ -7,6 +7,9 @@ import BlogCard from "@/components/BlogCard";
 import PartnersSection from "@/components/PartnersSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import StatsSection from "@/components/StatsSection";
+import ProblemSection from "@/components/ProblemSection";
+import SolutionSection from "@/components/SolutionSection";
+import OurModelSection from "@/components/OurModelSection";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useBlogs } from "@/hooks/useBlogs";
@@ -108,33 +111,8 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <StatsSection />
-
       {/* Partners Section */}
       <PartnersSection />
-
-      {/* Latest Blog Posts */}
-      <section className="py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <h2 className="font-display font-bold text-3xl md:text-4xl mb-12 text-center">
-            Latest Blog Posts
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {latestBlogs.map((blog) => (
-              <BlogCard key={blog.id} {...blog} />
-            ))}
-          </div>
-          <div className="text-center mt-12">
-            <Link to="/blogs">
-              <Button variant="outline" size="lg">
-                View All Posts
-                <ArrowRight className="ml-2" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
 
       {/* Services Section */}
       <section className="py-20">
@@ -170,6 +148,40 @@ const Index = () => {
                 </Card>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <StatsSection />
+
+      {/* The Problem */}
+      <ProblemSection />
+
+      {/* The Solution */}
+      <SolutionSection />
+
+      {/* Our Model */}
+      <OurModelSection />
+
+      {/* Latest Blog Posts */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <h2 className="font-display font-bold text-3xl md:text-4xl mb-12 text-center">
+            Latest Blog Posts
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {latestBlogs.map((blog) => (
+              <BlogCard key={blog.id} {...blog} />
+            ))}
+          </div>
+          <div className="text-center mt-12">
+            <Link to="/blogs">
+              <Button variant="outline" size="lg">
+                View All Posts
+                <ArrowRight className="ml-2" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
