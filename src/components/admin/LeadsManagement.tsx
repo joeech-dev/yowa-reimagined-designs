@@ -337,19 +337,27 @@ const LeadsManagement = () => {
                   <h4 className="text-sm font-medium text-muted-foreground">Attached Documents</h4>
                   <div className="flex gap-3">
                     {selectedLead.cv_url && (
-                      <Button variant="outline" size="sm" onClick={async () => {
-                        const { data, error } = await supabase.storage.from('applicant-documents').createSignedUrl(selectedLead.cv_url!, 3600);
-                        if (data?.signedUrl) window.open(data.signedUrl, '_blank');
-                        else toast.error("Could not access CV file");
+                      <Button variant="outline" size="sm" onClick={async (e) => {
+                        e.preventDefault();
+                        try {
+                          const { data, error } = await supabase.storage.from('applicant-documents').createSignedUrl(selectedLead.cv_url!, 3600);
+                          console.log('CV signed URL result:', { data, error });
+                          if (error) { toast.error("Could not access CV: " + error.message); return; }
+                          if (data?.signedUrl) { window.open(data.signedUrl, '_blank'); }
+                        } catch (err) { console.error('CV access error:', err); toast.error("Failed to access CV file"); }
                       }}>
                         <FileText className="h-4 w-4 mr-1" /> View CV
                       </Button>
                     )}
                     {selectedLead.national_id_url && (
-                      <Button variant="outline" size="sm" onClick={async () => {
-                        const { data, error } = await supabase.storage.from('applicant-documents').createSignedUrl(selectedLead.national_id_url!, 3600);
-                        if (data?.signedUrl) window.open(data.signedUrl, '_blank');
-                        else toast.error("Could not access National ID file");
+                      <Button variant="outline" size="sm" onClick={async (e) => {
+                        e.preventDefault();
+                        try {
+                          const { data, error } = await supabase.storage.from('applicant-documents').createSignedUrl(selectedLead.national_id_url!, 3600);
+                          console.log('ID signed URL result:', { data, error });
+                          if (error) { toast.error("Could not access ID: " + error.message); return; }
+                          if (data?.signedUrl) { window.open(data.signedUrl, '_blank'); }
+                        } catch (err) { console.error('ID access error:', err); toast.error("Failed to access National ID file"); }
                       }}>
                         <IdCard className="h-4 w-4 mr-1" /> View National ID
                       </Button>
