@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Mail, Phone, MapPin, Calendar, Sparkles, Send, Eye } from "lucide-react";
+import { Mail, Phone, MapPin, Calendar, Sparkles, Send, Eye, FileText, IdCard } from "lucide-react";
 import NewRequisitionButton from "./NewRequisitionButton";
 import WebsiteMessagesInbox from "./WebsiteMessagesInbox";
 import FollowupSequencesManager from "./FollowupSequencesManager";
@@ -39,6 +39,8 @@ interface Lead {
   last_contact_date: string | null;
   next_followup_date: string | null;
   created_at: string | null;
+  cv_url: string | null;
+  national_id_url: string | null;
 }
 
 const statusColors: Record<string, string> = {
@@ -318,6 +320,27 @@ const LeadsManagement = () => {
                   <p className="font-bold text-lg">{getLeadScore(selectedLead)}/100</p>
                 </div>
               </div>
+              {(selectedLead.cv_url || selectedLead.national_id_url) && (
+                <div className="border-t pt-4 space-y-2">
+                  <h4 className="text-sm font-medium text-muted-foreground">Attached Documents</h4>
+                  <div className="flex gap-3">
+                    {selectedLead.cv_url && (
+                      <Button variant="outline" size="sm" asChild>
+                        <a href={selectedLead.cv_url} target="_blank" rel="noopener noreferrer">
+                          <FileText className="h-4 w-4 mr-1" /> View CV
+                        </a>
+                      </Button>
+                    )}
+                    {selectedLead.national_id_url && (
+                      <Button variant="outline" size="sm" asChild>
+                        <a href={selectedLead.national_id_url} target="_blank" rel="noopener noreferrer">
+                          <IdCard className="h-4 w-4 mr-1" /> View National ID
+                        </a>
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              )}
               <div className="pt-4 flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setSelectedLead(null)}>Close</Button>
                 <Button onClick={() => window.location.href = `mailto:${selectedLead.email}`} className="bg-primary hover:bg-primary/90">
