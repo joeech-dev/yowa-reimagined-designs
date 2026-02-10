@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -336,17 +337,21 @@ const LeadsManagement = () => {
                   <h4 className="text-sm font-medium text-muted-foreground">Attached Documents</h4>
                   <div className="flex gap-3">
                     {selectedLead.cv_url && (
-                      <Button variant="outline" size="sm" asChild>
-                        <a href={selectedLead.cv_url} target="_blank" rel="noopener noreferrer">
-                          <FileText className="h-4 w-4 mr-1" /> View CV
-                        </a>
+                      <Button variant="outline" size="sm" onClick={async () => {
+                        const { data, error } = await supabase.storage.from('applicant-documents').createSignedUrl(selectedLead.cv_url!, 3600);
+                        if (data?.signedUrl) window.open(data.signedUrl, '_blank');
+                        else toast.error("Could not access CV file");
+                      }}>
+                        <FileText className="h-4 w-4 mr-1" /> View CV
                       </Button>
                     )}
                     {selectedLead.national_id_url && (
-                      <Button variant="outline" size="sm" asChild>
-                        <a href={selectedLead.national_id_url} target="_blank" rel="noopener noreferrer">
-                          <IdCard className="h-4 w-4 mr-1" /> View National ID
-                        </a>
+                      <Button variant="outline" size="sm" onClick={async () => {
+                        const { data, error } = await supabase.storage.from('applicant-documents').createSignedUrl(selectedLead.national_id_url!, 3600);
+                        if (data?.signedUrl) window.open(data.signedUrl, '_blank');
+                        else toast.error("Could not access National ID file");
+                      }}>
+                        <IdCard className="h-4 w-4 mr-1" /> View National ID
                       </Button>
                     )}
                   </div>
