@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Users, Shield, UserPlus } from "lucide-react";
+import { Users, Shield, UserPlus, Trash2 } from "lucide-react";
 
 interface UserWithRole {
   id: string;
@@ -43,7 +44,11 @@ const UserManagement = () => {
   const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newRole, setNewRole] = useState("");
+  const [newFullName, setNewFullName] = useState("");
+  const [newTeamCategory, setNewTeamCategory] = useState("");
+  const [newTeamRole, setNewTeamRole] = useState("");
   const [creating, setCreating] = useState(false);
+  const [deletingUser, setDeletingUser] = useState<string | null>(null);
 
   useEffect(() => {
     fetchUsers();
@@ -108,7 +113,14 @@ const UserManagement = () => {
 
       const { data, error } = await supabase.functions.invoke("create-user", {
         headers: { Authorization: `Bearer ${session.access_token}` },
-        body: { email: newEmail, password: newPassword, role: newRole },
+        body: { 
+          email: newEmail, 
+          password: newPassword, 
+          role: newRole,
+          fullName: newFullName,
+          teamCategory: newTeamCategory || null,
+          teamRole: newTeamRole || null,
+        },
       });
 
       if (error) throw error;
@@ -119,11 +131,37 @@ const UserManagement = () => {
       setNewEmail("");
       setNewPassword("");
       setNewRole("");
+      setNewFullName("");
+      setNewTeamCategory("");
+      setNewTeamRole("");
       fetchUsers();
     } catch (error: any) {
       toast.error("Failed to create user: " + error.message);
     } finally {
       setCreating(false);
+    }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    setDeletingUser(userId);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const { data, error } = await supabase.functions.invoke("create-user", {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+        body: { action: "delete", userId },
+      });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      toast.success("User deleted successfully");
+      fetchUsers();
+    } catch (error: any) {
+      toast.error("Failed to delete user: " + error.message);
+    } finally {
+      setDeletingUser(null);
     }
   };
 
@@ -179,6 +217,15 @@ const UserManagement = () => {
                 />
               </div>
               <div className="space-y-2">
+                <Label htmlFor="new-fullname">Full Name</Label>
+                <Input
+                  id="new-fullname"
+                  placeholder="John Doe"
+                  value={newFullName}
+                  onChange={(e) => setNewFullName(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
                 <Label>Role</Label>
                 <Select value={newRole} onValueChange={setNewRole}>
                   <SelectTrigger>
@@ -193,6 +240,30 @@ const UserManagement = () => {
                   </SelectContent>
                 </Select>
               </div>
+              <div className="space-y-2">
+                <Label>Team Category (optional - shows on website)</Label>
+                <Select value={newTeamCategory} onValueChange={setNewTeamCategory}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Not on website team..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="employee">Employee</SelectItem>
+                    <SelectItem value="freelancer">Freelancer</SelectItem>
+                    <SelectItem value="trainee">Trainee</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {newTeamCategory && (
+                <div className="space-y-2">
+                  <Label htmlFor="new-team-role">Team Role/Title</Label>
+                  <Input
+                    id="new-team-role"
+                    placeholder="e.g. Videographer"
+                    value={newTeamRole}
+                    onChange={(e) => setNewTeamRole(e.target.value)}
+                  />
+                </div>
+              )}
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
@@ -221,6 +292,7 @@ const UserManagement = () => {
                 <TableHead>Current Role</TableHead>
                 <TableHead>Joined</TableHead>
                 <TableHead>Assign Role</TableHead>
+                <TableHead className="w-[80px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -239,33 +311,56 @@ const UserManagement = () => {
                   <TableCell className="text-muted-foreground text-sm">
                     {new Date(user.created_at).toLocaleDateString()}
                   </TableCell>
-                  <TableCell>
-                    <Select
-                      value={user.role || ""}
-                      onValueChange={(value) => handleRoleChange(user.id, value)}
-                      disabled={updatingUser === user.id}
-                    >
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select role..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {ROLE_OPTIONS.map((role) => (
-                          <SelectItem key={role.value} value={role.value}>
-                            {role.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {users.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
-                    No users found.
-                  </TableCell>
-                </TableRow>
-              )}
+                    <TableCell>
+                      <Select
+                        value={user.role || ""}
+                        onValueChange={(value) => handleRoleChange(user.id, value)}
+                        disabled={updatingUser === user.id}
+                      >
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder="Select role..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {ROLE_OPTIONS.map((role) => (
+                            <SelectItem key={role.value} value={role.value}>
+                              {role.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" disabled={deletingUser === user.id}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete User</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete {user.email}? This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDeleteUser(user.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {users.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                      No users found.
+                    </TableCell>
+                  </TableRow>
+                )}
             </TableBody>
           </Table>
         </CardContent>

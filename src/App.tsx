@@ -19,6 +19,7 @@ import CookiePolicy from "./pages/CookiePolicy";
 import ContentPolicy from "./pages/ContentPolicy";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import SupportingTeam from "./pages/SupportingTeam";
 import useGoogleAnalytics from "@/hooks/useGoogleAnalytics";
 
 const queryClient = new QueryClient();
@@ -50,6 +51,7 @@ const App = () => (
           <Route path="/content-policy" element={<ContentPolicy />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/team" element={<SupportingTeam />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

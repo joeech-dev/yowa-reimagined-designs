@@ -4,6 +4,7 @@ import SEO from "@/components/SEO";
 import { Card } from "@/components/ui/card";
 import { Target, Heart, Users, Sparkles, Linkedin } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import joelImg from "@/assets/team/joel-ongwech.jpg";
 import kenethImg from "@/assets/team/lubangakene-keneth.jpg";
 import derickImg from "@/assets/team/muwanguzi-derick.jpg";
@@ -207,6 +208,12 @@ const About = () => {
                 </Card>
               ))}
             </div>
+          </div>
+
+          <div className="text-center mt-12">
+            <Button size="lg" asChild>
+              <Link to="/team">Meet Our Supporting Team</Link>
+            </Button>
           </div>
         </div>
       </section>

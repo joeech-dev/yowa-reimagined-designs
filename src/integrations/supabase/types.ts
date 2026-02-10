@@ -735,6 +735,45 @@ export type Database = {
         }
         Relationships: []
       }
+      team_members: {
+        Row: {
+          avatar_url: string | null
+          category: Database["public"]["Enums"]["team_member_category"]
+          created_at: string
+          display_order: number | null
+          full_name: string
+          id: string
+          is_active: boolean | null
+          linkedin_url: string | null
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          category: Database["public"]["Enums"]["team_member_category"]
+          created_at?: string
+          display_order?: number | null
+          full_name: string
+          id?: string
+          is_active?: boolean | null
+          linkedin_url?: string | null
+          role: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          category?: Database["public"]["Enums"]["team_member_category"]
+          created_at?: string
+          display_order?: number | null
+          full_name?: string
+          id?: string
+          is_active?: boolean | null
+          linkedin_url?: string | null
+          role?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_presence: {
         Row: {
           display_name: string | null
@@ -845,6 +884,7 @@ export type Database = {
         | "sales_marketing"
         | "super_admin"
       project_status: "lead" | "in_progress" | "completed" | "cancelled"
+      team_member_category: "employee" | "freelancer" | "trainee"
       transaction_type: "income" | "expense"
     }
     CompositeTypes: {
@@ -982,6 +1022,7 @@ export const Constants = {
         "super_admin",
       ],
       project_status: ["lead", "in_progress", "completed", "cancelled"],
+      team_member_category: ["employee", "freelancer", "trainee"],
       transaction_type: ["income", "expense"],
     },
   },
