@@ -25,12 +25,20 @@ interface GA4DailyRow {
   users: number;
 }
 
+interface GA4SourceRow {
+  source: string;
+  medium: string;
+  sessions: number;
+  users: number;
+}
+
 export interface GA4Data {
   overview: GA4Overview;
   trafficByCountry: GA4DimensionRow[];
   trafficByDevice: GA4DimensionRow[];
   trafficByBrowser: GA4DimensionRow[];
   dailyPageViews: GA4DailyRow[];
+  trafficBySource: GA4SourceRow[];
 }
 
 function parseOverview(report: any): GA4Overview {
@@ -73,6 +81,15 @@ function parseDailyRows(report: any): GA4DailyRow[] {
   });
 }
 
+function parseSourceRows(report: any): GA4SourceRow[] {
+  return (report?.rows || []).map((row: any) => ({
+    source: row.dimensionValues?.[0]?.value || "Unknown",
+    medium: row.dimensionValues?.[1]?.value || "Unknown",
+    sessions: parseInt(row.metricValues?.[0]?.value || "0"),
+    users: parseInt(row.metricValues?.[1]?.value || "0"),
+  }));
+}
+
 export function useGA4Analytics() {
   return useQuery<GA4Data>({
     queryKey: ["ga4-analytics"],
@@ -87,6 +104,7 @@ export function useGA4Analytics() {
         trafficByDevice: parseDimensionRows(data.trafficByDevice),
         trafficByBrowser: parseDimensionRows(data.trafficByBrowser),
         dailyPageViews: parseDailyRows(data.pageViews),
+        trafficBySource: parseSourceRows(data.trafficBySource),
       };
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
