@@ -57,6 +57,9 @@ const PartnersSection = () => {
     ? partners.map(p => ({ name: p.name, logo: p.logo_url, website: p.website_url }))
     : staticPartners.map(p => ({ name: p.name, logo: p.logo, website: null }));
 
+  // Scale animation duration with partner count (~3s per partner for smooth viewing)
+  const animationDuration = Math.max(displayPartners.length * 3, 15);
+
   return (
     <section className="py-16 bg-muted/20 overflow-hidden">
       <div className="container mx-auto px-4">
@@ -68,14 +71,19 @@ const PartnersSection = () => {
           that drives change.
         </p>
         <div className="relative overflow-hidden">
-          {/* Two identical strips side by side for seamless infinite loop */}
-          <div className="flex animate-marquee w-fit">
+          {/* Two identical strips for seamless infinite loop */}
+          <div
+            className="flex w-fit"
+            style={{
+              animation: `marquee ${animationDuration}s linear infinite`,
+            }}
+          >
             {[0, 1].map((copy) => (
               <div key={copy} className="flex shrink-0">
                 {displayPartners.map((partner, index) => (
                   <div
                     key={`${copy}-${partner.name}-${index}`}
-                    className="flex-shrink-0 px-8 grayscale hover:grayscale-0 opacity-70 hover:opacity-100 transition-smooth"
+                    className="flex-shrink-0 px-10 grayscale hover:grayscale-0 opacity-70 hover:opacity-100 transition-smooth"
                   >
                     {partner.website ? (
                       <a href={partner.website} target="_blank" rel="noopener noreferrer">
