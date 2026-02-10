@@ -68,28 +68,32 @@ const PartnersSection = () => {
           that drives change.
         </p>
         <div className="relative overflow-hidden">
-          {/* Continuous infinite scroll - duplicated 3x for seamless loop */}
-          <div className="flex animate-marquee">
-            {[...displayPartners, ...displayPartners, ...displayPartners].map((partner, index) => (
-              <div
-                key={`${partner.name}-${index}`}
-                className="flex-shrink-0 mx-8 grayscale hover:grayscale-0 opacity-70 hover:opacity-100 transition-smooth"
-              >
-                {partner.website ? (
-                  <a href={partner.website} target="_blank" rel="noopener noreferrer">
-                    <img
-                      src={partner.logo}
-                      alt={`${partner.name} logo`}
-                      className="h-16 w-auto object-contain"
-                    />
-                  </a>
-                ) : (
-                  <img
-                    src={partner.logo}
-                    alt={`${partner.name} logo`}
-                    className="h-16 w-auto object-contain"
-                  />
-                )}
+          {/* Two identical strips side by side for seamless infinite loop */}
+          <div className="flex animate-marquee w-fit">
+            {[0, 1].map((copy) => (
+              <div key={copy} className="flex shrink-0">
+                {displayPartners.map((partner, index) => (
+                  <div
+                    key={`${copy}-${partner.name}-${index}`}
+                    className="flex-shrink-0 px-8 grayscale hover:grayscale-0 opacity-70 hover:opacity-100 transition-smooth"
+                  >
+                    {partner.website ? (
+                      <a href={partner.website} target="_blank" rel="noopener noreferrer">
+                        <img
+                          src={partner.logo}
+                          alt={`${partner.name} logo`}
+                          className="h-16 w-auto object-contain"
+                        />
+                      </a>
+                    ) : (
+                      <img
+                        src={partner.logo}
+                        alt={`${partner.name} logo`}
+                        className="h-16 w-auto object-contain"
+                      />
+                    )}
+                  </div>
+                ))}
               </div>
             ))}
           </div>
