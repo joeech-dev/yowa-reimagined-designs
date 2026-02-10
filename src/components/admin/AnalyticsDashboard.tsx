@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, TrendingUp, TrendingDown, Users, Eye, Clock, BarChart3, Globe, Monitor, Smartphone, Tablet } from "lucide-react";
+import { Sparkles, TrendingUp, TrendingDown, Users, Eye, Clock, BarChart3, Globe, Monitor, Smartphone, Tablet, Facebook, Instagram, Linkedin, Twitter, Youtube, Share2 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from "recharts";
 import { useGA4Analytics } from "@/hooks/useGA4Analytics";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -69,7 +69,26 @@ const AnalyticsDashboard = () => {
     );
   }
 
-  const { overview, trafficByCountry, trafficByDevice, trafficByBrowser, dailyPageViews } = data;
+  const { overview, trafficByCountry, trafficByDevice, trafficByBrowser, dailyPageViews, trafficBySource } = data;
+
+  const SOCIAL_PLATFORMS = [
+    { key: "facebook", label: "Facebook", icon: Facebook, color: "hsl(220, 46%, 48%)" },
+    { key: "instagram", label: "Instagram", icon: Instagram, color: "hsl(340, 75%, 54%)" },
+    { key: "linkedin", label: "LinkedIn", icon: Linkedin, color: "hsl(210, 80%, 42%)" },
+    { key: "twitter", label: "Twitter/X", icon: Twitter, color: "hsl(203, 89%, 53%)" },
+    { key: "youtube", label: "YouTube", icon: Youtube, color: "hsl(0, 100%, 42%)" },
+  ];
+
+  const socialTraffic = SOCIAL_PLATFORMS.map((platform) => {
+    const matching = trafficBySource.filter(
+      (r) => r.source.toLowerCase().includes(platform.key) || r.medium.toLowerCase().includes(platform.key)
+    );
+    const sessions = matching.reduce((s, r) => s + r.sessions, 0);
+    const users = matching.reduce((s, r) => s + r.users, 0);
+    return { ...platform, sessions, users };
+  });
+
+  const totalSocialSessions = socialTraffic.reduce((s, p) => s + p.sessions, 0);
 
   const devicePieData = trafficByDevice.map((d, i) => ({
     name: d.dimension,
@@ -211,6 +230,38 @@ const AnalyticsDashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Social Media Traffic */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Share2 className="h-5 w-5" /> Social Media Traffic</CardTitle>
+          <CardDescription>Sessions from your social media platforms (last 30 days). Use UTM links for accurate tracking.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            {socialTraffic.map((platform) => {
+              const Icon = platform.icon;
+              return (
+                <div key={platform.key} className="flex flex-col items-center p-4 rounded-lg border bg-muted/30">
+                  <Icon className="h-6 w-6 mb-2" style={{ color: platform.color }} />
+                  <span className="font-medium text-sm">{platform.label}</span>
+                  <span className="text-2xl font-bold mt-1">{platform.sessions}</span>
+                  <span className="text-xs text-muted-foreground">{platform.users} users</span>
+                </div>
+              );
+            })}
+          </div>
+          <div className="mt-4 pt-4 border-t">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Total social media sessions</span>
+              <span className="font-bold text-lg">{totalSocialSessions}</span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              💡 Tip: Add <code className="bg-muted px-1 rounded">?utm_source=facebook&utm_medium=social</code> to your shared links for precise tracking.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

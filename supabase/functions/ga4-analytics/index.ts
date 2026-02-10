@@ -85,7 +85,7 @@ serve(async (req) => {
     const accessToken = await getAccessToken(serviceAccountJson);
 
     // Run multiple reports in parallel
-    const [overviewReport, trafficByCountry, trafficByDevice, trafficByBrowser, pageViewsReport] =
+    const [overviewReport, trafficByCountry, trafficByDevice, trafficByBrowser, pageViewsReport, trafficBySource] =
       await Promise.all([
         // Overview: sessions, users, pageviews, bounce rate (last 30 days)
         runReport(accessToken, propertyId, {
@@ -134,6 +134,15 @@ serve(async (req) => {
           metrics: [{ name: "screenPageViews" }, { name: "totalUsers" }],
           orderBys: [{ dimension: { dimensionName: "date" }, desc: false }],
         }),
+
+        // Traffic by source/medium
+        runReport(accessToken, propertyId, {
+          dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
+          dimensions: [{ name: "sessionSource" }, { name: "sessionMedium" }],
+          metrics: [{ name: "sessions" }, { name: "totalUsers" }],
+          limit: 20,
+          orderBys: [{ metric: { metricName: "sessions" }, desc: true }],
+        }),
       ]);
 
     const data = {
@@ -142,6 +151,7 @@ serve(async (req) => {
       trafficByDevice,
       trafficByBrowser,
       pageViews: pageViewsReport,
+      trafficBySource,
     };
 
     return new Response(JSON.stringify(data), {
