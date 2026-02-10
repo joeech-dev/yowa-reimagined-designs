@@ -346,12 +346,14 @@ export type Database = {
           budget: number | null
           budget_range: string | null
           created_at: string | null
+          cv_url: string | null
           email: string
           geographic_location: string | null
           id: string
           industry_type: string | null
           last_contact_date: string | null
           name: string
+          national_id_url: string | null
           next_followup_date: string | null
           phone: string
           status: string | null
@@ -361,12 +363,14 @@ export type Database = {
           budget?: number | null
           budget_range?: string | null
           created_at?: string | null
+          cv_url?: string | null
           email: string
           geographic_location?: string | null
           id?: string
           industry_type?: string | null
           last_contact_date?: string | null
           name: string
+          national_id_url?: string | null
           next_followup_date?: string | null
           phone: string
           status?: string | null
@@ -376,12 +380,14 @@ export type Database = {
           budget?: number | null
           budget_range?: string | null
           created_at?: string | null
+          cv_url?: string | null
           email?: string
           geographic_location?: string | null
           id?: string
           industry_type?: string | null
           last_contact_date?: string | null
           name?: string
+          national_id_url?: string | null
           next_followup_date?: string | null
           phone?: string
           status?: string | null
