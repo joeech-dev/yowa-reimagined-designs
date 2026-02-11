@@ -60,7 +60,7 @@ const AdminSidebar = () => {
       {/* Logo */}
       <div className="p-6 border-b border-white/10">
         <Link to="/" className="flex items-center gap-3">
-          <img src={logo} alt="Yowa" className="h-10 w-auto" />
+          <img src={logo} alt="Yowa" className="h-10 w-auto brightness-0 invert" />
           <div>
             <span className="font-bold text-lg text-white">Yowa</span>
             <div className="flex items-center gap-1 text-xs text-secondary">
