@@ -67,6 +67,7 @@ const LeadsManagement = () => {
       const { data, error } = await supabase
         .from("leads")
         .select("*")
+        .eq("is_recruitment", false)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -104,10 +105,7 @@ const LeadsManagement = () => {
       lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (lead.industry_type?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
     
-    const teamCategories = ["employment", "freelancing", "trainee"];
-    const matchesStatus = statusFilter === "all" || 
-      lead.status === statusFilter || 
-      (teamCategories.includes(statusFilter) && lead.industry_type?.toLowerCase() === statusFilter);
+    const matchesStatus = statusFilter === "all" || lead.status === statusFilter;
     
     return matchesSearch && matchesStatus;
   });
@@ -166,9 +164,6 @@ const LeadsManagement = () => {
                 <SelectItem value="contacted">Contacted</SelectItem>
                 <SelectItem value="qualified">Qualified</SelectItem>
                 <SelectItem value="closed">Closed</SelectItem>
-                <SelectItem value="employment">Employment</SelectItem>
-                <SelectItem value="freelancing">Freelancing</SelectItem>
-                <SelectItem value="trainee">Trainee</SelectItem>
               </SelectContent>
             </Select>
           </div>

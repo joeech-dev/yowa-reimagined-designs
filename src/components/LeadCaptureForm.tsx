@@ -143,6 +143,7 @@ export const LeadCaptureForm = () => {
         status: "new",
         cv_url: cvUrl,
         national_id_url: idUrl,
+        is_recruitment: isPosition,
       }]);
 
       if (error) throw error;

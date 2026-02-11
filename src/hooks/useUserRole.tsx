@@ -11,16 +11,16 @@ interface RolePermissions {
 }
 
 const viewPermissions: Record<AppRole, string[]> = {
-  super_admin: ["dashboard", "projects", "finance", "requisitions", "blogs", "partners", "leads", "analytics", "ai-assistant", "users", "settings"],
-  admin: ["dashboard", "projects", "finance", "requisitions", "blogs", "partners", "leads", "analytics", "ai-assistant", "users", "settings"],
+  super_admin: ["dashboard", "projects", "hr", "finance", "requisitions", "blogs", "partners", "leads", "analytics", "ai-assistant", "users", "settings"],
+  admin: ["dashboard", "projects", "hr", "finance", "requisitions", "blogs", "partners", "leads", "analytics", "ai-assistant", "users", "settings"],
   finance: ["dashboard", "projects", "finance", "requisitions", "partners", "leads", "analytics"],
   sales_marketing: ["dashboard", "projects", "blogs", "leads"],
   project_team: ["dashboard", "projects"],
 };
 
 const editPermissions: Record<AppRole, string[]> = {
-  super_admin: ["dashboard", "projects", "finance", "requisitions", "blogs", "partners", "leads", "analytics", "ai-assistant", "users", "settings"],
-  admin: ["dashboard", "projects", "blogs", "partners", "leads"],
+  super_admin: ["dashboard", "projects", "hr", "finance", "requisitions", "blogs", "partners", "leads", "analytics", "ai-assistant", "users", "settings"],
+  admin: ["dashboard", "projects", "hr", "blogs", "partners", "leads"],
   finance: ["dashboard", "finance", "requisitions"],
   sales_marketing: ["dashboard", "leads", "blogs"],
   project_team: [],

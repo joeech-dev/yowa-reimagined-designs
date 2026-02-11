@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      attendance: {
+        Row: {
+          check_in: string | null
+          check_out: string | null
+          created_at: string
+          date: string
+          employee_id: string
+          id: string
+          notes: string | null
+          status: string
+        }
+        Insert: {
+          check_in?: string | null
+          check_out?: string | null
+          created_at?: string
+          date: string
+          employee_id: string
+          id?: string
+          notes?: string | null
+          status?: string
+        }
+        Update: {
+          check_in?: string | null
+          check_out?: string | null
+          created_at?: string
+          date?: string
+          employee_id?: string
+          id?: string
+          notes?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       blog_posts: {
         Row: {
           auto_posted_to_social: boolean | null
@@ -351,6 +384,7 @@ export type Database = {
           geographic_location: string | null
           id: string
           industry_type: string | null
+          is_recruitment: boolean
           last_contact_date: string | null
           name: string
           national_id_url: string | null
@@ -368,6 +402,7 @@ export type Database = {
           geographic_location?: string | null
           id?: string
           industry_type?: string | null
+          is_recruitment?: boolean
           last_contact_date?: string | null
           name: string
           national_id_url?: string | null
@@ -385,6 +420,7 @@ export type Database = {
           geographic_location?: string | null
           id?: string
           industry_type?: string | null
+          is_recruitment?: boolean
           last_contact_date?: string | null
           name?: string
           national_id_url?: string | null
@@ -392,6 +428,51 @@ export type Database = {
           phone?: string
           status?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      leave_requests: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          employee_id: string
+          end_date: string
+          id: string
+          leave_type: string
+          reason: string | null
+          rejection_reason: string | null
+          start_date: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          employee_id: string
+          end_date: string
+          id?: string
+          leave_type: string
+          reason?: string | null
+          rejection_reason?: string | null
+          start_date: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          employee_id?: string
+          end_date?: string
+          id?: string
+          leave_type?: string
+          reason?: string | null
+          rejection_reason?: string | null
+          start_date?: string
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -494,6 +575,62 @@ export type Database = {
           website_url?: string | null
         }
         Relationships: []
+      }
+      payroll: {
+        Row: {
+          base_salary: number
+          bonuses: number
+          created_at: string
+          deductions: number
+          id: string
+          net_pay: number | null
+          notes: string | null
+          paid_at: string | null
+          period_end: string
+          period_start: string
+          status: string
+          team_member_id: string
+          updated_at: string
+        }
+        Insert: {
+          base_salary?: number
+          bonuses?: number
+          created_at?: string
+          deductions?: number
+          id?: string
+          net_pay?: number | null
+          notes?: string | null
+          paid_at?: string | null
+          period_end: string
+          period_start: string
+          status?: string
+          team_member_id: string
+          updated_at?: string
+        }
+        Update: {
+          base_salary?: number
+          bonuses?: number
+          created_at?: string
+          deductions?: number
+          id?: string
+          net_pay?: number | null
+          notes?: string | null
+          paid_at?: string | null
+          period_end?: string
+          period_start?: string
+          status?: string
+          team_member_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payroll_team_member_id_fkey"
+            columns: ["team_member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       portfolio_projects: {
         Row: {
