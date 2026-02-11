@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, TrendingUp, TrendingDown, Users, Eye, Clock, BarChart3, Globe, Monitor, Smartphone, Tablet, Facebook, Instagram, Linkedin, Twitter, Youtube, Share2 } from "lucide-react";
+import { Sparkles, TrendingUp, TrendingDown, Users, Eye, Clock, BarChart3, Globe, Monitor, Smartphone, Tablet, Facebook, Instagram, Linkedin, Twitter, Youtube, Share2, MessageCircle } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from "recharts";
 import { useGA4Analytics } from "@/hooks/useGA4Analytics";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -77,6 +77,8 @@ const AnalyticsDashboard = () => {
     { key: "linkedin", label: "LinkedIn", icon: Linkedin, color: "hsl(210, 80%, 42%)" },
     { key: "twitter", label: "Twitter/X", icon: Twitter, color: "hsl(203, 89%, 53%)" },
     { key: "youtube", label: "YouTube", icon: Youtube, color: "hsl(0, 100%, 42%)" },
+    { key: "whatsapp", label: "WhatsApp", icon: MessageCircle, color: "hsl(142, 70%, 40%)" },
+    { key: "tiktok", label: "TikTok", icon: MessageCircle, color: "hsl(343, 80%, 50%)" },
   ];
 
   const socialTraffic = SOCIAL_PLATFORMS.map((platform) => {
