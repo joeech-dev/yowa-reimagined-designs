@@ -20,6 +20,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { useProfile } from "@/hooks/useProfile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "lucide-react";
+import TasksPanel from "@/components/admin/TasksPanel";
 
 const allMenuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/admin", section: "dashboard" },
@@ -117,8 +118,11 @@ const AdminSidebar = () => {
         })}
       </nav>
 
-      {/* Sign Out */}
-      <div className="p-4 border-t border-white/10 space-y-1">
+      {/* Tasks & Sign Out */}
+      <div className="p-4 border-t border-white/10 space-y-2">
+        <div className="px-2">
+          <TasksPanel />
+        </div>
         <button
           onClick={handleSignOut}
           className="flex items-center gap-3 px-4 py-3 rounded-lg w-full hover:bg-white/10 text-white/90 transition-smooth"
