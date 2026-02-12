@@ -19,6 +19,7 @@ import OnlineUsersWidget from "@/components/admin/OnlineUsersWidget";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sparkles, ArrowRight, FolderKanban, DollarSign, Plus } from "lucide-react";
 import NewRequisitionButton from "@/components/admin/NewRequisitionButton";
+import TasksPanel from "@/components/admin/TasksPanel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -68,7 +69,10 @@ const AdminDashboardHome = () => {
           <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
           <p className="text-muted-foreground mt-1">Welcome back! Here's an overview of your business.</p>
         </div>
-        <NewRequisitionButton label="Expense Requisition" />
+        <div className="flex items-center gap-3">
+          <TasksPanel />
+          <NewRequisitionButton label="Expense Requisition" />
+        </div>
       </div>
 
       <DashboardStats {...stats} />
