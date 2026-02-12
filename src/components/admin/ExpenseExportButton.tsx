@@ -8,7 +8,31 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useExpenseCategories } from "@/hooks/useExpenseCategories";
 import { toast } from "sonner";
 import { Download, FileSpreadsheet } from "lucide-react";
-import * as XLSX from "xlsx";
+
+const escapeCsvValue = (value: string | number | null | undefined): string => {
+  const str = String(value ?? "");
+  if (str.includes(",") || str.includes('"') || str.includes("\n")) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+};
+
+const exportToCsv = (data: Record<string, any>[], fileName: string) => {
+  if (data.length === 0) return;
+  const headers = Object.keys(data[0]);
+  const csvRows = [
+    headers.map(escapeCsvValue).join(","),
+    ...data.map(row => headers.map(h => escapeCsvValue(row[h])).join(","))
+  ];
+  const csvContent = csvRows.join("\n");
+  const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = fileName;
+  link.click();
+  URL.revokeObjectURL(url);
+};
 
 const ExpenseExportButton = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -62,7 +86,6 @@ const ExpenseExportButton = () => {
         return;
       }
 
-      // Format data for export
       const exportData = data.map((req: any) => ({
         "Date": new Date(req.created_at).toLocaleDateString(),
         "Title": req.title,
@@ -76,18 +99,8 @@ const ExpenseExportButton = () => {
         "Rejection Reason": req.rejection_reason || "",
       }));
 
-      const ws = XLSX.utils.json_to_sheet(exportData);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Expense Requisitions");
-
-      // Auto-size columns
-      const colWidths = Object.keys(exportData[0]).map(key => ({
-        wch: Math.max(key.length, ...exportData.map((row: any) => String(row[key] || "").length)) + 2
-      }));
-      ws["!cols"] = colWidths;
-
-      const fileName = `expense_requisitions_${new Date().toISOString().split("T")[0]}.xlsx`;
-      XLSX.writeFile(wb, fileName);
+      const fileName = `expense_requisitions_${new Date().toISOString().split("T")[0]}.csv`;
+      exportToCsv(exportData, fileName);
       toast.success(`Exported ${data.length} requisitions`);
       setIsOpen(false);
     } catch (error: any) {
@@ -160,7 +173,7 @@ const ExpenseExportButton = () => {
           </div>
           <Button onClick={handleExport} className="w-full" disabled={exporting}>
             <Download className="mr-2 h-4 w-4" />
-            {exporting ? "Exporting..." : "Download Excel File"}
+            {exporting ? "Exporting..." : "Download CSV File"}
           </Button>
         </div>
       </DialogContent>
