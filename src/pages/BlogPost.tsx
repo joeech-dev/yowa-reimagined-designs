@@ -144,19 +144,17 @@ const BlogPost = () => {
               )}
 
               {/* Link to full article if external source */}
-              {blog.source_url && blog.source_url !== "yowainnovations.com" && (
-                <div className="bg-muted/50 rounded-xl p-6 my-8">
-                  <p className="text-foreground mb-4">
-                    Read the full story on {blog.source_name || "the original source"}.
-                  </p>
-                  <Button asChild>
-                    <a href={blog.source_url} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="mr-2 h-4 w-4" />
-                      Read Full Article
-                    </a>
-                  </Button>
-                </div>
-              )}
+              <div className="bg-muted/50 rounded-xl p-6 my-8">
+                <p className="text-foreground mb-4">
+                  Explore our completed projects and see our work in action.
+                </p>
+                <Button asChild>
+                  <Link to="/projects">
+                    <ArrowLeft className="mr-2 h-4 w-4 rotate-180" />
+                    More Projects
+                  </Link>
+                </Button>
+              </div>
             </div>
 
             {/* CTA */}
