@@ -20,6 +20,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Sparkles, ArrowRight, FolderKanban, DollarSign, Plus } from "lucide-react";
 import NewRequisitionButton from "@/components/admin/NewRequisitionButton";
 import TasksPanel from "@/components/admin/TasksPanel";
+import TasksManagement from "@/components/admin/tasks/TasksManagement";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -68,10 +69,6 @@ const AdminDashboardHome = () => {
         <div>
           <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
           <p className="text-muted-foreground mt-1">Welcome back! Here's an overview of your business.</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <TasksPanel />
-          <NewRequisitionButton label="Expense Requisition" />
         </div>
       </div>
 
@@ -288,8 +285,14 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex min-h-screen bg-background">
       <AdminSidebar />
-      <main className="flex-1 p-8 overflow-auto">
-        {children}
+      <main className="flex-1 flex flex-col overflow-auto">
+        <div className="flex items-center justify-end gap-3 px-8 pt-4">
+          <TasksPanel />
+          <NewRequisitionButton label="Expense Requisition" />
+        </div>
+        <div className="flex-1 p-8 pt-4">
+          {children}
+        </div>
       </main>
     </div>
   );
@@ -301,6 +304,7 @@ const Admin = () => {
       <Routes>
         <Route index element={<AdminDashboardHome />} />
         <Route path="projects" element={<ProjectsManagement />} />
+        <Route path="tasks" element={<TasksManagement />} />
         <Route path="hr" element={<HRManagement />} />
         <Route path="finance" element={<FinanceManagement />} />
         <Route path="blogs" element={<BlogsManagement />} />

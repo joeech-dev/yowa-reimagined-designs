@@ -11,6 +11,7 @@ import {
   DollarSign,
   FolderKanban,
   UserCheck,
+  ClipboardList,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,6 +26,7 @@ import { User } from "lucide-react";
 const allMenuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/admin", section: "dashboard" },
   { icon: FolderKanban, label: "Projects", path: "/admin/projects", section: "projects" },
+  { icon: ClipboardList, label: "Tasks", path: "/admin/tasks", section: "dashboard" },
   { icon: UserCheck, label: "HR", path: "/admin/hr", section: "hr" },
   { icon: DollarSign, label: "Finance", path: "/admin/finance", section: "finance" },
   { icon: FileText, label: "Blog Posts", path: "/admin/blogs", section: "blogs" },
