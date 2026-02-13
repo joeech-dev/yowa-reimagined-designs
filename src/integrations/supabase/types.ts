@@ -508,6 +508,39 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          reference_id: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          reference_id?: string | null
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          reference_id?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       outreach_log: {
         Row: {
           channel: string
@@ -910,41 +943,146 @@ export type Database = {
           },
         ]
       }
+      task_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_comments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_status_history: {
+        Row: {
+          changed_at: string
+          changed_by: string
+          id: string
+          new_status: string
+          old_status: string | null
+          task_id: string
+        }
+        Insert: {
+          changed_at?: string
+          changed_by: string
+          id?: string
+          new_status: string
+          old_status?: string | null
+          task_id: string
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string
+          id?: string
+          new_status?: string
+          old_status?: string | null
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_status_history_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tasks: {
         Row: {
+          actual_hours: number | null
           created_at: string
           created_by: string
           description: string | null
           due_date: string | null
+          estimated_hours: number | null
           id: string
           priority: string
+          project_id: string | null
+          recurring: boolean
+          recurring_type: string | null
+          reminder_enabled: boolean
+          reminder_time: string | null
+          start_date: string | null
           status: string
+          task_owner: string
+          task_type: string
           title: string
           updated_at: string
         }
         Insert: {
+          actual_hours?: number | null
           created_at?: string
           created_by: string
           description?: string | null
           due_date?: string | null
+          estimated_hours?: number | null
           id?: string
           priority?: string
+          project_id?: string | null
+          recurring?: boolean
+          recurring_type?: string | null
+          reminder_enabled?: boolean
+          reminder_time?: string | null
+          start_date?: string | null
           status?: string
+          task_owner?: string
+          task_type?: string
           title: string
           updated_at?: string
         }
         Update: {
+          actual_hours?: number | null
           created_at?: string
           created_by?: string
           description?: string | null
           due_date?: string | null
+          estimated_hours?: number | null
           id?: string
           priority?: string
+          project_id?: string | null
+          recurring?: boolean
+          recurring_type?: string | null
+          reminder_enabled?: boolean
+          reminder_time?: string | null
+          start_date?: string | null
           status?: string
+          task_owner?: string
+          task_type?: string
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       team_members: {
         Row: {
