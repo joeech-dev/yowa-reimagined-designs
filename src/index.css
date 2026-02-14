@@ -132,6 +132,11 @@ All colors MUST be HSL.
     transition: var(--transition-smooth);
   }
 
+  /* Safe area for mobile bottom nav */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
   /* Continuous marquee animation for partners section */
   @keyframes marquee {
     0% {

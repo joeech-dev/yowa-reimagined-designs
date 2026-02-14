@@ -21,11 +21,13 @@ import { Sparkles, ArrowRight, FolderKanban, DollarSign, Plus } from "lucide-rea
 import NewRequisitionButton from "@/components/admin/NewRequisitionButton";
 import TasksPanel from "@/components/admin/TasksPanel";
 import TasksManagement from "@/components/admin/tasks/TasksManagement";
+import MobileBottomNav from "@/components/admin/MobileBottomNav";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const AdminDashboardHome = () => {
   const [stats, setStats] = useState({
@@ -64,17 +66,17 @@ const AdminDashboardHome = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground mt-1">Welcome back! Here's an overview of your business.</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-muted-foreground mt-1 text-sm md:text-base">Welcome back! Here's an overview.</p>
         </div>
       </div>
 
       <DashboardStats {...stats} />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
         {canView("projects") && (
           <Card className="hover:shadow-primary transition-smooth cursor-pointer">
             <Link to="/admin/projects">
@@ -282,18 +284,21 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     return <CompleteProfile onComplete={refetchProfile} />;
   }
 
+  const isMobile = useIsMobile();
+
   return (
     <div className="flex min-h-screen bg-background">
       <AdminSidebar />
       <main className="flex-1 flex flex-col overflow-auto">
-        <div className="flex items-center justify-end gap-3 px-8 pt-4">
+        <div className="flex items-center justify-end gap-3 px-4 md:px-8 pt-4">
           <TasksPanel />
-          <NewRequisitionButton label="Expense Requisition" />
+          {!isMobile && <NewRequisitionButton label="Expense Requisition" />}
         </div>
-        <div className="flex-1 p-8 pt-4">
+        <div className="flex-1 p-4 md:p-8 pt-4 pb-24 md:pb-8">
           {children}
         </div>
       </main>
+      <MobileBottomNav />
     </div>
   );
 };
