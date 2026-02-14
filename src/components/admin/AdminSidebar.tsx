@@ -59,7 +59,7 @@ const AdminSidebar = () => {
     .slice(0, 2) || "?";
 
   return (
-    <aside className="w-64 min-h-screen bg-foreground flex flex-col">
+    <aside className="hidden md:flex w-64 min-h-screen bg-foreground flex-col">
       {/* Logo */}
       <div className="p-6 border-b border-white/10">
         <Link to="/" className="flex items-center gap-3">
