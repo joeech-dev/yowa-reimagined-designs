@@ -21,6 +21,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import SupportingTeam from "./pages/SupportingTeam";
 import useGoogleAnalytics from "@/hooks/useGoogleAnalytics";
+import SeoRedirects from "@/components/SeoRedirects";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AnalyticsProvider />
+        <SeoRedirects />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
