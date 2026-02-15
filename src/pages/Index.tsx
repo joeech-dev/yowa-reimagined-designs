@@ -74,10 +74,14 @@ const Index = () => {
       <main>
 
       {/* Hero Section */}
-       <section className="relative pt-32 pb-20 overflow-hidden min-h-[80vh] flex items-center">
-         <div 
-           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-           style={{ backgroundImage: `url(${heroBackground})` }}
+       <section className="relative pt-32 pb-20 overflow-hidden min-h-[80vh] flex items-center bg-foreground">
+         <img 
+           src={heroBackground}
+           alt="Yowa Innovations hero background"
+           className="absolute inset-0 w-full h-full object-cover object-center"
+           fetchPriority="high"
+           decoding="async"
+           loading="eager"
          />
         <div className="absolute inset-0 bg-black/40"></div>
         <div className="container mx-auto px-4 relative z-10">
