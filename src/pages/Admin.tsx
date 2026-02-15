@@ -182,6 +182,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const { profile, loading: profileLoading, refetch: refetchProfile } = useProfile();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     let isMounted = true;
@@ -284,7 +285,6 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     return <CompleteProfile onComplete={refetchProfile} />;
   }
 
-  const isMobile = useIsMobile();
 
   return (
     <div className="flex min-h-screen bg-background">
