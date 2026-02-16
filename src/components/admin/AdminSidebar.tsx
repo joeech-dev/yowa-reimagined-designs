@@ -12,6 +12,7 @@ import {
   FolderKanban,
   UserCheck,
   ClipboardList,
+  FileText as FileTextIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,6 +30,7 @@ const allMenuItems = [
   { icon: ClipboardList, label: "Tasks", path: "/admin/tasks", section: "dashboard" },
   { icon: UserCheck, label: "HR", path: "/admin/hr", section: "hr" },
   { icon: DollarSign, label: "Finance", path: "/admin/finance", section: "finance" },
+  { icon: FileTextIcon, label: "Invoices", path: "/admin/invoices", section: "finance" },
   { icon: FileText, label: "Blog Posts", path: "/admin/blogs", section: "blogs" },
   { icon: Building2, label: "Partner Brands", path: "/admin/partners", section: "partners" },
   { icon: Users, label: "Leads", path: "/admin/leads", section: "leads" },
