@@ -323,6 +323,89 @@ export type Database = {
         }
         Relationships: []
       }
+      invoices: {
+        Row: {
+          client_address: string | null
+          client_email: string | null
+          client_name: string
+          client_phone: string | null
+          created_at: string
+          created_by: string
+          due_date: string | null
+          id: string
+          invoice_date: string
+          invoice_number: string
+          is_receipt_generated: boolean
+          items: Json
+          notes: string | null
+          payment_date: string | null
+          payment_method: string | null
+          project_id: string | null
+          status: string
+          subtotal: number
+          tax_amount: number
+          tax_rate: number
+          total: number
+          updated_at: string
+        }
+        Insert: {
+          client_address?: string | null
+          client_email?: string | null
+          client_name: string
+          client_phone?: string | null
+          created_at?: string
+          created_by: string
+          due_date?: string | null
+          id?: string
+          invoice_date?: string
+          invoice_number: string
+          is_receipt_generated?: boolean
+          items?: Json
+          notes?: string | null
+          payment_date?: string | null
+          payment_method?: string | null
+          project_id?: string | null
+          status?: string
+          subtotal?: number
+          tax_amount?: number
+          tax_rate?: number
+          total?: number
+          updated_at?: string
+        }
+        Update: {
+          client_address?: string | null
+          client_email?: string | null
+          client_name?: string
+          client_phone?: string | null
+          created_at?: string
+          created_by?: string
+          due_date?: string | null
+          id?: string
+          invoice_date?: string
+          invoice_number?: string
+          is_receipt_generated?: boolean
+          items?: Json
+          notes?: string | null
+          payment_date?: string | null
+          payment_method?: string | null
+          project_id?: string | null
+          status?: string
+          subtotal?: number
+          tax_amount?: number
+          tax_rate?: number
+          total?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_sequence_assignments: {
         Row: {
           completed_at: string | null
