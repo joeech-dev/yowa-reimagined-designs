@@ -42,7 +42,7 @@ interface InvoiceRow {
 
 const defaultItem: InvoiceItem = { description: "", quantity: "1", unit_cost: 0, total: 0 };
 
-const InvoicesManagement = () => {
+const InvoicesManagement = ({ receiptMode }: { receiptMode?: boolean }) => {
   const queryClient = useQueryClient();
   const { canEdit } = useUserRole();
   const canEditFinance = canEdit("finance");
