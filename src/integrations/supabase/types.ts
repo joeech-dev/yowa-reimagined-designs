@@ -926,6 +926,83 @@ export type Database = {
           },
         ]
       }
+      quotations: {
+        Row: {
+          client_address: string | null
+          client_email: string | null
+          client_name: string
+          client_phone: string | null
+          created_at: string
+          created_by: string
+          id: string
+          items: Json
+          notes: string | null
+          project_id: string | null
+          provided_by: string | null
+          quotation_date: string
+          quotation_number: string
+          requested_by: string | null
+          status: string
+          subtotal: number
+          tax_amount: number
+          tax_rate: number
+          total: number
+          updated_at: string
+        }
+        Insert: {
+          client_address?: string | null
+          client_email?: string | null
+          client_name: string
+          client_phone?: string | null
+          created_at?: string
+          created_by: string
+          id?: string
+          items?: Json
+          notes?: string | null
+          project_id?: string | null
+          provided_by?: string | null
+          quotation_date?: string
+          quotation_number: string
+          requested_by?: string | null
+          status?: string
+          subtotal?: number
+          tax_amount?: number
+          tax_rate?: number
+          total?: number
+          updated_at?: string
+        }
+        Update: {
+          client_address?: string | null
+          client_email?: string | null
+          client_name?: string
+          client_phone?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          items?: Json
+          notes?: string | null
+          project_id?: string | null
+          provided_by?: string | null
+          quotation_date?: string
+          quotation_number?: string
+          requested_by?: string | null
+          status?: string
+          subtotal?: number
+          tax_amount?: number
+          tax_rate?: number
+          total?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sequence_steps: {
         Row: {
           created_at: string
@@ -1289,6 +1366,83 @@ export type Database = {
           visitor_phone?: string | null
         }
         Relationships: []
+      }
+      work_orders: {
+        Row: {
+          client_address: string | null
+          client_email: string | null
+          client_name: string
+          client_phone: string | null
+          created_at: string
+          created_by: string
+          id: string
+          items: Json
+          notes: string | null
+          project_id: string | null
+          provided_by: string | null
+          requested_by: string | null
+          status: string
+          subtotal: number
+          tax_amount: number
+          tax_rate: number
+          total: number
+          updated_at: string
+          work_order_date: string
+          work_order_number: string
+        }
+        Insert: {
+          client_address?: string | null
+          client_email?: string | null
+          client_name: string
+          client_phone?: string | null
+          created_at?: string
+          created_by: string
+          id?: string
+          items?: Json
+          notes?: string | null
+          project_id?: string | null
+          provided_by?: string | null
+          requested_by?: string | null
+          status?: string
+          subtotal?: number
+          tax_amount?: number
+          tax_rate?: number
+          total?: number
+          updated_at?: string
+          work_order_date?: string
+          work_order_number: string
+        }
+        Update: {
+          client_address?: string | null
+          client_email?: string | null
+          client_name?: string
+          client_phone?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          items?: Json
+          notes?: string | null
+          project_id?: string | null
+          provided_by?: string | null
+          requested_by?: string | null
+          status?: string
+          subtotal?: number
+          tax_amount?: number
+          tax_rate?: number
+          total?: number
+          updated_at?: string
+          work_order_date?: string
+          work_order_number?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_orders_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

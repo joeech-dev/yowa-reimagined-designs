@@ -11,7 +11,7 @@ import PartnersManagement from "@/components/admin/PartnersManagement";
 import LeadsManagement from "@/components/admin/LeadsManagement";
 import AnalyticsDashboard from "@/components/admin/AnalyticsDashboard";
 import FinanceManagement from "@/components/admin/FinanceManagement";
-import InvoicesManagement from "@/components/admin/InvoicesManagement";
+import BillingManagement from "@/components/admin/BillingManagement";
 import ProjectsManagement from "@/components/admin/ProjectsManagement";
 import AIAssistantPanel from "@/components/admin/AIAssistantPanel";
 import UserManagement from "@/components/admin/UserManagement";
@@ -313,7 +313,7 @@ const Admin = () => {
         <Route path="tasks" element={<TasksManagement />} />
         <Route path="hr" element={<HRManagement />} />
         <Route path="finance" element={<FinanceManagement />} />
-        <Route path="invoices" element={<InvoicesManagement />} />
+        <Route path="billing" element={<BillingManagement />} />
         <Route path="blogs" element={<BlogsManagement />} />
         <Route path="partners" element={<PartnersManagement />} />
         <Route path="leads" element={<LeadsManagement />} />
