@@ -32,6 +32,7 @@ const primaryTabs = [
 const moreItems = [
   { icon: ClipboardList, label: "Tasks", path: "/admin/tasks", section: "dashboard" },
   { icon: UserCheck, label: "HR", path: "/admin/hr", section: "hr" },
+  { icon: FileText, label: "Billing", path: "/admin/billing", section: "finance" },
   { icon: FileText, label: "Blog Posts", path: "/admin/blogs", section: "blogs" },
   { icon: Building2, label: "Partners", path: "/admin/partners", section: "partners" },
   { icon: BarChart3, label: "Analytics", path: "/admin/analytics", section: "analytics" },
