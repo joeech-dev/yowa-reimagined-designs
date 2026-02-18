@@ -176,7 +176,7 @@ const Index = () => {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {latestBlogs.map((blog) => (
-              <BlogCard key={blog.id} {...blog} />
+              <BlogCard key={blog.id} {...blog} published_at={blog.published_at} />
             ))}
           </div>
           <div className="text-center mt-12">
@@ -198,7 +198,7 @@ const Index = () => {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {urbanismBlogs.map((blog) => (
-              <BlogCard key={blog.id} {...blog} />
+              <BlogCard key={blog.id} {...blog} published_at={blog.published_at} />
             ))}
           </div>
         </div>
@@ -212,7 +212,7 @@ const Index = () => {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {livelihoodBlogs.map((blog) => (
-              <BlogCard key={blog.id} {...blog} />
+              <BlogCard key={blog.id} {...blog} published_at={blog.published_at} />
             ))}
           </div>
         </div>

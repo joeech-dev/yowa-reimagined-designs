@@ -15,6 +15,7 @@ import { format } from "date-fns";
 import { useUserRole } from "@/hooks/useUserRole";
 import WorkOrderTemplate from "./WorkOrderTemplate";
 import type { InvoiceItem } from "./InvoiceTemplate";
+import { printDocument } from "@/lib/printDocument";
 
 interface WorkOrderRow {
   id: string;
@@ -166,15 +167,7 @@ const WorkOrdersManagement = () => {
   };
 
   const handlePrint = () => {
-    if (!printRef.current) return;
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) return;
-    printWindow.document.write(`<html><head><title>Work Order</title>
-      <style>* { margin: 0; padding: 0; box-sizing: border-box; } body { font-family: system-ui, -apple-system, sans-serif; }
-      @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }</style></head><body>
-      ${printRef.current.innerHTML}</body></html>`);
-    printWindow.document.close();
-    setTimeout(() => { printWindow.print(); }, 500);
+    printDocument(printRef.current, "Work Order");
   };
 
   const handleSubmit = (e: React.FormEvent) => { e.preventDefault(); createMutation.mutate(); };
