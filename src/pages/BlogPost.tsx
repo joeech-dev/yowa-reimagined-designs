@@ -49,7 +49,7 @@ const BlogPost = () => {
       <SEO
         title={`${blog.title} | Yowa Innovations Blog`}
         description={blog.excerpt || "Read this insightful article from Yowa Innovations."}
-        url={`https://yowainnovations.com/blog/${blog.slug}`}
+        url={`https://yowa.us/blog/${blog.slug}`}
         type="article"
       />
       <Navbar />

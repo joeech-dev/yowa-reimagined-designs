@@ -20,7 +20,7 @@ const Contact = () => {
         title="Contact Yowa Innovations | Get a Free Consultation - Uganda Creative Agency"
         description="Contact Yowa Innovations for video production, photography & digital marketing services. Free consultation available. Based in Kampala, serving all of East Africa."
         keywords="contact yowa innovations, Uganda creative agency contact, video production inquiry Kampala, content creation consultation, digital marketing Uganda"
-        url="https://yowainnovations.com/contact"
+        url="https://yowa.us/contact"
       />
       <Navbar />
 

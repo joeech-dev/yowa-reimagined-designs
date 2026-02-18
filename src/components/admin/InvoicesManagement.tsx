@@ -17,6 +17,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import InvoiceTemplate from "./InvoiceTemplate";
 import ReceiptTemplate from "./ReceiptTemplate";
 import type { InvoiceItem } from "./InvoiceTemplate";
+import { printDocument } from "@/lib/printDocument";
 
 interface InvoiceRow {
   id: string;
@@ -189,21 +190,7 @@ const InvoicesManagement = ({ receiptMode }: { receiptMode?: boolean }) => {
   };
 
   const handlePrint = () => {
-    if (!printRef.current) return;
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) return;
-    printWindow.document.write(`
-      <html><head><title>${previewType === "invoice" ? "Invoice" : "Receipt"}</title>
-      <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: system-ui, -apple-system, sans-serif; }
-        @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
-      </style></head><body>
-      ${printRef.current.innerHTML}
-      </body></html>
-    `);
-    printWindow.document.close();
-    setTimeout(() => { printWindow.print(); }, 500);
+    printDocument(printRef.current, previewType === "invoice" ? "Invoice" : "Receipt");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -434,6 +421,7 @@ const InvoicesManagement = ({ receiptMode }: { receiptMode?: boolean }) => {
                   title: previewInvoice.notes || undefined,
                   payment_date: previewInvoice.payment_date || undefined,
                   payment_method: previewInvoice.payment_method || undefined,
+                  receipt_number: `RCT-${previewInvoice.invoice_number}`,
                 }} />
               )}
             </div>

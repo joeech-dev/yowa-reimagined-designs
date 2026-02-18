@@ -15,6 +15,7 @@ import { format } from "date-fns";
 import { useUserRole } from "@/hooks/useUserRole";
 import QuotationTemplate from "./QuotationTemplate";
 import type { InvoiceItem } from "./InvoiceTemplate";
+import { printDocument } from "@/lib/printDocument";
 
 interface QuotationRow {
   id: string;
@@ -166,15 +167,7 @@ const QuotationsManagement = () => {
   };
 
   const handlePrint = () => {
-    if (!printRef.current) return;
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) return;
-    printWindow.document.write(`<html><head><title>Quotation</title>
-      <style>* { margin: 0; padding: 0; box-sizing: border-box; } body { font-family: system-ui, -apple-system, sans-serif; }
-      @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }</style></head><body>
-      ${printRef.current.innerHTML}</body></html>`);
-    printWindow.document.close();
-    setTimeout(() => { printWindow.print(); }, 500);
+    printDocument(printRef.current, "Quotation");
   };
 
   const handleSubmit = (e: React.FormEvent) => { e.preventDefault(); createMutation.mutate(); };
