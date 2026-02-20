@@ -8,31 +8,30 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-interface Project {
+interface PortfolioProject {
   id: string;
   title: string;
   description: string | null;
-  client_name: string;
-  video_url: string | null;
-  budget: number | null;
-  start_date: string | null;
-  deadline: string | null;
-  completed_at: string | null;
+  category: string;
+  video_url: string;
+  client: string | null;
+  year: string | null;
+  display_order: number | null;
+  is_active: boolean | null;
 }
 
 const Portfolio = () => {
   const { data: projects = [], isLoading } = useQuery({
-    queryKey: ["public-projects"],
+    queryKey: ["public-portfolio-projects"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("projects")
-        .select("id, title, description, client_name, video_url, budget, start_date, deadline, completed_at")
-        .eq("show_on_website", true)
-        .eq("status", "completed")
-        .order("completed_at", { ascending: false });
+        .from("portfolio_projects")
+        .select("id, title, description, category, video_url, client, year, display_order, is_active")
+        .eq("is_active", true)
+        .order("display_order", { ascending: true });
 
       if (error) {
-        console.error("Error fetching projects:", error);
+        console.error("Error fetching portfolio projects:", error);
         return [];
       }
       return data || [];
@@ -86,27 +85,24 @@ const Portfolio = () => {
                   key={project.id}
                   className="group overflow-hidden border-border hover:shadow-warm transition-smooth"
                 >
-                  {project.video_url && (
-                    <div className="relative aspect-video overflow-hidden bg-muted">
-                      <iframe
-                        src={(() => {
-                          let url = project.video_url || '';
-                          // Convert youtube.com/embed to youtube-nocookie.com/embed
-                          url = url.replace('www.youtube.com/embed', 'www.youtube-nocookie.com/embed');
-                          url = url.replace('youtube.com/embed', 'www.youtube-nocookie.com/embed');
-                          const separator = url.includes('?') ? '&' : '?';
-                          return `${url}${separator}modestbranding=1&showinfo=0&rel=0&iv_load_policy=3&controls=1&fs=1`;
-                        })()}
-                        title={project.title}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        className="w-full h-full"
-                      />
-                    </div>
-                  )}
+                  <div className="relative aspect-video overflow-hidden bg-muted">
+                    <iframe
+                      src={(() => {
+                        let url = project.video_url;
+                        url = url.replace('www.youtube.com/embed', 'www.youtube-nocookie.com/embed');
+                        url = url.replace('youtube.com/embed', 'www.youtube-nocookie.com/embed');
+                        const separator = url.includes('?') ? '&' : '?';
+                        return `${url}${separator}modestbranding=1&showinfo=0&rel=0&iv_load_policy=3&controls=1&fs=1`;
+                      })()}
+                      title={project.title}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full"
+                    />
+                  </div>
                   <div className="p-6">
                     <Badge variant="secondary" className="mb-3">
-                      Completed
+                      {project.category}
                     </Badge>
                     <h3 className="font-display font-semibold text-xl mb-2 group-hover:text-primary transition-smooth">
                       {project.title}
@@ -117,10 +113,8 @@ const Portfolio = () => {
                       </p>
                     )}
                     <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <span>{project.client_name}</span>
-                      {project.completed_at && (
-                        <span>{new Date(project.completed_at).getFullYear()}</span>
-                      )}
+                      <span>{project.client || ""}</span>
+                      {project.year && <span>{project.year}</span>}
                     </div>
                   </div>
                 </Card>
