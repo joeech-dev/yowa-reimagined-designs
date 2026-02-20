@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
@@ -21,9 +22,14 @@ const BlogPost = () => {
     );
   }
 
-  if (!blog) {
+  if (!blog && !isLoading) {
     return (
       <div className="min-h-screen">
+        <Helmet>
+          <meta name="robots" content="noindex, nofollow" />
+          <meta name="googlebot" content="noindex" />
+          <title>Post Not Found | Yowa Innovations</title>
+        </Helmet>
         <Navbar />
         <section className="pt-32 pb-16">
           <div className="container mx-auto px-4 text-center">

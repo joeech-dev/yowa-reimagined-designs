@@ -44,7 +44,7 @@ const Portfolio = () => {
         title="Projects | Yowa Innovations - Our Completed Work"
         description="View our completed projects — documentaries, video productions & digital campaigns. 50+ projects for NGOs, corporates & startups across East Africa."
         keywords="video production projects Uganda, documentary projects East Africa, creative campaigns, NGO video production, corporate video Uganda"
-        url="https://yowainnovations.com/projects"
+        url="https://yowa.us/projects"
       />
       <Navbar />
 

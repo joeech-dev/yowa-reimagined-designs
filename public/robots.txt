@@ -37,6 +37,17 @@ Disallow: /2023/
 Disallow: /2024/
 Disallow: /2025/
 Disallow: /2026/
+Disallow: /author/
+Disallow: /tag/
+Disallow: /page/
+Disallow: /wp-*
+Disallow: /feed
+Disallow: /rss
+Disallow: /xmlrpc.php
+Disallow: /wp-sitemap.xml
+Disallow: /comments/
+Disallow: /sample-page
+Disallow: /hello-world
 
 # Sitemap location
 Sitemap: https://yowa.us/sitemap.xml

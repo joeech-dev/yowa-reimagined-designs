@@ -41,6 +41,66 @@ const SeoRedirects = () => {
       navigate("/blogs", { replace: true });
       return;
     }
+
+    // /YYYY/MM/... (partial date paths)
+    if (/^\/\d{4}\/\d{2}\/?$/.test(path)) {
+      navigate("/blogs", { replace: true });
+      return;
+    }
+
+    // /author/X → /about
+    if (path.startsWith("/author/") || path === "/author") {
+      navigate("/about", { replace: true });
+      return;
+    }
+
+    // /tag/X → /blogs
+    if (path.startsWith("/tag/") || path === "/tag") {
+      navigate("/blogs", { replace: true });
+      return;
+    }
+
+    // /page/X → /
+    if (path.startsWith("/page/") || path === "/page") {
+      navigate("/", { replace: true });
+      return;
+    }
+
+    // /wp-content/*, /wp-admin/*, /wp-includes/*, /wp-login*, /wp-json/*
+    if (path.startsWith("/wp-")) {
+      navigate("/", { replace: true });
+      return;
+    }
+
+    // /feed/, /rss, /atom
+    if (path === "/feed" || path === "/feed/" || path === "/rss" || path === "/atom") {
+      navigate("/blogs", { replace: true });
+      return;
+    }
+
+    // /xmlrpc.php, /wp-sitemap.xml, etc.
+    if (path.endsWith(".php") || path === "/wp-sitemap.xml") {
+      navigate("/", { replace: true });
+      return;
+    }
+
+    // /cecb899f* (broken hash URLs from Google Search Console)
+    if (path.startsWith("/cecb899f")) {
+      navigate("/", { replace: true });
+      return;
+    }
+
+    // /comments/feed → /blogs
+    if (path.startsWith("/comments")) {
+      navigate("/blogs", { replace: true });
+      return;
+    }
+
+    // /sample-page, /hello-world (default WP pages)
+    if (path === "/sample-page" || path === "/hello-world") {
+      navigate("/", { replace: true });
+      return;
+    }
   }, [location.pathname, navigate]);
 
   return null;
