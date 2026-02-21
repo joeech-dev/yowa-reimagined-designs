@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
@@ -24,17 +23,39 @@ const Portfolio = () => {
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ["public-portfolio-projects"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("portfolio_projects")
-        .select("id, title, description, category, video_url, client, year, display_order, is_active")
-        .eq("is_active", true)
-        .order("display_order", { ascending: true });
+      // Fetch from both portfolio_projects and projects tables
+      const [portfolioRes, projectsRes] = await Promise.all([
+        supabase
+          .from("portfolio_projects")
+          .select("id, title, description, category, video_url, client, year, display_order, is_active")
+          .eq("is_active", true)
+          .order("display_order", { ascending: true }),
+        supabase
+          .from("projects")
+          .select("id, title, description, client_name, video_url, status, show_on_website")
+          .eq("show_on_website", true)
+          .eq("status", "completed"),
+      ]);
 
-      if (error) {
-        console.error("Error fetching portfolio projects:", error);
-        return [];
-      }
-      return data || [];
+      const portfolioItems: PortfolioProject[] = (portfolioRes.data || []);
+
+      // Map projects table items to same shape, avoiding duplicates by title
+      const portfolioTitles = new Set(portfolioItems.map(p => p.title.toLowerCase()));
+      const projectItems: PortfolioProject[] = (projectsRes.data || [])
+        .filter(p => p.video_url && !portfolioTitles.has(p.title.toLowerCase()))
+        .map(p => ({
+          id: p.id,
+          title: p.title,
+          description: p.description,
+          category: "Video Production",
+          video_url: p.video_url!,
+          client: p.client_name,
+          year: null,
+          display_order: 999,
+          is_active: true,
+        }));
+
+      return [...portfolioItems, ...projectItems];
     },
   });
 
