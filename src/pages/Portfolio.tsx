@@ -89,6 +89,11 @@ const Portfolio = () => {
                     <iframe
                       src={(() => {
                         let url = project.video_url;
+                        // Convert watch URLs to embed URLs
+                        const watchMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?]+)/);
+                        if (watchMatch) {
+                          url = `https://www.youtube.com/embed/${watchMatch[1]}`;
+                        }
                         url = url.replace('www.youtube.com/embed', 'www.youtube-nocookie.com/embed');
                         url = url.replace('youtube.com/embed', 'www.youtube-nocookie.com/embed');
                         const separator = url.includes('?') ? '&' : '?';
@@ -97,7 +102,8 @@ const Portfolio = () => {
                       title={project.title}
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
-                      className="w-full h-full"
+                      loading="lazy"
+                      className="w-full h-full absolute inset-0"
                     />
                   </div>
                   <div className="p-6">

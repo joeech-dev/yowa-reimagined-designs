@@ -69,6 +69,13 @@ const PortfolioManagement = () => {
       return;
     }
 
+    // Auto-convert YouTube watch/short URLs to embed format
+    let videoUrl = formData.video_url.trim();
+    const watchMatch = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?]+)/);
+    if (watchMatch) {
+      videoUrl = `https://www.youtube.com/embed/${watchMatch[1]}`;
+    }
+
     if (editingProject) {
       const { error } = await supabase
         .from("portfolio_projects")
@@ -76,7 +83,7 @@ const PortfolioManagement = () => {
           title: formData.title,
           category: formData.category,
           description: formData.description || null,
-          video_url: formData.video_url,
+          video_url: videoUrl,
           client: formData.client || null,
           year: formData.year || null,
           is_active: formData.is_active,
@@ -96,7 +103,7 @@ const PortfolioManagement = () => {
         title: formData.title,
         category: formData.category,
         description: formData.description || null,
-        video_url: formData.video_url,
+        video_url: videoUrl,
         client: formData.client || null,
         year: formData.year || null,
         is_active: formData.is_active,
