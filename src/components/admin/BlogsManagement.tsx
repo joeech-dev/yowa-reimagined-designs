@@ -102,8 +102,8 @@ const BlogsManagement = () => {
         if (error) throw error;
         toast.success("Blog post updated");
       } else {
-        // Auto-generate source_url if empty (required by DB constraint to start with https://)
-        const sourceUrl = formData.source_url || `https://yowa.us/blog/${formData.slug}`;
+        // Auto-generate source_url if empty
+        const sourceUrl = formData.source_url || `https://yowa.us/blog/${formData.slug}-${Date.now()}`;
         const sourceName = formData.source_name || "Yowa Innovations";
         const { error } = await supabase
           .from("blog_posts")
