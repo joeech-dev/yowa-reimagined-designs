@@ -10,6 +10,7 @@ import StatsSection from "@/components/StatsSection";
 import ProblemSection from "@/components/ProblemSection";
 import SolutionSection from "@/components/SolutionSection";
 import OurModelSection from "@/components/OurModelSection";
+import EbookPromo from "@/components/EbookPromo";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useBlogs } from "@/hooks/useBlogs";
@@ -217,6 +218,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* eBook Promo */}
+      <EbookPromo variant="banner" />
 
       {/* Testimonials Section */}
       <TestimonialsSection />

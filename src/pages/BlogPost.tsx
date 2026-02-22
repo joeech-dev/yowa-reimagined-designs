@@ -6,6 +6,7 @@ import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, ExternalLink, Calendar } from "lucide-react";
+import EbookPromo from "@/components/EbookPromo";
 import { useBlogBySlug } from "@/hooks/useBlogs";
  import ReactMarkdown from "react-markdown";
  import remarkGfm from "remark-gfm";
@@ -172,6 +173,9 @@ const BlogPost = () => {
                 </Button>
               </div>
             </div>
+
+            {/* eBook Promo */}
+            <EbookPromo variant="compact" />
 
             {/* CTA */}
             <div className="mt-12 p-8 bg-primary/5 rounded-xl text-center">
