@@ -20,6 +20,7 @@ import ContentPolicy from "./pages/ContentPolicy";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import SupportingTeam from "./pages/SupportingTeam";
+import Ebook from "./pages/Ebook";
 import useGoogleAnalytics from "@/hooks/useGoogleAnalytics";
 import SeoRedirects from "@/components/SeoRedirects";
 
@@ -54,6 +55,7 @@ const App = () => (
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route path="/team" element={<SupportingTeam />} />
+          <Route path="/ebook" element={<Ebook />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
