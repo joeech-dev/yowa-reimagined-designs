@@ -5,17 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sparkles, Send, Trash2, FileText, Users, CalendarCheck, MessageSquare, Loader2 } from "lucide-react";
+import { Sparkles, Send, Trash2, FileText, Users, CalendarCheck, MessageSquare, Loader2, Search } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import { supabase } from "@/integrations/supabase/client";
 
 const quickActions = [
   { label: "Generate Blog Post", action: "generate_blog", icon: FileText, prompt: "Write a blog post about sustainable urban development in East Africa" },
   { label: "Analyze Leads", action: "analyze_lead", icon: Users, prompt: "Analyze the current leads pipeline and suggest follow-up strategies" },
   { label: "Schedule Followups", action: "schedule_followup", icon: CalendarCheck, prompt: "Suggest follow-up schedules for active leads" },
+  { label: "SEO Intelligence", action: "seo_analysis", icon: Search, prompt: "__FETCH_GSC__" },
 ];
 
 const AIAssistantPanel = () => {
-  const { messages, isLoading, sendMessage, clearMessages } = useAIAssistant();
+  const { messages, isLoading, sendMessage, clearMessages, setMessages } = useAIAssistant();
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -25,9 +27,30 @@ const AIAssistantPanel = () => {
     }
   }, [messages]);
 
+  const [isFetchingGsc, setIsFetchingGsc] = useState(false);
+
   const handleSend = async (prompt?: string, action?: string) => {
-    const text = prompt || input.trim();
+    let text = prompt || input.trim();
     if (!text) return;
+
+    // If SEO analysis, fetch GSC data first and inject into prompt
+    if (text === "__FETCH_GSC__") {
+      setIsFetchingGsc(true);
+      const userMsg = "Analyze our Google Search Console data and give SEO recommendations, content gaps, and performance insights.";
+      try {
+        const { data: gscData, error } = await supabase.functions.invoke("gsc-analytics", {
+          body: { report: "ai_analysis" },
+        });
+        if (error) throw error;
+        text = `${userMsg}\n\nHere is the raw Google Search Console data for yowa.us (last 28 days):\n\n${JSON.stringify(gscData, null, 2)}`;
+      } catch (e: any) {
+        setMessages((prev) => [...prev, { role: "user", content: userMsg }, { role: "assistant", content: `Error fetching search data: ${e.message}` }]);
+        setIsFetchingGsc(false);
+        return;
+      }
+      setIsFetchingGsc(false);
+    }
+
     setInput("");
     await sendMessage(text, action);
   };
