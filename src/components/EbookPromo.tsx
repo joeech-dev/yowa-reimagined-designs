@@ -2,7 +2,7 @@ import { ArrowRight, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ebookCover from "@/assets/ebook-cover.jpg";
 
-const EBOOK_URL = "https://www.yowa.us/ebook";
+const EBOOK_URL = "https://www.yowa.us/ordernow";
 
 interface EbookPromoProps {
   variant?: "banner" | "compact";
