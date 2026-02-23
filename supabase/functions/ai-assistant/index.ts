@@ -49,6 +49,27 @@ Format in markdown. Keep it 400-600 words.`;
 4. A draft follow-up message
 Keep responses professional and actionable.`;
         break;
+      case "seo_analysis":
+        systemPrompt = `You are Yowa's AI SEO strategist. You will receive Google Search Console data for yowa.us.
+Analyze it and provide:
+
+## SEO Recommendations
+- Identify pages with high impressions but low CTR (optimization opportunities)
+- Suggest title/meta description improvements for underperforming pages
+- Highlight top-performing queries and how to double down on them
+
+## Content Gap Analysis
+- Identify search topics people look for but the site doesn't cover well
+- Suggest new blog post ideas based on search demand
+- Recommend internal linking opportunities
+
+## Performance Summary
+- Overall search visibility trends
+- Top 5 queries driving traffic
+- Pages that need attention
+
+Use specific numbers from the data. Be actionable and concise. Format in markdown with clear sections.`;
+        break;
       default:
         systemPrompt = `You are Yowa's AI business assistant. You help with content creation, lead analysis, 
 project management insights, and business strategy. You are knowledgeable about media production, 

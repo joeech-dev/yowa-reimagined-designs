@@ -111,5 +111,5 @@ export const useAIAssistant = () => {
 
   const clearMessages = useCallback(() => setMessages([]), []);
 
-  return { messages, isLoading, sendMessage, clearMessages };
+  return { messages, isLoading, sendMessage, clearMessages, setMessages };
 };
