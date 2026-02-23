@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import ebookCover from "@/assets/ebook-cover.jpg";
 
-const EBOOK_URL = "https://www.yowa.us/ebook";
+const EBOOK_URL = "https://www.yowa.us/ordernow";
 
 const chapters = [
   { icon: BookOpen, title: "Foundation", desc: "Understand why video is the most powerful tool for creatives today." },
