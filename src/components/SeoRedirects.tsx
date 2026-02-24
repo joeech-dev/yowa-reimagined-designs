@@ -101,6 +101,12 @@ const SeoRedirects = () => {
       navigate("/", { replace: true });
       return;
     }
+
+    // /ordernow → /shop
+    if (path === "/ordernow") {
+      navigate("/shop", { replace: true });
+      return;
+    }
   }, [location.pathname, navigate]);
 
   return null;

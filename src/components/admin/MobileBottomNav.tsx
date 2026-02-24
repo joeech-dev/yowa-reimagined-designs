@@ -15,6 +15,7 @@ import {
   UserCheck,
   ClipboardList,
   X,
+  ShoppingBag,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -35,6 +36,7 @@ const moreItems = [
   { icon: FileText, label: "Billing", path: "/admin/billing", section: "finance" },
   { icon: FileText, label: "Blog Posts", path: "/admin/blogs", section: "blogs" },
   { icon: Building2, label: "Partners", path: "/admin/partners", section: "partners" },
+  { icon: ShoppingBag, label: "Products", path: "/admin/products", section: "partners" },
   { icon: BarChart3, label: "Analytics", path: "/admin/analytics", section: "analytics" },
   { icon: Sparkles, label: "AI Assistant", path: "/admin/ai-assistant", section: "ai-assistant" },
   { icon: Users, label: "Users", path: "/admin/users", section: "users" },
