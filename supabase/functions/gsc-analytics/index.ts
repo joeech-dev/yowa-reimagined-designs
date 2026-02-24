@@ -44,7 +44,7 @@ async function getAccessToken(serviceAccountJson: string): Promise<string> {
   return tokenData.access_token;
 }
 
-const SITE_URL = "https://yowa.us/";
+const SITE_URL = "sc-domain:yowa.us";
 
 async function querySearchAnalytics(
   accessToken: string,
