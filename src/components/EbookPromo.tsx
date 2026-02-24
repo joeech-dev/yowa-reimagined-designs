@@ -1,8 +1,7 @@
-import { ArrowRight, BookOpen } from "lucide-react";
+import { ArrowRight, BookOpen, ShoppingBag } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import ebookCover from "@/assets/ebook-cover.jpg";
-
-const EBOOK_URL = "https://www.yowa.us/ordernow";
 
 interface EbookPromoProps {
   variant?: "banner" | "compact";
@@ -12,17 +11,17 @@ const EbookPromo = ({ variant = "banner" }: EbookPromoProps) => {
   if (variant === "compact") {
     return (
       <div className="bg-foreground rounded-xl p-6 flex flex-col sm:flex-row items-center gap-4 my-8">
-        <img src={ebookCover} alt="Video Cash for Creatives" className="w-20 rounded-md shadow-lg shrink-0" />
+        <img src={ebookCover} alt="Creative Resources" className="w-20 rounded-md shadow-lg shrink-0" />
         <div className="flex-1 text-center sm:text-left">
-          <p className="text-primary-foreground font-display font-bold text-lg">Video Cash for Creatives</p>
-          <p className="text-primary-foreground/70 text-sm">Turn your video skills into real income.</p>
+          <p className="text-primary-foreground font-display font-bold text-lg">Creative Resources</p>
+          <p className="text-primary-foreground/70 text-sm">eBooks, videos, photos & more.</p>
         </div>
-        <a href={EBOOK_URL} target="_blank" rel="noopener noreferrer">
+        <Link to="/shop">
           <Button size="sm" className="bg-secondary text-secondary-foreground hover:bg-secondary/90 whitespace-nowrap">
-            Get the Book
+            Visit Shop
             <ArrowRight className="ml-1 h-4 w-4" />
           </Button>
-        </a>
+        </Link>
       </div>
     );
   }
@@ -38,21 +37,21 @@ const EbookPromo = ({ variant = "banner" }: EbookPromoProps) => {
           />
           <div className="text-center md:text-left">
             <div className="flex items-center gap-2 justify-center md:justify-start mb-3">
-              <BookOpen className="text-secondary" size={20} />
-              <span className="text-secondary font-bold text-sm uppercase tracking-wider">New eBook</span>
+              <ShoppingBag className="text-secondary" size={20} />
+              <span className="text-secondary font-bold text-sm uppercase tracking-wider">Shop</span>
             </div>
             <h2 className="font-display font-bold text-2xl md:text-3xl text-primary-foreground mb-3">
-              Video Cash for Creatives
+              Creative Resources & Products
             </h2>
             <p className="text-primary-foreground/70 mb-6 max-w-lg">
-              A practical guide to monetising your video production skills. Learn how to find clients, price your work, and build a sustainable creative business.
+              Browse our collection of eBooks, videos, photos, and film scripts — tools to help you grow as a creative professional.
             </p>
-            <a href={EBOOK_URL} target="_blank" rel="noopener noreferrer">
+            <Link to="/shop">
               <Button size="lg" className="bg-secondary text-secondary-foreground hover:bg-secondary/90 hover:scale-105 transition-smooth">
-                Get Your Copy
+                Visit Shop
                 <ArrowRight className="ml-2" />
               </Button>
-            </a>
+            </Link>
           </div>
         </div>
       </div>

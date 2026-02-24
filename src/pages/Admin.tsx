@@ -22,6 +22,7 @@ import { Sparkles, ArrowRight, FolderKanban, DollarSign, Plus } from "lucide-rea
 import NewRequisitionButton from "@/components/admin/NewRequisitionButton";
 import TasksPanel from "@/components/admin/TasksPanel";
 import TasksManagement from "@/components/admin/tasks/TasksManagement";
+import ProductsManagement from "@/components/admin/ProductsManagement";
 import MobileBottomNav from "@/components/admin/MobileBottomNav";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -318,6 +319,7 @@ const Admin = () => {
         <Route path="partners" element={<PartnersManagement />} />
         <Route path="leads" element={<LeadsManagement />} />
         <Route path="analytics" element={<AnalyticsDashboard />} />
+        <Route path="products" element={<ProductsManagement />} />
         <Route path="ai-assistant" element={<AIAssistantPanel />} />
         <Route path="users" element={<UserManagement />} />
         <Route path="settings" element={<AdminSettings />} />

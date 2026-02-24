@@ -13,6 +13,7 @@ import {
   UserCheck,
   ClipboardList,
   FileText as FileTextIcon,
+  ShoppingBag,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,6 +35,7 @@ const allMenuItems = [
   { icon: FileText, label: "Blog Posts", path: "/admin/blogs", section: "blogs" },
   { icon: Building2, label: "Partner Brands", path: "/admin/partners", section: "partners" },
   { icon: Users, label: "Leads", path: "/admin/leads", section: "leads" },
+  { icon: ShoppingBag, label: "Products", path: "/admin/products", section: "partners" },
   { icon: BarChart3, label: "Analytics", path: "/admin/analytics", section: "analytics" },
   { icon: Sparkles, label: "AI Assistant", path: "/admin/ai-assistant", section: "ai-assistant" },
   { icon: Users, label: "Users", path: "/admin/users", section: "users" },
