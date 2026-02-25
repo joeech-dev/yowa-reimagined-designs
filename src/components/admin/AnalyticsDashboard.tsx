@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, TrendingUp, TrendingDown, Users, Eye, Clock, BarChart3, Globe, Monitor, Smartphone, Tablet, Facebook, Instagram, Linkedin, Twitter, Youtube, Share2, MessageCircle } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Sparkles, TrendingUp, TrendingDown, Users, Eye, Clock, BarChart3, Globe, Monitor, Smartphone, Tablet, Facebook, Instagram, Linkedin, Twitter, Youtube, Share2, MessageCircle, FileText } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from "recharts";
 import { useGA4Analytics } from "@/hooks/useGA4Analytics";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -69,7 +70,7 @@ const AnalyticsDashboard = () => {
     );
   }
 
-  const { overview, trafficByCountry, trafficByDevice, trafficByBrowser, dailyPageViews, trafficBySource } = data;
+  const { overview, trafficByCountry, trafficByDevice, trafficByBrowser, dailyPageViews, trafficBySource, topPages } = data;
 
   const SOCIAL_PLATFORMS = [
     { key: "facebook", label: "Facebook", icon: Facebook, color: "hsl(220, 46%, 48%)" },
@@ -156,6 +157,42 @@ const AnalyticsDashboard = () => {
               <Line type="monotone" dataKey="users" stroke="hsl(46, 93%, 56%)" strokeWidth={2} name="Users" dot={false} />
             </LineChart>
           </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
+      {/* Top Pages */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><FileText className="h-5 w-5" /> Top Pages by Traffic</CardTitle>
+          <CardDescription>Which pages drive the most engagement (last 30 days)</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Page</TableHead>
+                <TableHead className="text-right">Views</TableHead>
+                <TableHead className="text-right">Users</TableHead>
+                <TableHead className="text-right">Engaged</TableHead>
+                <TableHead className="text-right">Bounce</TableHead>
+                <TableHead className="text-right">Avg Duration</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {topPages.map((page, i) => (
+                <TableRow key={i}>
+                  <TableCell className="font-medium max-w-[200px] truncate" title={page.pagePath}>
+                    {page.pagePath}
+                  </TableCell>
+                  <TableCell className="text-right">{page.pageViews.toLocaleString()}</TableCell>
+                  <TableCell className="text-right">{page.users.toLocaleString()}</TableCell>
+                  <TableCell className="text-right">{page.engagedSessions.toLocaleString()}</TableCell>
+                  <TableCell className="text-right">{(page.bounceRate * 100).toFixed(1)}%</TableCell>
+                  <TableCell className="text-right">{Math.round(page.avgSessionDuration)}s</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
 

@@ -32,6 +32,15 @@ interface GA4SourceRow {
   users: number;
 }
 
+export interface GA4PageRow {
+  pagePath: string;
+  pageViews: number;
+  users: number;
+  avgSessionDuration: number;
+  bounceRate: number;
+  engagedSessions: number;
+}
+
 export interface GA4Data {
   overview: GA4Overview;
   trafficByCountry: GA4DimensionRow[];
@@ -39,6 +48,7 @@ export interface GA4Data {
   trafficByBrowser: GA4DimensionRow[];
   dailyPageViews: GA4DailyRow[];
   trafficBySource: GA4SourceRow[];
+  topPages: GA4PageRow[];
 }
 
 function parseOverview(report: any): GA4Overview {
@@ -90,6 +100,17 @@ function parseSourceRows(report: any): GA4SourceRow[] {
   }));
 }
 
+function parsePageRows(report: any): GA4PageRow[] {
+  return (report?.rows || []).map((row: any) => ({
+    pagePath: row.dimensionValues?.[0]?.value || "/",
+    pageViews: parseInt(row.metricValues?.[0]?.value || "0"),
+    users: parseInt(row.metricValues?.[1]?.value || "0"),
+    avgSessionDuration: parseFloat(row.metricValues?.[2]?.value || "0"),
+    bounceRate: parseFloat(row.metricValues?.[3]?.value || "0"),
+    engagedSessions: parseInt(row.metricValues?.[4]?.value || "0"),
+  }));
+}
+
 export function useGA4Analytics() {
   return useQuery<GA4Data>({
     queryKey: ["ga4-analytics"],
@@ -105,9 +126,10 @@ export function useGA4Analytics() {
         trafficByBrowser: parseDimensionRows(data.trafficByBrowser),
         dailyPageViews: parseDailyRows(data.pageViews),
         trafficBySource: parseSourceRows(data.trafficBySource),
+        topPages: parsePageRows(data.topPages),
       };
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    refetchInterval: 10 * 60 * 1000, // 10 minutes
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: 10 * 60 * 1000,
   });
 }
