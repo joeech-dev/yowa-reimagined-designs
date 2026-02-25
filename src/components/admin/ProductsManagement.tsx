@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Pencil, Trash2, BookOpen, Video, Camera, FileText, Package } from "lucide-react";
+import { Plus, Pencil, Trash2, BookOpen, Video, Camera, FileText, Package, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 
 interface Product {
@@ -58,6 +58,8 @@ const ProductsManagement = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchProducts = async () => {
     const { data, error } = await supabase
@@ -94,6 +96,47 @@ const ProductsManagement = () => {
       display_order: p.display_order,
     });
     setDialogOpen(true);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be under 5MB");
+      return;
+    }
+
+    setUploading(true);
+    const ext = file.name.split(".").pop();
+    const fileName = `${crypto.randomUUID()}.${ext}`;
+
+    const { error } = await supabase.storage
+      .from("product-images")
+      .upload(fileName, file, { cacheControl: "3600", upsert: false });
+
+    if (error) {
+      toast.error("Upload failed: " + error.message);
+      setUploading(false);
+      return;
+    }
+
+    const { data: urlData } = supabase.storage
+      .from("product-images")
+      .getPublicUrl(fileName);
+
+    setForm(prev => ({ ...prev, image_url: urlData.publicUrl }));
+    toast.success("Image uploaded");
+    setUploading(false);
+  };
+
+  const removeImage = () => {
+    setForm(prev => ({ ...prev, image_url: "" }));
   };
 
   const handleSave = async () => {
@@ -152,6 +195,7 @@ const ProductsManagement = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Type</TableHead>
+                <TableHead>Image</TableHead>
                 <TableHead>Title</TableHead>
                 <TableHead>Price</TableHead>
                 <TableHead>Status</TableHead>
@@ -165,6 +209,15 @@ const ProductsManagement = () => {
                 return (
                   <TableRow key={p.id}>
                     <TableCell><Icon className="h-5 w-5 text-muted-foreground" /></TableCell>
+                    <TableCell>
+                      {p.image_url ? (
+                        <img src={p.image_url} alt={p.title} className="h-10 w-10 rounded object-cover" />
+                      ) : (
+                        <div className="h-10 w-10 rounded bg-muted flex items-center justify-center">
+                          <Icon className="h-4 w-4 text-muted-foreground/40" />
+                        </div>
+                      )}
+                    </TableCell>
                     <TableCell className="font-medium">{p.title}</TableCell>
                     <TableCell>{p.price ? `${p.currency} ${p.price}` : "—"}</TableCell>
                     <TableCell>
@@ -181,7 +234,7 @@ const ProductsManagement = () => {
                 );
               })}
               {products.length === 0 && (
-                <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">No products yet. Add your first product above.</TableCell></TableRow>
+                <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">No products yet. Add your first product above.</TableCell></TableRow>
               )}
             </TableBody>
           </Table>
@@ -219,13 +272,49 @@ const ProductsManagement = () => {
                 <Input type="number" placeholder="Leave empty if free" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} />
               </div>
             </div>
+
+            {/* Image Upload */}
+            <div>
+              <Label>Product Image</Label>
+              {form.image_url ? (
+                <div className="relative mt-2 inline-block">
+                  <img src={form.image_url} alt="Product" className="h-32 w-auto rounded-lg object-cover border" />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
+                    onClick={removeImage}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="mt-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageUpload}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="w-full"
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    {uploading ? "Uploading..." : "Upload Image"}
+                  </Button>
+                </div>
+              )}
+            </div>
+
             <div>
               <Label>Purchase / Order URL</Label>
               <Input placeholder="https://..." value={form.purchase_url} onChange={e => setForm({ ...form, purchase_url: e.target.value })} />
-            </div>
-            <div>
-              <Label>Image URL (optional)</Label>
-              <Input placeholder="https://..." value={form.image_url} onChange={e => setForm({ ...form, image_url: e.target.value })} />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -237,7 +326,7 @@ const ProductsManagement = () => {
                 <Label>Active</Label>
               </div>
             </div>
-            <Button onClick={handleSave} className="w-full">{editingId ? "Update Product" : "Create Product"}</Button>
+            <Button onClick={handleSave} className="w-full" disabled={uploading}>{editingId ? "Update Product" : "Create Product"}</Button>
           </div>
         </DialogContent>
       </Dialog>

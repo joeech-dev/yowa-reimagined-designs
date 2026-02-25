@@ -1,3 +1,4 @@
+import { useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
@@ -6,6 +7,7 @@ import SEO from "@/components/SEO";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import ProjectDetailModal from "@/components/ProjectDetailModal";
 
 interface PortfolioProject {
   id: string;
@@ -19,11 +21,20 @@ interface PortfolioProject {
   is_active: boolean | null;
 }
 
+const getThumbUrl = (url: string) => {
+  const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?]+)/);
+  if (match) return `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
+  return null;
+};
+
 const Portfolio = () => {
+  const [selectedProject, setSelectedProject] = useState<PortfolioProject | null>(null);
+  const [triggerRect, setTriggerRect] = useState<DOMRect | null>(null);
+  const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ["public-portfolio-projects"],
     queryFn: async () => {
-      // Fetch from both portfolio_projects and projects tables
       const [portfolioRes, projectsRes] = await Promise.all([
         supabase
           .from("portfolio_projects")
@@ -38,8 +49,6 @@ const Portfolio = () => {
       ]);
 
       const portfolioItems: PortfolioProject[] = (portfolioRes.data || []);
-
-      // Map projects table items to same shape, avoiding duplicates by title
       const portfolioTitles = new Set(portfolioItems.map(p => p.title.toLowerCase()));
       const projectItems: PortfolioProject[] = (projectsRes.data || [])
         .filter(p => p.video_url && !portfolioTitles.has(p.title.toLowerCase()))
@@ -58,6 +67,12 @@ const Portfolio = () => {
       return [...portfolioItems, ...projectItems];
     },
   });
+
+  const handleOpenProject = (project: PortfolioProject) => {
+    const el = cardRefs.current[project.id];
+    setTriggerRect(el ? el.getBoundingClientRect() : null);
+    setSelectedProject(project);
+  };
 
   return (
     <div className="min-h-screen">
@@ -101,51 +116,61 @@ const Portfolio = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {projects.map((project) => (
-                <Card
-                  key={project.id}
-                  className="group overflow-hidden border-border hover:shadow-warm transition-smooth"
-                >
-                  <div className="relative aspect-video overflow-hidden bg-muted">
-                    <iframe
-                      src={(() => {
-                        let url = project.video_url;
-                        // Convert watch URLs to embed URLs
-                        const watchMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?]+)/);
-                        if (watchMatch) {
-                          url = `https://www.youtube.com/embed/${watchMatch[1]}`;
-                        }
-                        url = url.replace('www.youtube.com/embed', 'www.youtube-nocookie.com/embed');
-                        url = url.replace('youtube.com/embed', 'www.youtube-nocookie.com/embed');
-                        const separator = url.includes('?') ? '&' : '?';
-                        return `${url}${separator}modestbranding=1&showinfo=0&rel=0&iv_load_policy=3&controls=1&fs=1`;
-                      })()}
-                      title={project.title}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      loading="lazy"
-                      className="w-full h-full absolute inset-0"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <Badge variant="secondary" className="mb-3">
-                      {project.category}
-                    </Badge>
-                    <h3 className="font-display font-semibold text-xl mb-2 group-hover:text-primary transition-smooth">
-                      {project.title}
-                    </h3>
-                    {project.description && (
-                      <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
-                        {project.description}
-                      </p>
-                    )}
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <span>{project.client || ""}</span>
-                      {project.year && <span>{project.year}</span>}
+              {projects.map((project) => {
+                const thumb = getThumbUrl(project.video_url);
+                return (
+                  <Card
+                    key={project.id}
+                    ref={(el) => { cardRefs.current[project.id] = el; }}
+                    className="group overflow-hidden border-border hover:shadow-warm transition-smooth cursor-pointer"
+                    onClick={() => handleOpenProject(project)}
+                  >
+                    <div className="relative aspect-video overflow-hidden bg-muted">
+                      {thumb ? (
+                        <>
+                          <img
+                            src={thumb}
+                            alt={project.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            loading="lazy"
+                          />
+                          {/* Play overlay */}
+                          <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div className="w-16 h-16 rounded-full bg-primary/90 flex items-center justify-center shadow-lg">
+                              <svg className="w-7 h-7 text-primary-foreground ml-1" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z" />
+                              </svg>
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <svg className="w-12 h-12 text-muted-foreground/30" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                </Card>
-              ))}
+                    <div className="p-6">
+                      <Badge variant="secondary" className="mb-3">
+                        {project.category}
+                      </Badge>
+                      <h3 className="font-display font-semibold text-xl mb-2 group-hover:text-primary transition-smooth">
+                        {project.title}
+                      </h3>
+                      {project.description && (
+                        <p className="text-muted-foreground text-sm mb-4 leading-relaxed line-clamp-2">
+                          {project.description}
+                        </p>
+                      )}
+                      <div className="flex items-center justify-between text-sm text-muted-foreground">
+                        <span>{project.client || ""}</span>
+                        {project.year && <span>{project.year}</span>}
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
             </div>
           )}
         </div>
@@ -168,6 +193,15 @@ const Portfolio = () => {
       </section>
 
       <Footer />
+
+      {/* Project Detail Modal */}
+      {selectedProject && (
+        <ProjectDetailModal
+          project={selectedProject}
+          onClose={() => setSelectedProject(null)}
+          triggerRect={triggerRect}
+        />
+      )}
     </div>
   );
 };

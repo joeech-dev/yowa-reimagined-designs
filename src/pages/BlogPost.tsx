@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, ExternalLink, Calendar } from "lucide-react";
 import EbookPromo from "@/components/EbookPromo";
 import { useBlogBySlug } from "@/hooks/useBlogs";
+import BlogPostsList from "@/components/BlogPostsList";
  import ReactMarkdown from "react-markdown";
  import remarkGfm from "remark-gfm";
 
@@ -176,6 +177,9 @@ const BlogPost = () => {
 
             {/* eBook Promo */}
             <EbookPromo variant="compact" />
+
+            {/* More Blog Posts */}
+            <BlogPostsList currentSlug={slug} />
 
             {/* CTA */}
             <div className="mt-12 p-8 bg-primary/5 rounded-xl text-center">
