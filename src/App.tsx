@@ -13,7 +13,7 @@ import LeadGeneration from "./pages/LeadGeneration";
 import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
-import ContactFormWidget from "@/components/ContactFormWidget";
+import WhatsAppButton from "@/components/WhatsAppButton";
 import CookieConsent from "@/components/CookieConsent";
 import CookiePolicy from "./pages/CookiePolicy";
 import ContentPolicy from "./pages/ContentPolicy";
@@ -45,6 +45,7 @@ const App = () => (
           <Route path="/blogs" element={<Blogs />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/projects" element={<Portfolio />} />
+          <Route path="/projects/:projectId" element={<Portfolio />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/get-started" element={<LeadGeneration />} />
@@ -60,7 +61,7 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-        <ContactFormWidget />
+        <WhatsAppButton />
         <CookieConsent />
       </BrowserRouter>
     </TooltipProvider>

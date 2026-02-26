@@ -148,6 +148,18 @@ export const LeadCaptureForm = () => {
 
       if (error) throw error;
 
+      // Fire lead notification email (best-effort, no await blocking UX)
+      supabase.functions.invoke('notify-new-lead', {
+        body: {
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          industry_type: data.service,
+          geographic_location: data.geographic_location,
+          is_recruitment: isPosition,
+        },
+      }).catch(console.error);
+
       try {
         await supabase.functions.invoke('systeme-add-contact', {
           body: {

@@ -138,16 +138,18 @@ const BlogPost = () => {
                      blockquote: ({ children }) => (
                        <blockquote className="border-l-4 border-primary pl-4 italic my-4 text-muted-foreground">{children}</blockquote>
                      ),
-                      a: ({ href, children }) => (
-                        <a 
-                          href={href} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-primary underline underline-offset-4 decoration-primary/50 hover:decoration-primary font-medium transition-colors"
-                        >
-                          {children}
-                        </a>
-                      ),
+                       a: ({ href, children }) => {
+                         const isInternal = href && (href.startsWith('/') || href.startsWith('https://yowa.us') || href.startsWith('https://yowaa.lovable.app'));
+                         return (
+                           <a 
+                             href={href} 
+                             {...(!isInternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                             className="text-primary underline underline-offset-4 decoration-primary/50 hover:decoration-primary font-medium transition-colors"
+                           >
+                             {children}
+                           </a>
+                         );
+                       },
                       code: ({ children }) => (
                         <code className="bg-muted px-1.5 py-0.5 rounded text-sm">{children}</code>
                       ),
