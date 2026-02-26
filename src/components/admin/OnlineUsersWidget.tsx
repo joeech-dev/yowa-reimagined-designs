@@ -1,7 +1,7 @@
 import { usePresence } from "@/hooks/usePresence";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, Circle } from "lucide-react";
+import { Users, Circle, MapPin } from "lucide-react";
 
 const roleColors: Record<string, string> = {
   super_admin: "bg-destructive text-destructive-foreground",
@@ -41,9 +41,17 @@ const OnlineUsersWidget = () => {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate">{user.display_name || user.email}</p>
-                  <Badge variant="secondary" className={`text-[10px] px-1.5 py-0 ${roleColors[user.role || ""] || ""}`}>
-                    {user.role?.replace("_", " ") || "user"}
-                  </Badge>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <Badge variant="secondary" className={`text-[10px] px-1.5 py-0 ${roleColors[user.role || ""] || ""}`}>
+                      {user.role?.replace("_", " ") || "user"}
+                    </Badge>
+                    {(user as any).location && (
+                      <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
+                        <MapPin className="h-2.5 w-2.5" />
+                        {(user as any).location}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
