@@ -11,7 +11,7 @@ interface OnlineUser {
   location?: string | null;
 }
 
-/** Fetch approximate city/country from a free IP geolocation API (no key needed) */
+/** Fetch approximate city/country from ipapi.co (free, no key required) */
 const getIpLocation = async (): Promise<string | null> => {
   try {
     const res = await fetch("https://ipapi.co/json/", { signal: AbortSignal.timeout(4000) });
@@ -30,6 +30,7 @@ export const usePresence = () => {
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
+    let cachedLocation: string | null = null;
 
     const updatePresence = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -41,26 +42,25 @@ export const usePresence = () => {
         .eq("user_id", user.id)
         .maybeSingle();
 
-      const location = await getIpLocation();
+      // Fetch location once per session
+      if (!cachedLocation) {
+        cachedLocation = await getIpLocation();
+      }
 
-      await supabase.from("user_presence").upsert({
+      await (supabase.from("user_presence") as any).upsert({
         user_id: user.id,
         email: user.email,
         display_name: user.email?.split("@")[0] || "User",
         role: roleData?.role || "user",
         last_seen_at: new Date().toISOString(),
         is_online: true,
-        // Store location in the display_name field suffix isn't ideal; use a separate approach below
+        location: cachedLocation,
       }, { onConflict: "user_id" });
-
-      // Persist location in localStorage for the widget to read
-      if (location) localStorage.setItem(`yowa_location_${user.id}`, location);
     };
 
     const fetchOnlineUsers = async () => {
       const cutoff = new Date(Date.now() - 2 * 60 * 1000).toISOString();
-      const { data } = await supabase
-        .from("user_presence")
+      const { data } = await (supabase.from("user_presence") as any)
         .select("*")
         .gte("last_seen_at", cutoff)
         .eq("is_online", true);

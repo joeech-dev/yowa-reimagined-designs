@@ -1335,6 +1335,7 @@ export type Database = {
           id: string
           is_online: boolean
           last_seen_at: string
+          location: string | null
           role: string | null
           user_id: string
         }
@@ -1344,6 +1345,7 @@ export type Database = {
           id?: string
           is_online?: boolean
           last_seen_at?: string
+          location?: string | null
           role?: string | null
           user_id: string
         }
@@ -1353,6 +1355,7 @@ export type Database = {
           id?: string
           is_online?: boolean
           last_seen_at?: string
+          location?: string | null
           role?: string | null
           user_id?: string
         }
