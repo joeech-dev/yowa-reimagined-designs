@@ -8,7 +8,22 @@ interface OnlineUser {
   role: string | null;
   last_seen_at: string;
   is_online: boolean;
+  location?: string | null;
 }
+
+/** Fetch approximate city/country from a free IP geolocation API (no key needed) */
+const getIpLocation = async (): Promise<string | null> => {
+  try {
+    const res = await fetch("https://ipapi.co/json/", { signal: AbortSignal.timeout(4000) });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const city = data.city || "";
+    const country = data.country_name || "";
+    return [city, country].filter(Boolean).join(", ") || null;
+  } catch {
+    return null;
+  }
+};
 
 export const usePresence = () => {
   const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([]);
@@ -20,14 +35,14 @@ export const usePresence = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Get user role
       const { data: roleData } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", user.id)
         .maybeSingle();
 
-      // Upsert presence
+      const location = await getIpLocation();
+
       await supabase.from("user_presence").upsert({
         user_id: user.id,
         email: user.email,
@@ -35,11 +50,14 @@ export const usePresence = () => {
         role: roleData?.role || "user",
         last_seen_at: new Date().toISOString(),
         is_online: true,
+        // Store location in the display_name field suffix isn't ideal; use a separate approach below
       }, { onConflict: "user_id" });
+
+      // Persist location in localStorage for the widget to read
+      if (location) localStorage.setItem(`yowa_location_${user.id}`, location);
     };
 
     const fetchOnlineUsers = async () => {
-      // Consider users online if seen in last 2 minutes
       const cutoff = new Date(Date.now() - 2 * 60 * 1000).toISOString();
       const { data } = await supabase
         .from("user_presence")
@@ -49,17 +67,14 @@ export const usePresence = () => {
       if (data) setOnlineUsers(data as OnlineUser[]);
     };
 
-    // Initial update
     updatePresence();
     fetchOnlineUsers();
 
-    // Heartbeat every 30s
     interval = setInterval(() => {
       updatePresence();
       fetchOnlineUsers();
     }, 30000);
 
-    // Realtime subscription
     const channel = supabase
       .channel("user-presence")
       .on("postgres_changes", { event: "*", schema: "public", table: "user_presence" }, () => {
@@ -67,7 +82,6 @@ export const usePresence = () => {
       })
       .subscribe();
 
-    // Set offline on unload
     const handleUnload = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {

@@ -1,5 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -19,6 +20,7 @@ interface PortfolioProject {
   year: string | null;
   display_order: number | null;
   is_active: boolean | null;
+  slug?: string;
 }
 
 const getThumbUrl = (url: string) => {
@@ -27,7 +29,12 @@ const getThumbUrl = (url: string) => {
   return null;
 };
 
+const slugify = (title: string, id: string) =>
+  title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + "-" + id.slice(0, 8);
+
 const Portfolio = () => {
+  const { projectId } = useParams<{ projectId?: string }>();
+  const navigate = useNavigate();
   const [selectedProject, setSelectedProject] = useState<PortfolioProject | null>(null);
   const [triggerRect, setTriggerRect] = useState<DOMRect | null>(null);
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -68,10 +75,25 @@ const Portfolio = () => {
     },
   });
 
+  // Open project from URL param once data loaded
+  useEffect(() => {
+    if (!projectId || projects.length === 0) return;
+    const found = projects.find(p => slugify(p.title, p.id) === projectId || p.id === projectId);
+    if (found) {
+      setSelectedProject(found);
+    }
+  }, [projectId, projects]);
+
   const handleOpenProject = (project: PortfolioProject) => {
     const el = cardRefs.current[project.id];
     setTriggerRect(el ? el.getBoundingClientRect() : null);
     setSelectedProject(project);
+    navigate(`/projects/${slugify(project.title, project.id)}`, { replace: false });
+  };
+
+  const handleCloseProject = () => {
+    setSelectedProject(null);
+    navigate("/projects", { replace: false });
   };
 
   return (
@@ -118,6 +140,7 @@ const Portfolio = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {projects.map((project) => {
                 const thumb = getThumbUrl(project.video_url);
+                const projectSlug = slugify(project.title, project.id);
                 return (
                   <Card
                     key={project.id}
@@ -167,6 +190,12 @@ const Portfolio = () => {
                         <span>{project.client || ""}</span>
                         {project.year && <span>{project.year}</span>}
                       </div>
+                      {/* Shareable link hint */}
+                      <div className="mt-3 pt-3 border-t border-border">
+                        <p className="text-xs text-muted-foreground/60 font-mono truncate">
+                          /projects/{projectSlug}
+                        </p>
+                      </div>
                     </div>
                   </Card>
                 );
@@ -198,7 +227,7 @@ const Portfolio = () => {
       {selectedProject && (
         <ProjectDetailModal
           project={selectedProject}
-          onClose={() => setSelectedProject(null)}
+          onClose={handleCloseProject}
           triggerRect={triggerRect}
         />
       )}
