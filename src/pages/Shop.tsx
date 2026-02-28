@@ -115,17 +115,13 @@ const Shop = () => {
                         </p>
                       )}
 
-                      {product.purchase_url ? (
-                        <Button
-                          className="w-full hover:scale-105 transition-smooth"
-                          onClick={() => navigate(`/ordernow?product=${product.id}`)}
-                        >
-                          Get This
-                          <ArrowRight className="ml-2 h-4 w-4" />
-                        </Button>
-                      ) : (
-                        <Button disabled className="w-full">Coming Soon</Button>
-                      )}
+                      <Button
+                        className="w-full hover:scale-105 transition-smooth"
+                        onClick={() => navigate(`/ordernow?product=${product.id}`)}
+                      >
+                        Get This
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
                     </div>
                   </Card>
                 );
