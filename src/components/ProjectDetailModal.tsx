@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { X, User, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import YouTubeSubscribePrompt from "@/components/YouTubeSubscribePrompt";
 
 interface PortfolioProject {
   id: string;
@@ -110,6 +111,7 @@ const ProjectDetailModal = ({ project, onClose, triggerRect }: ProjectDetailModa
               allowFullScreen
               className="w-full h-full absolute inset-0"
             />
+            <YouTubeSubscribePrompt delaySeconds={15} />
           </div>
         </div>
 
