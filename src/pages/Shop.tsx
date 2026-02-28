@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ArrowRight, BookOpen, Video, Camera, FileText, Package, ShoppingBag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
@@ -31,7 +31,6 @@ const typeConfig: Record<string, { icon: typeof BookOpen; label: string; color: 
 const Shop = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetch = async () => {
@@ -115,13 +114,12 @@ const Shop = () => {
                         </p>
                       )}
 
-                      <Button
-                        className="w-full hover:scale-105 transition-smooth"
-                        onClick={() => navigate(`/ordernow?product=${product.id}`)}
-                      >
-                        Get This
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
+                      <Link to={`/ordernow?product=${product.id}`} className="w-full">
+                        <Button className="w-full hover:scale-105 transition-smooth">
+                          Get This
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </Link>
                     </div>
                   </Card>
                 );
