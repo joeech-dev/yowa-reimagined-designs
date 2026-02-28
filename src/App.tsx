@@ -21,6 +21,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import SupportingTeam from "./pages/SupportingTeam";
 import Shop from "./pages/Shop";
+import OrderNow from "./pages/OrderNow";
 import useGoogleAnalytics from "@/hooks/useGoogleAnalytics";
 import SeoRedirects from "@/components/SeoRedirects";
 
@@ -58,6 +59,7 @@ const App = () => (
           <Route path="/team" element={<SupportingTeam />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/ebook" element={<Shop />} />
+          <Route path="/ordernow" element={<OrderNow />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
