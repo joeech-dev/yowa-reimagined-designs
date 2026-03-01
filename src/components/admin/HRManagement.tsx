@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,9 +9,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Users, FileText, IdCard, Eye, Send, Calendar, Clock, DollarSign, Plus, CalendarDays, UserCheck } from "lucide-react";
+import { Users, FileText, IdCard, Eye, Send, Calendar, Clock, DollarSign, Plus, CalendarDays, UserCheck, Camera } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 // ─── Types ───────────────────────────────────────────────
 interface Applicant {
@@ -245,7 +246,11 @@ const TeamDirectoryTab = () => {
   const [loading, setLoading] = useState(true);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [showAddDialog, setShowAddDialog] = useState(false);
-  const [newMember, setNewMember] = useState({ full_name: "", role: "", category: "employee" as const, linkedin_url: "" });
+  const [editMember, setEditMember] = useState<TeamMember | null>(null);
+  const [newMember, setNewMember] = useState({ full_name: "", role: "", category: "employee" as const, linkedin_url: "", avatar_url: "" });
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const editFileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { fetchMembers(); }, []);
 
@@ -256,11 +261,36 @@ const TeamDirectoryTab = () => {
     setLoading(false);
   };
 
+  const uploadAvatar = async (file: File, memberId?: string): Promise<string | null> => {
+    if (file.size > 2 * 1024 * 1024) { toast.error("Image must be under 2MB"); return null; }
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `team/${memberId || "new"}-${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
+      if (error) throw error;
+      const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(path);
+      return publicUrl;
+    } catch (e: any) {
+      toast.error(`Upload failed: ${e.message}`);
+      return null;
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const addMember = async () => {
     if (!newMember.full_name || !newMember.role) { toast.error("Name and role required"); return; }
-    const { error } = await supabase.from("team_members").insert([{ full_name: newMember.full_name, role: newMember.role, category: newMember.category, linkedin_url: newMember.linkedin_url || null }]);
+    const { error } = await supabase.from("team_members").insert([{ full_name: newMember.full_name, role: newMember.role, category: newMember.category, linkedin_url: newMember.linkedin_url || null, avatar_url: newMember.avatar_url || null }]);
     if (error) toast.error("Failed to add team member");
-    else { toast.success("Team member added"); setShowAddDialog(false); setNewMember({ full_name: "", role: "", category: "employee", linkedin_url: "" }); fetchMembers(); }
+    else { toast.success("Team member added"); setShowAddDialog(false); setNewMember({ full_name: "", role: "", category: "employee", linkedin_url: "", avatar_url: "" }); fetchMembers(); }
+  };
+
+  const saveEditMember = async () => {
+    if (!editMember) return;
+    const { error } = await supabase.from("team_members").update({ full_name: editMember.full_name, role: editMember.role, category: editMember.category, linkedin_url: editMember.linkedin_url, avatar_url: editMember.avatar_url }).eq("id", editMember.id);
+    if (error) toast.error("Failed to update");
+    else { toast.success("Member updated"); setEditMember(null); fetchMembers(); }
   };
 
   const toggleActive = async (id: string, isActive: boolean) => {
@@ -271,6 +301,7 @@ const TeamDirectoryTab = () => {
 
   const filtered = members.filter(m => categoryFilter === "all" || m.category === categoryFilter);
   const counts = { employee: members.filter(m => m.category === "employee").length, freelancer: members.filter(m => m.category === "freelancer").length, trainee: members.filter(m => m.category === "trainee").length };
+  const getInitials = (name: string) => name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
 
   return (
     <div className="space-y-6">
@@ -301,15 +332,22 @@ const TeamDirectoryTab = () => {
         <CardContent>
           {loading ? <div className="text-center py-8 text-muted-foreground">Loading...</div> : (
             <Table>
-              <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Role</TableHead><TableHead>Category</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
+              <TableHeader><TableRow><TableHead>Photo</TableHead><TableHead>Name</TableHead><TableHead>Role</TableHead><TableHead>Category</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
               <TableBody>
                 {filtered.map(m => (
                   <TableRow key={m.id}>
+                    <TableCell>
+                      <Avatar className="h-9 w-9">
+                        <AvatarImage src={m.avatar_url || ""} alt={m.full_name} className="object-cover" />
+                        <AvatarFallback className="text-xs">{getInitials(m.full_name)}</AvatarFallback>
+                      </Avatar>
+                    </TableCell>
                     <TableCell className="font-medium">{m.full_name}</TableCell>
                     <TableCell>{m.role}</TableCell>
                     <TableCell><Badge variant="outline" className="capitalize">{m.category}</Badge></TableCell>
                     <TableCell><Badge variant={m.is_active ? "default" : "secondary"}>{m.is_active ? "Active" : "Inactive"}</Badge></TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right space-x-2">
+                      <Button variant="ghost" size="sm" onClick={() => setEditMember(m)}>Edit</Button>
                       <Button variant="ghost" size="sm" onClick={() => toggleActive(m.id, !!m.is_active)}>{m.is_active ? "Deactivate" : "Activate"}</Button>
                     </TableCell>
                   </TableRow>
@@ -320,10 +358,28 @@ const TeamDirectoryTab = () => {
         </CardContent>
       </Card>
 
+      {/* Add Member Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
         <DialogContent>
           <DialogHeader><DialogTitle>Add Team Member</DialogTitle></DialogHeader>
           <div className="space-y-4">
+            <div className="flex flex-col items-center gap-2">
+              <div className="relative cursor-pointer group" onClick={() => fileInputRef.current?.click()}>
+                <Avatar className="h-20 w-20 border-2 border-muted">
+                  <AvatarImage src={newMember.avatar_url} className="object-cover" />
+                  <AvatarFallback className="bg-primary/10">{newMember.full_name ? getInitials(newMember.full_name) : "?"}</AvatarFallback>
+                </Avatar>
+                <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Camera className="h-5 w-5 text-white" />
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">{uploading ? "Uploading..." : "Click to add photo"}</p>
+              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={async e => {
+                const f = e.target.files?.[0]; if (!f) return;
+                const url = await uploadAvatar(f);
+                if (url) setNewMember(p => ({ ...p, avatar_url: url }));
+              }} />
+            </div>
             <div><Label>Full Name</Label><Input value={newMember.full_name} onChange={e => setNewMember(p => ({ ...p, full_name: e.target.value }))} /></div>
             <div><Label>Role</Label><Input value={newMember.role} onChange={e => setNewMember(p => ({ ...p, role: e.target.value }))} placeholder="e.g. Video Editor" /></div>
             <div><Label>Category</Label>
@@ -333,8 +389,46 @@ const TeamDirectoryTab = () => {
               </Select>
             </div>
             <div><Label>LinkedIn URL (optional)</Label><Input value={newMember.linkedin_url} onChange={e => setNewMember(p => ({ ...p, linkedin_url: e.target.value }))} /></div>
-            <Button className="w-full" onClick={addMember}>Add Member</Button>
+            <Button className="w-full" onClick={addMember} disabled={uploading}>Add Member</Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Member Dialog */}
+      <Dialog open={!!editMember} onOpenChange={open => !open && setEditMember(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Edit Team Member</DialogTitle></DialogHeader>
+          {editMember && (
+            <div className="space-y-4">
+              <div className="flex flex-col items-center gap-2">
+                <div className="relative cursor-pointer group" onClick={() => editFileInputRef.current?.click()}>
+                  <Avatar className="h-20 w-20 border-2 border-muted">
+                    <AvatarImage src={editMember.avatar_url || ""} className="object-cover" />
+                    <AvatarFallback className="bg-primary/10">{getInitials(editMember.full_name)}</AvatarFallback>
+                  </Avatar>
+                  <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Camera className="h-5 w-5 text-white" />
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground">{uploading ? "Uploading..." : "Click to change photo"}</p>
+                <input ref={editFileInputRef} type="file" accept="image/*" className="hidden" onChange={async e => {
+                  const f = e.target.files?.[0]; if (!f) return;
+                  const url = await uploadAvatar(f, editMember.id);
+                  if (url) setEditMember(p => p ? { ...p, avatar_url: url } : null);
+                }} />
+              </div>
+              <div><Label>Full Name</Label><Input value={editMember.full_name} onChange={e => setEditMember(p => p ? { ...p, full_name: e.target.value } : null)} /></div>
+              <div><Label>Role</Label><Input value={editMember.role} onChange={e => setEditMember(p => p ? { ...p, role: e.target.value } : null)} /></div>
+              <div><Label>Category</Label>
+                <Select value={editMember.category} onValueChange={(v: any) => setEditMember(p => p ? { ...p, category: v } : null)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent><SelectItem value="employee">Employee</SelectItem><SelectItem value="freelancer">Freelancer</SelectItem><SelectItem value="trainee">Trainee</SelectItem></SelectContent>
+                </Select>
+              </div>
+              <div><Label>LinkedIn URL (optional)</Label><Input value={editMember.linkedin_url || ""} onChange={e => setEditMember(p => p ? { ...p, linkedin_url: e.target.value } : null)} /></div>
+              <Button className="w-full" onClick={saveEditMember} disabled={uploading}>Save Changes</Button>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>
