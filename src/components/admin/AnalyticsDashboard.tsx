@@ -70,7 +70,8 @@ const AnalyticsDashboard = () => {
     );
   }
 
-  const { overview, trafficByCountry, trafficByDevice, trafficByBrowser, dailyPageViews, trafficBySource, topPages } = data;
+  const { overview, trafficByCountry, trafficByDevice, trafficByBrowser, dailyPageViews, trafficBySource, topPages: rawTopPages } = data;
+  const topPages = rawTopPages.filter(p => !p.pagePath.startsWith("/admin") && !p.pagePath.startsWith("/auth"));
 
   const SOCIAL_PLATFORMS = [
     { key: "facebook", label: "Facebook", icon: Facebook, color: "hsl(220, 46%, 48%)" },

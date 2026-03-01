@@ -3,7 +3,7 @@ import { Youtube, X, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // Replace with your actual YouTube channel URL / ID
-const YOUTUBE_CHANNEL_URL = "https://www.youtube.com/@YowaInnovations?sub_confirmation=1";
+const YOUTUBE_CHANNEL_URL = "https://www.youtube.com/@yowa_inn?sub_confirmation=1";
 
 interface YouTubeSubscribePromptProps {
   /** Seconds after video starts before the prompt appears */
