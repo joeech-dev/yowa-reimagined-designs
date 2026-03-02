@@ -110,8 +110,12 @@ const OrderNow = () => {
 
       setSubmitted(true);
 
-      // Redirect to actual purchase URL after brief delay if available
-      if (product.purchase_url && product.purchase_url !== window.location.href) {
+      // Redirect to actual payment URL after brief delay — only if it's an external URL
+      const isExternalUrl = product.purchase_url &&
+        !product.purchase_url.includes("/ordernow") &&
+        (product.purchase_url.startsWith("http://") || product.purchase_url.startsWith("https://"));
+
+      if (isExternalUrl) {
         setTimeout(() => {
           window.location.href = product.purchase_url!;
         }, 3000);
