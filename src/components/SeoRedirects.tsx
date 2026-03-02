@@ -102,9 +102,21 @@ const SeoRedirects = () => {
       return;
     }
 
-    // /ordernow → /shop
-    if (path === "/ordernow") {
-      navigate("/shop", { replace: true });
+    // /ebook → /shop/ebooks
+    if (path === "/ebook") {
+      navigate("/shop/ebooks", { replace: true });
+      return;
+    }
+
+    // /videos → /shop/videos
+    if (path === "/videos") {
+      navigate("/shop/videos", { replace: true });
+      return;
+    }
+
+    // /photos → /shop/photos
+    if (path === "/photos") {
+      navigate("/shop/photos", { replace: true });
       return;
     }
   }, [location.pathname, navigate]);
