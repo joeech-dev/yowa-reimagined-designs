@@ -28,30 +28,35 @@ const typeConfig: Record<string, { icon: typeof BookOpen; label: string; color: 
   other: { icon: Package, label: "Product", color: "bg-muted text-muted-foreground" },
 };
 
-const Shop = () => {
+const Shop = ({ filter }: { filter?: string }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const categoryLabels: Record<string, string> = { ebook: "eBooks", video: "Videos", photo: "Photos" };
+  const categoryLabel = filter ? categoryLabels[filter] || "Products" : null;
+
   useEffect(() => {
-    const fetch = async () => {
-      const { data } = await supabase
+    const load = async () => {
+      let query = supabase
         .from("products")
         .select("id, title, description, price, currency, product_type, image_url, purchase_url")
         .eq("is_active", true)
         .order("display_order", { ascending: true });
+      if (filter) query = query.eq("product_type", filter);
+      const { data } = await query;
       setProducts(data || []);
       setLoading(false);
     };
-    fetch();
-  }, []);
+    load();
+  }, [filter]);
 
   return (
     <div className="min-h-screen">
       <SEO
-        title="Shop – Products & Resources | Yowa Innovations"
-        description="Browse our collection of creative resources including eBooks, videos, photos, and film scripts. Tools to help you grow as a creative professional."
-        url="https://yowa.us/shop"
+        title={categoryLabel ? `${categoryLabel} – Shop | Yowa Innovations` : "Shop – Products & Resources | Yowa Innovations"}
+        description={categoryLabel ? `Browse our ${categoryLabel} collection. Tools to help you grow as a creative professional.` : "Browse our collection of creative resources including eBooks, videos, photos, and film scripts."}
+        url={`https://yowa.us/${filter ? `shop/${filter}s` : "shop"}`}
       />
       <Navbar />
 
@@ -61,11 +66,13 @@ const Shop = () => {
             <div className="flex items-center justify-center gap-2 mb-4">
               <ShoppingBag className="h-6 w-6 text-primary" />
               <h1 className="font-display font-bold text-3xl md:text-4xl text-foreground">
-                Our Shop
-              </h1>
+                  {categoryLabel ? `Our ${categoryLabel}` : "Our Shop"}
+                </h1>
             </div>
             <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-              Explore our creative resources — from practical guides and video packs to photography collections and film scripts.
+              {categoryLabel
+                ? `Explore our ${categoryLabel.toLowerCase()} — practical tools to grow your creative career.`
+                : "Explore our creative resources — from practical guides and video packs to photography collections and film scripts."}
             </p>
           </div>
 
