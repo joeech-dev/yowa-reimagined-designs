@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Plus, Printer, Receipt, Trash2, Eye, FileText } from "lucide-react";
+import { Plus, Printer, Receipt, Trash2, Pencil, FileText } from "lucide-react";
 import { format } from "date-fns";
 import { useUserRole } from "@/hooks/useUserRole";
 import InvoiceTemplate from "./InvoiceTemplate";
@@ -48,6 +48,7 @@ const InvoicesManagement = ({ receiptMode }: { receiptMode?: boolean }) => {
   const { canEdit } = useUserRole();
   const canEditFinance = canEdit("finance");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [editInvoice, setEditInvoice] = useState<InvoiceRow | null>(null);
   const [previewInvoice, setPreviewInvoice] = useState<InvoiceRow | null>(null);
   const [previewType, setPreviewType] = useState<"invoice" | "receipt">("invoice");
   const printRef = useRef<HTMLDivElement>(null);
@@ -153,6 +154,34 @@ const InvoicesManagement = ({ receiptMode }: { receiptMode?: boolean }) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
       toast.success("Invoice deleted");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (inv: InvoiceRow) => {
+      const { subtotal, taxAmount, total } = calculateTotals(inv.items, inv.tax_rate);
+      const { error } = await supabase.from("invoices").update({
+        invoice_number: inv.invoice_number,
+        invoice_date: inv.invoice_date,
+        client_name: inv.client_name,
+        client_address: inv.client_address || null,
+        client_phone: inv.client_phone || null,
+        client_email: inv.client_email || null,
+        items: inv.items as any,
+        subtotal,
+        tax_rate: inv.tax_rate,
+        tax_amount: taxAmount,
+        total,
+        notes: inv.notes || null,
+        project_id: inv.project_id || null,
+      }).eq("id", inv.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["invoices"] });
+      toast.success("Invoice updated");
+      setEditInvoice(null);
     },
     onError: (e) => toast.error(e.message),
   });
@@ -362,6 +391,11 @@ const InvoicesManagement = ({ receiptMode }: { receiptMode?: boolean }) => {
                             <Badge variant="outline" className="text-xs">Pay</Badge>
                           </Button>
                         )}
+                        {canEditFinance && inv.status !== "paid" && (
+                          <Button variant="ghost" size="sm" title="Edit" onClick={() => setEditInvoice({ ...inv })}>
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        )}
                         {canEditFinance && (
                           <Button variant="ghost" size="sm" title="Delete" onClick={() => deleteMutation.mutate(inv.id)}>
                             <Trash2 className="h-4 w-4 text-destructive" />
@@ -376,6 +410,58 @@ const InvoicesManagement = ({ receiptMode }: { receiptMode?: boolean }) => {
           )}
         </CardContent>
       </Card>
+
+      {/* Edit Dialog */}
+      <Dialog open={!!editInvoice} onOpenChange={(open) => !open && setEditInvoice(null)}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Edit Invoice</DialogTitle></DialogHeader>
+          {editInvoice && (
+            <form onSubmit={(e) => { e.preventDefault(); updateMutation.mutate(editInvoice); }} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div><Label>Invoice Number</Label><Input value={editInvoice.invoice_number} onChange={(e) => setEditInvoice({ ...editInvoice, invoice_number: e.target.value })} required /></div>
+                <div><Label>Date</Label><Input type="date" value={editInvoice.invoice_date} onChange={(e) => setEditInvoice({ ...editInvoice, invoice_date: e.target.value })} required /></div>
+              </div>
+              <div><Label>Invoice Title</Label><Input value={editInvoice.notes || ""} onChange={(e) => setEditInvoice({ ...editInvoice, notes: e.target.value })} placeholder="e.g. Transcription of documentary interviews" /></div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><Label>Client Name</Label><Input value={editInvoice.client_name} onChange={(e) => setEditInvoice({ ...editInvoice, client_name: e.target.value })} required /></div>
+                <div><Label>Client Email</Label><Input type="email" value={editInvoice.client_email || ""} onChange={(e) => setEditInvoice({ ...editInvoice, client_email: e.target.value })} /></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><Label>Client Address</Label><Textarea value={editInvoice.client_address || ""} onChange={(e) => setEditInvoice({ ...editInvoice, client_address: e.target.value })} rows={2} /></div>
+                <div><Label>Client Phone</Label><Input value={editInvoice.client_phone || ""} onChange={(e) => setEditInvoice({ ...editInvoice, client_phone: e.target.value })} /></div>
+              </div>
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <Label>Line Items</Label>
+                  <Button type="button" variant="outline" size="sm" onClick={() => setEditInvoice({ ...editInvoice, items: [...editInvoice.items, { ...defaultItem }] })}>
+                    <Plus className="h-3 w-3 mr-1" /> Add Item
+                  </Button>
+                </div>
+                {editInvoice.items.map((item, i) => (
+                  <div key={i} className="grid grid-cols-12 gap-2 mb-2">
+                    <Input className="col-span-5" placeholder="Service description" value={item.description} onChange={(e) => { const items = [...editInvoice.items]; items[i] = { ...items[i], description: e.target.value }; setEditInvoice({ ...editInvoice, items }); }} required />
+                    <Input className="col-span-2" placeholder="Qty" value={item.quantity} onChange={(e) => { const items = [...editInvoice.items]; items[i] = { ...items[i], quantity: e.target.value, total: (parseFloat(e.target.value) || 1) * Number(items[i].unit_cost) }; setEditInvoice({ ...editInvoice, items }); }} required />
+                    <Input className="col-span-2" type="number" placeholder="Unit Cost" value={item.unit_cost || ""} onChange={(e) => { const items = [...editInvoice.items]; items[i] = { ...items[i], unit_cost: parseFloat(e.target.value) || 0, total: (parseFloat(String(items[i].quantity)) || 1) * (parseFloat(e.target.value) || 0) }; setEditInvoice({ ...editInvoice, items }); }} required />
+                    <div className="col-span-2 flex items-center text-sm font-medium">{Number(item.total).toLocaleString()}/=</div>
+                    <Button type="button" variant="ghost" size="sm" onClick={() => setEditInvoice({ ...editInvoice, items: editInvoice.items.filter((_, idx) => idx !== i) })} className="col-span-1" disabled={editInvoice.items.length <= 1}><Trash2 className="h-3 w-3" /></Button>
+                  </div>
+                ))}
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><Label>Tax Rate (%)</Label><Input type="number" step="0.01" value={editInvoice.tax_rate} onChange={(e) => setEditInvoice({ ...editInvoice, tax_rate: parseFloat(e.target.value) || 0 })} /></div>
+                <div className="flex items-end">
+                  <div className="text-sm space-y-1">
+                    <p>Subtotal: <strong>{calculateTotals(editInvoice.items, editInvoice.tax_rate).subtotal.toLocaleString()}/=</strong></p>
+                    <p>Tax: <strong>-{calculateTotals(editInvoice.items, editInvoice.tax_rate).taxAmount.toLocaleString()}/=</strong></p>
+                    <p className="text-base">Total: <strong className="text-primary">{calculateTotals(editInvoice.items, editInvoice.tax_rate).total.toLocaleString()}/=</strong></p>
+                  </div>
+                </div>
+              </div>
+              <Button type="submit" className="w-full" disabled={updateMutation.isPending}>{updateMutation.isPending ? "Saving..." : "Save Changes"}</Button>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Preview Dialog */}
       <Dialog open={!!previewInvoice} onOpenChange={(open) => !open && setPreviewInvoice(null)}>

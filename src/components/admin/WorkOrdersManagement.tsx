@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Plus, Printer, Trash2, FileText } from "lucide-react";
+import { Plus, Printer, Trash2, FileText, Pencil } from "lucide-react";
 import { format } from "date-fns";
 import { useUserRole } from "@/hooks/useUserRole";
 import WorkOrderTemplate from "./WorkOrderTemplate";
@@ -45,6 +45,7 @@ const WorkOrdersManagement = () => {
   const { canEdit } = useUserRole();
   const canEditFinance = canEdit("finance");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [editWorkOrder, setEditWorkOrder] = useState<WorkOrderRow | null>(null);
   const [previewWorkOrder, setPreviewWorkOrder] = useState<WorkOrderRow | null>(null);
   const printRef = useRef<HTMLDivElement>(null);
 
@@ -153,6 +154,33 @@ const WorkOrdersManagement = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["work_orders"] });
       toast.success("Work Order deleted");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (w: WorkOrderRow) => {
+      const { subtotal, taxAmount, total } = calculateTotals(w.items, w.tax_rate);
+      const { error } = await supabase.from("work_orders").update({
+        work_order_number: w.work_order_number,
+        work_order_date: w.work_order_date,
+        client_name: w.client_name,
+        client_address: w.client_address || null,
+        client_phone: w.client_phone || null,
+        client_email: w.client_email || null,
+        items: w.items as any,
+        subtotal, tax_rate: w.tax_rate, tax_amount: taxAmount, total,
+        notes: w.notes || null,
+        project_id: w.project_id || null,
+        requested_by: w.requested_by || null,
+        provided_by: w.provided_by || null,
+      }).eq("id", w.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["work_orders"] });
+      toast.success("Work Order updated");
+      setEditWorkOrder(null);
     },
     onError: (e) => toast.error(e.message),
   });
@@ -267,6 +295,7 @@ const WorkOrdersManagement = () => {
                     <TableCell>
                       <div className="flex gap-1">
                         <Button variant="ghost" size="sm" title="View" onClick={() => setPreviewWorkOrder(w)}><FileText className="h-4 w-4" /></Button>
+                        {canEditFinance && <Button variant="ghost" size="sm" title="Edit" onClick={() => setEditWorkOrder({ ...w })}><Pencil className="h-4 w-4" /></Button>}
                         {canEditFinance && <Button variant="ghost" size="sm" title="Delete" onClick={() => deleteMutation.mutate(w.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>}
                       </div>
                     </TableCell>
@@ -277,6 +306,51 @@ const WorkOrdersManagement = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Edit Dialog */}
+      <Dialog open={!!editWorkOrder} onOpenChange={(open) => !open && setEditWorkOrder(null)}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Edit Work Order</DialogTitle></DialogHeader>
+          {editWorkOrder && (
+            <form onSubmit={(e) => { e.preventDefault(); updateMutation.mutate(editWorkOrder); }} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div><Label>Work Order Number</Label><Input value={editWorkOrder.work_order_number} onChange={(e) => setEditWorkOrder({ ...editWorkOrder, work_order_number: e.target.value })} required /></div>
+                <div><Label>Date</Label><Input type="date" value={editWorkOrder.work_order_date} onChange={(e) => setEditWorkOrder({ ...editWorkOrder, work_order_date: e.target.value })} required /></div>
+              </div>
+              <div><Label>Title / Scope</Label><Input value={editWorkOrder.notes || ""} onChange={(e) => setEditWorkOrder({ ...editWorkOrder, notes: e.target.value })} /></div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><Label>Client Name</Label><Input value={editWorkOrder.client_name} onChange={(e) => setEditWorkOrder({ ...editWorkOrder, client_name: e.target.value })} required /></div>
+                <div><Label>Client Email</Label><Input type="email" value={editWorkOrder.client_email || ""} onChange={(e) => setEditWorkOrder({ ...editWorkOrder, client_email: e.target.value })} /></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><Label>Client Address</Label><Textarea value={editWorkOrder.client_address || ""} onChange={(e) => setEditWorkOrder({ ...editWorkOrder, client_address: e.target.value })} rows={2} /></div>
+                <div><Label>Client Phone</Label><Input value={editWorkOrder.client_phone || ""} onChange={(e) => setEditWorkOrder({ ...editWorkOrder, client_phone: e.target.value })} /></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><Label>Requested By</Label><Input value={editWorkOrder.requested_by || ""} onChange={(e) => setEditWorkOrder({ ...editWorkOrder, requested_by: e.target.value })} /></div>
+                <div><Label>Provided By</Label><Input value={editWorkOrder.provided_by || ""} onChange={(e) => setEditWorkOrder({ ...editWorkOrder, provided_by: e.target.value })} /></div>
+              </div>
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <Label>Tasks / Deliverables</Label>
+                  <Button type="button" variant="outline" size="sm" onClick={() => setEditWorkOrder({ ...editWorkOrder, items: [...editWorkOrder.items, { ...defaultItem }] })}><Plus className="h-3 w-3 mr-1" /> Add</Button>
+                </div>
+                {editWorkOrder.items.map((item, i) => (
+                  <div key={i} className="grid grid-cols-12 gap-2 mb-2">
+                    <Input className="col-span-5" value={item.description} onChange={(e) => { const items = [...editWorkOrder.items]; items[i] = { ...items[i], description: e.target.value }; setEditWorkOrder({ ...editWorkOrder, items }); }} required />
+                    <Input className="col-span-2" value={item.quantity} onChange={(e) => { const items = [...editWorkOrder.items]; items[i] = { ...items[i], quantity: e.target.value, total: (parseFloat(e.target.value) || 1) * Number(items[i].unit_cost) }; setEditWorkOrder({ ...editWorkOrder, items }); }} required />
+                    <Input className="col-span-2" type="number" value={item.unit_cost || ""} onChange={(e) => { const items = [...editWorkOrder.items]; items[i] = { ...items[i], unit_cost: parseFloat(e.target.value) || 0, total: (parseFloat(String(items[i].quantity)) || 1) * (parseFloat(e.target.value) || 0) }; setEditWorkOrder({ ...editWorkOrder, items }); }} required />
+                    <div className="col-span-2 flex items-center text-sm font-medium">{Number(item.total).toLocaleString()}/=</div>
+                    <Button type="button" variant="ghost" size="sm" onClick={() => setEditWorkOrder({ ...editWorkOrder, items: editWorkOrder.items.filter((_, idx) => idx !== i) })} className="col-span-1" disabled={editWorkOrder.items.length <= 1}><Trash2 className="h-3 w-3" /></Button>
+                  </div>
+                ))}
+              </div>
+              <div><Label>Tax Rate (%)</Label><Input type="number" step="0.01" value={editWorkOrder.tax_rate} onChange={(e) => setEditWorkOrder({ ...editWorkOrder, tax_rate: parseFloat(e.target.value) || 0 })} /></div>
+              <Button type="submit" className="w-full" disabled={updateMutation.isPending}>{updateMutation.isPending ? "Saving..." : "Save Changes"}</Button>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Preview Dialog */}
       <Dialog open={!!previewWorkOrder} onOpenChange={(open) => !open && setPreviewWorkOrder(null)}>

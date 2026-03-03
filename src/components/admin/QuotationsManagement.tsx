@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Plus, Printer, Trash2, FileText } from "lucide-react";
+import { Plus, Printer, Trash2, FileText, Pencil } from "lucide-react";
 import { format } from "date-fns";
 import { useUserRole } from "@/hooks/useUserRole";
 import QuotationTemplate from "./QuotationTemplate";
@@ -45,6 +45,7 @@ const QuotationsManagement = () => {
   const { canEdit } = useUserRole();
   const canEditFinance = canEdit("finance");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [editQuotation, setEditQuotation] = useState<QuotationRow | null>(null);
   const [previewQuotation, setPreviewQuotation] = useState<QuotationRow | null>(null);
   const printRef = useRef<HTMLDivElement>(null);
 
@@ -153,6 +154,33 @@ const QuotationsManagement = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["quotations"] });
       toast.success("Quotation deleted");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (q: QuotationRow) => {
+      const { subtotal, taxAmount, total } = calculateTotals(q.items, q.tax_rate);
+      const { error } = await supabase.from("quotations").update({
+        quotation_number: q.quotation_number,
+        quotation_date: q.quotation_date,
+        client_name: q.client_name,
+        client_address: q.client_address || null,
+        client_phone: q.client_phone || null,
+        client_email: q.client_email || null,
+        items: q.items as any,
+        subtotal, tax_rate: q.tax_rate, tax_amount: taxAmount, total,
+        notes: q.notes || null,
+        project_id: q.project_id || null,
+        requested_by: q.requested_by || null,
+        provided_by: q.provided_by || null,
+      }).eq("id", q.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["quotations"] });
+      toast.success("Quotation updated");
+      setEditQuotation(null);
     },
     onError: (e) => toast.error(e.message),
   });
@@ -267,6 +295,7 @@ const QuotationsManagement = () => {
                     <TableCell>
                       <div className="flex gap-1">
                         <Button variant="ghost" size="sm" title="View" onClick={() => setPreviewQuotation(q)}><FileText className="h-4 w-4" /></Button>
+                        {canEditFinance && <Button variant="ghost" size="sm" title="Edit" onClick={() => setEditQuotation({ ...q })}><Pencil className="h-4 w-4" /></Button>}
                         {canEditFinance && <Button variant="ghost" size="sm" title="Delete" onClick={() => deleteMutation.mutate(q.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>}
                       </div>
                     </TableCell>
@@ -277,6 +306,51 @@ const QuotationsManagement = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Edit Dialog */}
+      <Dialog open={!!editQuotation} onOpenChange={(open) => !open && setEditQuotation(null)}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Edit Quotation</DialogTitle></DialogHeader>
+          {editQuotation && (
+            <form onSubmit={(e) => { e.preventDefault(); updateMutation.mutate(editQuotation); }} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div><Label>Quotation Number</Label><Input value={editQuotation.quotation_number} onChange={(e) => setEditQuotation({ ...editQuotation, quotation_number: e.target.value })} required /></div>
+                <div><Label>Date</Label><Input type="date" value={editQuotation.quotation_date} onChange={(e) => setEditQuotation({ ...editQuotation, quotation_date: e.target.value })} required /></div>
+              </div>
+              <div><Label>Title</Label><Input value={editQuotation.notes || ""} onChange={(e) => setEditQuotation({ ...editQuotation, notes: e.target.value })} /></div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><Label>Client Name</Label><Input value={editQuotation.client_name} onChange={(e) => setEditQuotation({ ...editQuotation, client_name: e.target.value })} required /></div>
+                <div><Label>Client Email</Label><Input type="email" value={editQuotation.client_email || ""} onChange={(e) => setEditQuotation({ ...editQuotation, client_email: e.target.value })} /></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><Label>Client Address</Label><Textarea value={editQuotation.client_address || ""} onChange={(e) => setEditQuotation({ ...editQuotation, client_address: e.target.value })} rows={2} /></div>
+                <div><Label>Client Phone</Label><Input value={editQuotation.client_phone || ""} onChange={(e) => setEditQuotation({ ...editQuotation, client_phone: e.target.value })} /></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><Label>Requested By</Label><Input value={editQuotation.requested_by || ""} onChange={(e) => setEditQuotation({ ...editQuotation, requested_by: e.target.value })} /></div>
+                <div><Label>Provided By</Label><Input value={editQuotation.provided_by || ""} onChange={(e) => setEditQuotation({ ...editQuotation, provided_by: e.target.value })} /></div>
+              </div>
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <Label>Line Items</Label>
+                  <Button type="button" variant="outline" size="sm" onClick={() => setEditQuotation({ ...editQuotation, items: [...editQuotation.items, { ...defaultItem }] })}><Plus className="h-3 w-3 mr-1" /> Add</Button>
+                </div>
+                {editQuotation.items.map((item, i) => (
+                  <div key={i} className="grid grid-cols-12 gap-2 mb-2">
+                    <Input className="col-span-5" value={item.description} onChange={(e) => { const items = [...editQuotation.items]; items[i] = { ...items[i], description: e.target.value }; setEditQuotation({ ...editQuotation, items }); }} required />
+                    <Input className="col-span-2" value={item.quantity} onChange={(e) => { const items = [...editQuotation.items]; items[i] = { ...items[i], quantity: e.target.value, total: (parseFloat(e.target.value) || 1) * Number(items[i].unit_cost) }; setEditQuotation({ ...editQuotation, items }); }} required />
+                    <Input className="col-span-2" type="number" value={item.unit_cost || ""} onChange={(e) => { const items = [...editQuotation.items]; items[i] = { ...items[i], unit_cost: parseFloat(e.target.value) || 0, total: (parseFloat(String(items[i].quantity)) || 1) * (parseFloat(e.target.value) || 0) }; setEditQuotation({ ...editQuotation, items }); }} required />
+                    <div className="col-span-2 flex items-center text-sm font-medium">{Number(item.total).toLocaleString()}/=</div>
+                    <Button type="button" variant="ghost" size="sm" onClick={() => setEditQuotation({ ...editQuotation, items: editQuotation.items.filter((_, idx) => idx !== i) })} className="col-span-1" disabled={editQuotation.items.length <= 1}><Trash2 className="h-3 w-3" /></Button>
+                  </div>
+                ))}
+              </div>
+              <div><Label>Tax Rate (%)</Label><Input type="number" step="0.01" value={editQuotation.tax_rate} onChange={(e) => setEditQuotation({ ...editQuotation, tax_rate: parseFloat(e.target.value) || 0 })} /></div>
+              <Button type="submit" className="w-full" disabled={updateMutation.isPending}>{updateMutation.isPending ? "Saving..." : "Save Changes"}</Button>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Preview Dialog */}
       <Dialog open={!!previewQuotation} onOpenChange={(open) => !open && setPreviewQuotation(null)}>
