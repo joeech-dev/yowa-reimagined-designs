@@ -1,6 +1,7 @@
 import { forwardRef } from "react";
 import { format } from "date-fns";
 import logo from "@/assets/Yowa_Logo_1.png";
+import signature from "@/assets/joel-signature.png";
 
 interface InvoiceItem {
   description: string;
@@ -127,8 +128,10 @@ const InvoiceTemplate = forwardRef<HTMLDivElement, InvoiceTemplateProps>(
 
         {/* Signature */}
         <div className="mb-8">
-          <p className="text-xs text-gray-500 mb-8">Authorized Signed</p>
+          <p className="text-xs text-gray-500 mb-1">Authorized Signed</p>
+          <img src={signature} alt="Authorized Signature" className="h-16 w-auto mb-0 -mb-2" style={{ maxWidth: "180px" }} />
           <div className="w-48 border-t border-gray-400" />
+          <p className="text-xs text-gray-500 mt-1">{format(new Date(), "dd / MM / yyyy")}</p>
         </div>
 
         {/* Footer */}

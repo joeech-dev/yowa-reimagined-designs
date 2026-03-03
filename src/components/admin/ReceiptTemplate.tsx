@@ -1,6 +1,7 @@
 import { forwardRef } from "react";
 import { format } from "date-fns";
 import logo from "@/assets/Yowa_Logo_1.png";
+import signature from "@/assets/joel-signature.png";
 import type { InvoiceData } from "./InvoiceTemplate";
 
 interface ReceiptTemplateProps {
@@ -103,8 +104,10 @@ const ReceiptTemplate = forwardRef<HTMLDivElement, ReceiptTemplateProps>(
         {/* Signature */}
         <div className="flex justify-between mb-8">
           <div>
-            <p className="text-xs text-gray-500 mb-8">Received by (Authorized Signature)</p>
+            <p className="text-xs text-gray-500 mb-1">Received by (Authorized Signature)</p>
+            <img src={signature} alt="Authorized Signature" className="h-16 w-auto -mb-2" style={{ maxWidth: "180px" }} />
             <div className="w-48 border-t border-gray-400" />
+            <p className="text-xs text-gray-500 mt-1">{format(new Date(), "dd / MM / yyyy")}</p>
           </div>
           <div>
             <p className="text-xs text-gray-500 mb-8">Client Signature</p>
