@@ -1,6 +1,8 @@
 import { forwardRef } from "react";
 import { format } from "date-fns";
 import logo from "@/assets/Yowa_Logo_1.png";
+import signature from "@/assets/joel-signature.png";
+import stamp from "@/assets/yowa-stamp.jpg";
 import type { InvoiceItem } from "./InvoiceTemplate";
 
 export interface WorkOrderData {
@@ -27,6 +29,7 @@ interface WorkOrderTemplateProps {
 
 const WorkOrderTemplate = forwardRef<HTMLDivElement, WorkOrderTemplateProps>(
   ({ data }, ref) => {
+    const docDate = format(new Date(data.work_order_date), "dd MMM yyyy");
     return (
       <div ref={ref} className="bg-white text-black p-8 max-w-[210mm] mx-auto font-sans text-sm print:p-0 print:shadow-none" style={{ minHeight: "297mm" }}>
         {/* Header */}
@@ -120,17 +123,30 @@ const WorkOrderTemplate = forwardRef<HTMLDivElement, WorkOrderTemplateProps>(
           </div>
         )}
 
-        {/* Requested By / Provided By */}
-        <div className="flex justify-between mb-8 mt-12">
+        {/* Requested By / Provided By with Signature + Stamp */}
+        <div className="flex justify-between items-end mb-8 mt-12">
           <div>
             <p className="text-xs text-gray-500 mb-1">Requested By:</p>
             <p className="text-sm font-medium mb-8">{data.requested_by || ""}</p>
             <div className="w-48 border-t border-gray-400" />
             <p className="text-xs text-gray-500 mt-1">Signature / Date</p>
           </div>
+          {/* Official Stamp with date overlay */}
+          <div className="relative" style={{ width: "130px", height: "130px" }}>
+            <img src={stamp} alt="Official Stamp" style={{ width: "130px", height: "130px", objectFit: "contain", opacity: 0.9 }} />
+            <div
+              className="absolute flex items-center justify-center"
+              style={{ bottom: "28px", left: "50%", transform: "translateX(-50%)", width: "90px" }}
+            >
+              <span style={{ color: "#cc0000", fontSize: "7px", fontWeight: "bold", textAlign: "center", letterSpacing: "0.3px" }}>
+                {docDate}
+              </span>
+            </div>
+          </div>
           <div>
             <p className="text-xs text-gray-500 mb-1">Provided By:</p>
-            <p className="text-sm font-medium mb-8">{data.provided_by || "Yowa Innovations Ltd"}</p>
+            <p className="text-sm font-medium mb-1">{data.provided_by || "Yowa Innovations Ltd"}</p>
+            <img src={signature} alt="Authorized Signature" className="h-12 w-auto -mb-1" style={{ maxWidth: "150px" }} />
             <div className="w-48 border-t border-gray-400" />
             <p className="text-xs text-gray-500 mt-1">Signature / Date</p>
           </div>
