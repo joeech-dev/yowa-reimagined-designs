@@ -2,6 +2,7 @@ import { forwardRef } from "react";
 import { format } from "date-fns";
 import logo from "@/assets/Yowa_Logo_1.png";
 import signature from "@/assets/joel-signature.png";
+import stamp from "@/assets/yowa-stamp.jpg";
 
 interface InvoiceItem {
   description: string;
@@ -32,6 +33,7 @@ interface InvoiceTemplateProps {
 
 const InvoiceTemplate = forwardRef<HTMLDivElement, InvoiceTemplateProps>(
   ({ data }, ref) => {
+    const docDate = format(new Date(data.invoice_date), "dd MMM yyyy");
     return (
       <div ref={ref} className="bg-white text-black p-8 max-w-[210mm] mx-auto font-sans text-sm print:p-0 print:shadow-none" style={{ minHeight: "297mm" }}>
         {/* Header */}
@@ -126,12 +128,27 @@ const InvoiceTemplate = forwardRef<HTMLDivElement, InvoiceTemplateProps>(
           </div>
         </div>
 
-        {/* Signature */}
-        <div className="mb-8">
-          <p className="text-xs text-gray-500 mb-1">Authorized Signed</p>
-          <img src={signature} alt="Authorized Signature" className="h-16 w-auto -mb-2" style={{ maxWidth: "180px" }} />
-          <div className="w-48 border-t border-gray-400" />
-          <p className="text-xs text-gray-500 mt-1">{format(new Date(data.invoice_date), "dd / MM / yyyy")}</p>
+        {/* Signature + Stamp */}
+        <div className="flex justify-between items-end mb-8">
+          <div>
+            <p className="text-xs text-gray-500 mb-1">Authorized Signed</p>
+            <img src={signature} alt="Authorized Signature" className="h-16 w-auto -mb-2" style={{ maxWidth: "180px" }} />
+            <div className="w-48 border-t border-gray-400" />
+            <p className="text-xs text-gray-500 mt-1">{format(new Date(data.invoice_date), "dd / MM / yyyy")}</p>
+          </div>
+          {/* Official Stamp with date overlay */}
+          <div className="relative" style={{ width: "130px", height: "130px" }}>
+            <img src={stamp} alt="Official Stamp" style={{ width: "130px", height: "130px", objectFit: "contain", opacity: 0.9 }} />
+            {/* Date overlay on the red date area of the stamp */}
+            <div
+              className="absolute flex items-center justify-center"
+              style={{ bottom: "28px", left: "50%", transform: "translateX(-50%)", width: "90px" }}
+            >
+              <span style={{ color: "#cc0000", fontSize: "7px", fontWeight: "bold", textAlign: "center", letterSpacing: "0.3px" }}>
+                {docDate}
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* Footer */}
