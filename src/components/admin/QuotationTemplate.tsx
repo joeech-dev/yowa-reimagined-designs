@@ -132,13 +132,13 @@ const QuotationTemplate = forwardRef<HTMLDivElement, QuotationTemplateProps>(
             <p className="text-xs text-gray-500 mt-1">Signature / Date</p>
           </div>
           {/* Official Stamp with date overlay */}
-          <div className="relative" style={{ width: "130px", height: "130px" }}>
-            <img src={stamp} alt="Official Stamp" style={{ width: "130px", height: "130px", objectFit: "contain", opacity: 0.9 }} />
+          <div className="relative" style={{ width: "260px", height: "260px" }}>
+            <img src={stamp} alt="Official Stamp" style={{ width: "260px", height: "260px", objectFit: "contain", opacity: 0.9 }} />
             <div
               className="absolute flex items-center justify-center"
-              style={{ bottom: "28px", left: "50%", transform: "translateX(-50%)", width: "90px" }}
+              style={{ bottom: "54px", left: "50%", transform: "translateX(-50%)", width: "130px" }}
             >
-              <span style={{ color: "#cc0000", fontSize: "7px", fontWeight: "bold", textAlign: "center", letterSpacing: "0.3px" }}>
+              <span style={{ color: "#cc0000", fontSize: "11px", fontWeight: "bold", textAlign: "center", letterSpacing: "0.5px" }}>
                 {docDate}
               </span>
             </div>
