@@ -111,16 +111,23 @@ const ReceiptTemplate = forwardRef<HTMLDivElement, ReceiptTemplateProps>(
             <p className="text-xs text-gray-500 mb-1">Received by (Authorized Signature)</p>
             <img src={signature} alt="Authorized Signature" className="h-16 w-auto -mb-2" style={{ maxWidth: "180px" }} />
             <div className="w-48 border-t border-gray-400" />
-            <p className="text-xs text-gray-500 mt-1">{data.payment_date ? format(new Date(data.payment_date), "dd / MM / yyyy") : format(new Date(data.invoice_date), "dd / MM / yyyy")}</p>
           </div>
-          {/* Official Stamp with date overlay */}
-          <div className="relative" style={{ width: "260px", height: "260px" }}>
-            <img src={stamp} alt="Official Stamp" style={{ width: "260px", height: "260px", objectFit: "contain", opacity: 0.9 }} />
-            <div
-              className="absolute flex items-center justify-center"
-              style={{ bottom: "54px", left: "50%", transform: "translateX(-50%)", width: "130px" }}
+          {/* Official Stamp PDF with date overlay */}
+          <div className="relative" style={{ width: "300px", height: "300px" }}>
+            <object
+              data="/yowa-stamp-2.pdf"
+              type="application/pdf"
+              style={{ width: "300px", height: "300px", border: "none" }}
+              aria-label="Official Stamp"
             >
-              <span style={{ color: "#cc0000", fontSize: "11px", fontWeight: "bold", textAlign: "center", letterSpacing: "0.5px" }}>
+              <img src={stamp} alt="Official Stamp" style={{ width: "300px", height: "300px", objectFit: "contain" }} />
+            </object>
+            {/* Date overlay inside the red date band of the stamp */}
+            <div
+              className="absolute flex items-center justify-center pointer-events-none"
+              style={{ bottom: "72px", left: "50%", transform: "translateX(-50%)", width: "150px" }}
+            >
+              <span style={{ color: "#cc0000", fontSize: "12px", fontWeight: "bold", textAlign: "center", letterSpacing: "1px", fontFamily: "Arial, sans-serif" }}>
                 {docDate}
               </span>
             </div>

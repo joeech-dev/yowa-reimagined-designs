@@ -202,9 +202,14 @@ const InvoicesManagement = ({ receiptMode }: { receiptMode?: boolean }) => {
     onError: (e) => toast.error(e.message),
   });
 
+  const generateInvoiceNumber = () => {
+    const next = (invoices.length + 1).toString().padStart(3, "0");
+    return `INV-${next}`;
+  };
+
   const resetForm = () => {
     setForm({
-      invoice_number: "",
+      invoice_number: generateInvoiceNumber(),
       invoice_date: new Date().toISOString().split("T")[0],
       client_name: "",
       client_address: "",
