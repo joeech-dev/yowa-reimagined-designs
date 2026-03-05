@@ -185,9 +185,14 @@ const QuotationsManagement = () => {
     onError: (e) => toast.error(e.message),
   });
 
+  const generateQuotationNumber = () => {
+    const next = (quotations.length + 1).toString().padStart(3, "0");
+    return `QT-${next}`;
+  };
+
   const resetForm = () => {
     setForm({
-      quotation_number: "", quotation_date: new Date().toISOString().split("T")[0],
+      quotation_number: generateQuotationNumber(), quotation_date: new Date().toISOString().split("T")[0],
       client_name: "", client_address: "", client_phone: "", client_email: "",
       title: "", items: [{ ...defaultItem }], tax_rate: 0, notes: "", project_id: "",
       requested_by: "", provided_by: "Yowa Innovations Ltd",
