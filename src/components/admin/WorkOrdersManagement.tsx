@@ -185,9 +185,14 @@ const WorkOrdersManagement = () => {
     onError: (e) => toast.error(e.message),
   });
 
+  const generateWorkOrderNumber = () => {
+    const next = (workOrders.length + 1).toString().padStart(3, "0");
+    return `WO-${next}`;
+  };
+
   const resetForm = () => {
     setForm({
-      work_order_number: "", work_order_date: new Date().toISOString().split("T")[0],
+      work_order_number: generateWorkOrderNumber(), work_order_date: new Date().toISOString().split("T")[0],
       client_name: "", client_address: "", client_phone: "", client_email: "",
       title: "", items: [{ ...defaultItem }], tax_rate: 0, notes: "", project_id: "",
       requested_by: "", provided_by: "Yowa Innovations Ltd",
