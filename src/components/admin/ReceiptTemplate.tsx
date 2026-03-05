@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import { format } from "date-fns";
 import logo from "@/assets/Yowa_Logo_1.png";
 import signature from "@/assets/joel-signature.png";
-import stamp from "@/assets/yowa-stamp.jpg";
+import stamp from "@/assets/yowa-stamp-new.png";
 import type { InvoiceData } from "./InvoiceTemplate";
 
 interface ReceiptTemplateProps {
