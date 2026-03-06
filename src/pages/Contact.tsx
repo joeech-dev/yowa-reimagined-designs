@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
@@ -5,13 +6,54 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { MapPin, Phone, Mail } from "lucide-react";
+import { MapPin, Phone, Mail, Send } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const Contact = () => {
-  const handleSubmit = (e: React.FormEvent) => {
+  const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Message sent! We'll get back to you soon.");
+    setLoading(true);
+    try {
+      // Save to website_messages (shows in Sales Inbox)
+      const { error: msgError } = await supabase.from("website_messages").insert([{
+        visitor_name: formData.name.trim(),
+        visitor_email: formData.email.trim(),
+        message: `Subject: ${formData.subject.trim()}\n\n${formData.message.trim()}`,
+      }]);
+      if (msgError) throw msgError;
+
+      // Auto-create lead
+      const { error: leadError } = await supabase.from("leads").insert([{
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: "Not provided",
+        status: "new",
+      }]);
+      if (leadError) console.warn("Lead note:", leadError.message);
+
+      // Trigger email notification
+      await supabase.functions.invoke("notify-new-lead", {
+        body: {
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          phone: "Not provided",
+          subject: formData.subject.trim(),
+          message: formData.message.trim(),
+        },
+      });
+
+      toast.success("Message sent! We'll get back to you soon.");
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    } catch (error: any) {
+      console.error(error);
+      toast.error("Failed to send message. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -50,19 +92,19 @@ const Contact = () => {
                     <label htmlFor="name" className="block text-sm font-medium mb-2">
                       Your Name
                     </label>
-                    <Input id="name" placeholder="John Doe" required aria-required="true" />
+                    <Input id="name" placeholder="John Doe" required aria-required="true" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
                   </div>
                   <div>
                     <label htmlFor="email" className="block text-sm font-medium mb-2">
                       Email Address
                     </label>
-                    <Input id="email" type="email" placeholder="john@example.com" required aria-required="true" />
+                    <Input id="email" type="email" placeholder="john@example.com" required aria-required="true" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
                   </div>
                   <div>
                     <label htmlFor="subject" className="block text-sm font-medium mb-2">
                       Subject
                     </label>
-                    <Input id="subject" placeholder="How can we help?" required aria-required="true" />
+                    <Input id="subject" placeholder="How can we help?" required aria-required="true" value={formData.subject} onChange={(e) => setFormData({ ...formData, subject: e.target.value })} />
                   </div>
                   <div>
                     <label htmlFor="message" className="block text-sm font-medium mb-2">
@@ -74,10 +116,12 @@ const Contact = () => {
                       rows={6}
                       required
                       aria-required="true"
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     />
                   </div>
-                  <Button type="submit" className="w-full gradient-warm hover:scale-105 transition-smooth" size="lg">
-                    Send Message
+                  <Button type="submit" className="w-full gradient-warm hover:scale-105 transition-smooth" size="lg" disabled={loading}>
+                    {loading ? "Sending..." : <><Send className="h-4 w-4 mr-2" />Send Message</>}
                   </Button>
                 </form>
               </Card>
