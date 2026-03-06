@@ -124,7 +124,10 @@ const Shop = ({ filter }: { filter?: string }) => {
 
                       <Button
                         className="w-full hover:scale-105 transition-smooth"
-                        onClick={() => navigate(`/ordernow?product=${product.id}`)}
+                        onClick={() => {
+                          const url = `/ordernow?product=${product.id}`;
+                          navigate(url);
+                        }}
                       >
                         Get This
                         <ArrowRight className="ml-2 h-4 w-4" />
