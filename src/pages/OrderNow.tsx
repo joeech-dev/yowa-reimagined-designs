@@ -64,20 +64,32 @@ const OrderNow = () => {
 
   useEffect(() => {
     const load = async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("products")
         .select("id, title, description, price, currency, product_type, image_url, purchase_url")
         .eq("is_active", true)
         .order("display_order", { ascending: true });
 
-      const products = data || [];
-      setAllProducts(products);
+      if (error) console.error("Failed to load products:", error);
+
+      const allProds = data || [];
+      setAllProducts(allProds);
 
       if (productId) {
-        const found = products.find((p) => p.id === productId);
-        setProduct(found || products[0] || null);
+        const found = allProds.find((p) => p.id === productId);
+        // If specific product not found, still show it alone if we can fetch it directly
+        if (!found) {
+          const { data: single } = await supabase
+            .from("products")
+            .select("id, title, description, price, currency, product_type, image_url, purchase_url")
+            .eq("id", productId)
+            .single();
+          setProduct(single || allProds[0] || null);
+        } else {
+          setProduct(found);
+        }
       } else {
-        setProduct(products[0] || null);
+        setProduct(allProds[0] || null);
       }
       setLoading(false);
     };
