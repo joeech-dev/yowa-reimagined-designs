@@ -92,19 +92,19 @@ const Contact = () => {
                     <label htmlFor="name" className="block text-sm font-medium mb-2">
                       Your Name
                     </label>
-                    <Input id="name" placeholder="John Doe" required aria-required="true" />
+                    <Input id="name" placeholder="John Doe" required aria-required="true" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
                   </div>
                   <div>
                     <label htmlFor="email" className="block text-sm font-medium mb-2">
                       Email Address
                     </label>
-                    <Input id="email" type="email" placeholder="john@example.com" required aria-required="true" />
+                    <Input id="email" type="email" placeholder="john@example.com" required aria-required="true" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
                   </div>
                   <div>
                     <label htmlFor="subject" className="block text-sm font-medium mb-2">
                       Subject
                     </label>
-                    <Input id="subject" placeholder="How can we help?" required aria-required="true" />
+                    <Input id="subject" placeholder="How can we help?" required aria-required="true" value={formData.subject} onChange={(e) => setFormData({ ...formData, subject: e.target.value })} />
                   </div>
                   <div>
                     <label htmlFor="message" className="block text-sm font-medium mb-2">
@@ -116,10 +116,12 @@ const Contact = () => {
                       rows={6}
                       required
                       aria-required="true"
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     />
                   </div>
-                  <Button type="submit" className="w-full gradient-warm hover:scale-105 transition-smooth" size="lg">
-                    Send Message
+                  <Button type="submit" className="w-full gradient-warm hover:scale-105 transition-smooth" size="lg" disabled={loading}>
+                    {loading ? "Sending..." : <><Send className="h-4 w-4 mr-2" />Send Message</>}
                   </Button>
                 </form>
               </Card>
