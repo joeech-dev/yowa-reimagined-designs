@@ -190,6 +190,8 @@ export type Database = {
           finance_approved_at: string | null
           finance_approved_by: string | null
           id: string
+          paid_at: string | null
+          paid_by: string | null
           project_id: string | null
           rejected_at: string | null
           rejected_by: string | null
@@ -209,6 +211,8 @@ export type Database = {
           finance_approved_at?: string | null
           finance_approved_by?: string | null
           id?: string
+          paid_at?: string | null
+          paid_by?: string | null
           project_id?: string | null
           rejected_at?: string | null
           rejected_by?: string | null
@@ -228,6 +232,8 @@ export type Database = {
           finance_approved_at?: string | null
           finance_approved_by?: string | null
           id?: string
+          paid_at?: string | null
+          paid_by?: string | null
           project_id?: string | null
           rejected_at?: string | null
           rejected_by?: string | null
