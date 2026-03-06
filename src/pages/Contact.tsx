@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
@@ -5,13 +6,54 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { MapPin, Phone, Mail } from "lucide-react";
+import { MapPin, Phone, Mail, Send } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const Contact = () => {
-  const handleSubmit = (e: React.FormEvent) => {
+  const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Message sent! We'll get back to you soon.");
+    setLoading(true);
+    try {
+      // Save to website_messages (shows in Sales Inbox)
+      const { error: msgError } = await supabase.from("website_messages").insert([{
+        visitor_name: formData.name.trim(),
+        visitor_email: formData.email.trim(),
+        message: `Subject: ${formData.subject.trim()}\n\n${formData.message.trim()}`,
+      }]);
+      if (msgError) throw msgError;
+
+      // Auto-create lead
+      const { error: leadError } = await supabase.from("leads").insert([{
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: "Not provided",
+        status: "new",
+      }]);
+      if (leadError) console.warn("Lead note:", leadError.message);
+
+      // Trigger email notification
+      await supabase.functions.invoke("notify-new-lead", {
+        body: {
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          phone: "Not provided",
+          subject: formData.subject.trim(),
+          message: formData.message.trim(),
+        },
+      });
+
+      toast.success("Message sent! We'll get back to you soon.");
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    } catch (error: any) {
+      console.error(error);
+      toast.error("Failed to send message. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
