@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Plus, CheckCircle, XCircle, Clock, AlertTriangle } from "lucide-react";
+import { Plus, CheckCircle, XCircle, Clock, AlertTriangle, Banknote } from "lucide-react";
 import { format } from "date-fns";
 import { useExpenseCategories } from "@/hooks/useExpenseCategories";
 
@@ -19,6 +19,7 @@ const statusConfig: Record<string, { label: string; variant: "default" | "second
   pending: { label: "Pending", variant: "outline", icon: Clock },
   finance_approved: { label: "Finance Approved", variant: "secondary", icon: CheckCircle },
   approved: { label: "Fully Approved", variant: "default", icon: CheckCircle },
+  paid: { label: "Paid / Recorded", variant: "default", icon: Banknote },
   rejected: { label: "Rejected", variant: "destructive", icon: XCircle },
 };
 
@@ -38,6 +39,8 @@ interface ExpenseRequisition {
   rejected_by: string | null;
   rejection_reason: string | null;
   created_at: string;
+  paid_at?: string | null;
+  paid_by?: string | null;
 }
 
 const ExpenseRequisitionForm = () => {
@@ -45,6 +48,7 @@ const ExpenseRequisitionForm = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [rejectDialogId, setRejectDialogId] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
+  const [confirmPayDialogReq, setConfirmPayDialogReq] = useState<ExpenseRequisition | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -54,15 +58,12 @@ const ExpenseRequisitionForm = () => {
   });
 
   const [userRole, setUserRole] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
 
-  // Get current user role
   useQuery({
     queryKey: ["current-user-role"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
-      setUserId(user.id);
       const { data } = await supabase
         .from("user_roles")
         .select("role")
@@ -131,33 +132,18 @@ const ExpenseRequisitionForm = () => {
       const isSuperAdmin = userRole === "super_admin";
 
       if (amount < 100000 && isFinanceOrAdmin) {
-        // Finance can fully approve under 100k
         const { error } = await supabase.from("expense_requisitions")
-          .update({
-            status: "approved",
-            finance_approved_by: user.id,
-            finance_approved_at: new Date().toISOString(),
-          })
+          .update({ status: "approved", finance_approved_by: user.id, finance_approved_at: new Date().toISOString() })
           .eq("id", id);
         if (error) throw error;
       } else if (amount >= 100000 && isFinanceOrAdmin) {
-        // Finance approves first stage for 100k+
         const { error } = await supabase.from("expense_requisitions")
-          .update({
-            status: "finance_approved",
-            finance_approved_by: user.id,
-            finance_approved_at: new Date().toISOString(),
-          })
+          .update({ status: "finance_approved", finance_approved_by: user.id, finance_approved_at: new Date().toISOString() })
           .eq("id", id);
         if (error) throw error;
       } else if (isSuperAdmin) {
-        // Super admin gives final approval for 100k+
         const { error } = await supabase.from("expense_requisitions")
-          .update({
-            status: "approved",
-            super_admin_approved_by: user.id,
-            super_admin_approved_at: new Date().toISOString(),
-          })
+          .update({ status: "approved", super_admin_approved_by: user.id, super_admin_approved_at: new Date().toISOString() })
           .eq("id", id);
         if (error) throw error;
       }
@@ -169,17 +155,44 @@ const ExpenseRequisitionForm = () => {
     onError: (error) => toast.error(`Error: ${error.message}`),
   });
 
+  // Confirm payment: marks as paid + auto-creates expense in finance_transactions
+  const confirmPaymentMutation = useMutation({
+    mutationFn: async (req: ExpenseRequisition) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      // 1. Record as expense in finance_transactions
+      const { error: txError } = await supabase.from("finance_transactions").insert([{
+        type: "expense",
+        amount: req.amount,
+        description: req.title + (req.description ? ` — ${req.description}` : ""),
+        category: req.category,
+        project_id: req.project_id || null,
+        transaction_date: new Date().toISOString().split("T")[0],
+      }]);
+      if (txError) throw txError;
+
+      // 2. Mark requisition as paid
+      const { error: reqError } = await supabase.from("expense_requisitions")
+        .update({ status: "paid", paid_by: user.id, paid_at: new Date().toISOString() })
+        .eq("id", req.id);
+      if (reqError) throw reqError;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["expense-requisitions"] });
+      queryClient.invalidateQueries({ queryKey: ["finance-transactions"] });
+      toast.success("Payment confirmed — expense recorded in Finance");
+      setConfirmPayDialogReq(null);
+    },
+    onError: (error) => toast.error(`Error: ${error.message}`),
+  });
+
   const rejectMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
       const { error } = await supabase.from("expense_requisitions")
-        .update({
-          status: "rejected",
-          rejected_by: user.id,
-          rejected_at: new Date().toISOString(),
-          rejection_reason: reason,
-        })
+        .update({ status: "rejected", rejected_by: user.id, rejected_at: new Date().toISOString(), rejection_reason: reason })
         .eq("id", id);
       if (error) throw error;
     },
@@ -195,28 +208,37 @@ const ExpenseRequisitionForm = () => {
   const canApprove = (req: ExpenseRequisition) => {
     const isFinanceOrAdmin = userRole === "finance" || userRole === "admin";
     const isSuperAdmin = userRole === "super_admin";
-
     if (req.status === "pending" && (isFinanceOrAdmin || isSuperAdmin)) return true;
     if (req.status === "finance_approved" && isSuperAdmin) return true;
     return false;
   };
 
+  const canConfirmPayment = (req: ExpenseRequisition) =>
+    req.status === "approved" &&
+    (userRole === "finance" || userRole === "super_admin");
+
   const canReject = userRole === "finance" || userRole === "admin" || userRole === "super_admin";
 
   const pendingCount = requisitions.filter(r => r.status === "pending" || r.status === "finance_approved").length;
+  const awaitingPaymentCount = requisitions.filter(r => r.status === "approved").length;
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold">Expense Requisitions</h2>
-          <p className="text-sm text-muted-foreground">
+          <div className="flex flex-col gap-0.5 mt-1">
             {pendingCount > 0 && (
-              <span className="flex items-center gap-1 text-secondary">
+              <span className="flex items-center gap-1 text-sm text-secondary">
                 <AlertTriangle className="h-4 w-4" /> {pendingCount} pending approval
               </span>
             )}
-          </p>
+            {awaitingPaymentCount > 0 && (
+              <span className="flex items-center gap-1 text-sm text-green-600">
+                <Banknote className="h-4 w-4" /> {awaitingPaymentCount} awaiting payment confirmation
+              </span>
+            )}
+          </div>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -275,12 +297,11 @@ const ExpenseRequisitionForm = () => {
         </Dialog>
       </div>
 
-      {/* Approval info */}
+      {/* Workflow info */}
       <Card className="bg-muted/50">
         <CardContent className="pt-4">
           <p className="text-sm text-muted-foreground">
-            <strong>Approval workflow:</strong> Amounts under UGX 100,000 → Finance approves.
-            Amounts ≥ UGX 100,000 → Finance approves first, then Super Admin gives final approval.
+            <strong>Workflow:</strong> Submit → Finance approves (amounts ≥ UGX 100,000 also need Super Admin) → <strong>Finance confirms payment</strong> → Auto-recorded as expense in Finance.
           </p>
         </CardContent>
       </Card>
@@ -330,12 +351,22 @@ const ExpenseRequisitionForm = () => {
                         {req.rejection_reason && (
                           <p className="text-xs text-destructive mt-1">{req.rejection_reason}</p>
                         )}
+                        {req.status === "paid" && req.paid_at && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Paid {format(new Date(req.paid_at), "MMM d, yyyy")}
+                          </p>
+                        )}
                       </TableCell>
                       <TableCell>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 flex-wrap">
                           {canApprove(req) && (
                             <Button size="sm" variant="outline" className="text-primary" onClick={() => approveMutation.mutate({ id: req.id, amount: req.amount })}>
                               <CheckCircle className="h-4 w-4 mr-1" /> Approve
+                            </Button>
+                          )}
+                          {canConfirmPayment(req) && (
+                            <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={() => setConfirmPayDialogReq(req)}>
+                              <Banknote className="h-4 w-4 mr-1" /> Confirm Payment
                             </Button>
                           )}
                           {canReject && (req.status === "pending" || req.status === "finance_approved") && (
@@ -353,6 +384,42 @@ const ExpenseRequisitionForm = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Confirm Payment Dialog */}
+      <Dialog open={!!confirmPayDialogReq} onOpenChange={() => setConfirmPayDialogReq(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Banknote className="h-5 w-5 text-green-600" /> Confirm Payment
+            </DialogTitle>
+          </DialogHeader>
+          {confirmPayDialogReq && (
+            <div className="space-y-4">
+              <div className="rounded-lg bg-muted p-4 space-y-1 text-sm">
+                <p><strong>Title:</strong> {confirmPayDialogReq.title}</p>
+                <p><strong>Category:</strong> {confirmPayDialogReq.category}</p>
+                <p><strong>Amount:</strong> UGX {Number(confirmPayDialogReq.amount).toLocaleString()}</p>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Confirming payment will <strong>automatically record this as an expense</strong> in the Finance transactions sheet. This action cannot be undone.
+              </p>
+              <div className="flex gap-2">
+                <Button variant="outline" className="flex-1" onClick={() => setConfirmPayDialogReq(null)}>
+                  Cancel
+                </Button>
+                <Button
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                  disabled={confirmPaymentMutation.isPending}
+                  onClick={() => confirmPaymentMutation.mutate(confirmPayDialogReq)}
+                >
+                  <Banknote className="h-4 w-4 mr-2" />
+                  {confirmPaymentMutation.isPending ? "Recording..." : "Yes, Confirm Payment"}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Reject Dialog */}
       <Dialog open={!!rejectDialogId} onOpenChange={() => { setRejectDialogId(null); setRejectionReason(""); }}>
