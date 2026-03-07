@@ -197,61 +197,62 @@ const FinanceManagement = () => {
                       <Plus className="mr-2 h-4 w-4" /> Add Transaction
                     </Button>
                   </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>{editingTransaction ? "Edit" : "Add"} Transaction</DialogTitle>
-                  </DialogHeader>
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                      <Label>Type</Label>
-                      <Select value={formData.type} onValueChange={(v: TransactionType) => setFormData({ ...formData, type: v, category: "" })}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="income">Income</SelectItem>
-                          <SelectItem value="expense">Expense</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label>Amount ($)</Label>
-                      <Input type="number" step="0.01" value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: e.target.value })} required />
-                    </div>
-                    <div>
-                      <Label>Category</Label>
-                      <Select value={formData.category} onValueChange={(v) => setFormData({ ...formData, category: v })}>
-                        <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
-                        <SelectContent>
-                          {categories[formData.type].map((cat) => (
-                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label>Description</Label>
-                      <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
-                    </div>
-                    <div>
-                      <Label>Linked Project (Optional)</Label>
-                      <Select value={formData.project_id || "none"} onValueChange={(v) => setFormData({ ...formData, project_id: v === "none" ? "" : v })}>
-                        <SelectTrigger><SelectValue placeholder="Select project" /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="none">None</SelectItem>
-                          {projects.map((p) => (
-                            <SelectItem key={p.id} value={p.id}>{p.title}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label>Date</Label>
-                      <Input type="date" value={formData.transaction_date} onChange={(e) => setFormData({ ...formData, transaction_date: e.target.value })} required />
-                    </div>
-                    <Button type="submit" className="w-full">{editingTransaction ? "Update" : "Add"} Transaction</Button>
-                  </form>
-                </DialogContent>
-              </Dialog>
-            )}
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>{editingTransaction ? "Edit" : "Add"} Transaction</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      <div>
+                        <Label>Type</Label>
+                        <Select value={formData.type} onValueChange={(v: TransactionType) => setFormData({ ...formData, type: v, category: "" })}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="income">Income</SelectItem>
+                            <SelectItem value="expense">Expense</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>Amount (UGX)</Label>
+                        <Input type="number" step="0.01" value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: e.target.value })} required />
+                      </div>
+                      <div>
+                        <Label>Category</Label>
+                        <Select value={formData.category} onValueChange={(v) => setFormData({ ...formData, category: v })}>
+                          <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
+                          <SelectContent>
+                            {categories[formData.type].map((cat) => (
+                              <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>Description</Label>
+                        <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
+                      </div>
+                      <div>
+                        <Label>Linked Project (Optional)</Label>
+                        <Select value={formData.project_id || "none"} onValueChange={(v) => setFormData({ ...formData, project_id: v === "none" ? "" : v })}>
+                          <SelectTrigger><SelectValue placeholder="Select project" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">None</SelectItem>
+                            {projects.map((p) => (
+                              <SelectItem key={p.id} value={p.id}>{p.title}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>Date</Label>
+                        <Input type="date" value={formData.transaction_date} onChange={(e) => setFormData({ ...formData, transaction_date: e.target.value })} required />
+                      </div>
+                      <Button type="submit" className="w-full">{editingTransaction ? "Update" : "Add"} Transaction</Button>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              )}
+            </div>
           </div>
 
           {/* Stats Cards */}
