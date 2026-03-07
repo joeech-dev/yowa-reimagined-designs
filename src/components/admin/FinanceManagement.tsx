@@ -17,6 +17,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import ExpenseRequisitionForm from "./ExpenseRequisitionForm";
 import ExpenseCategoriesManager from "./ExpenseCategoriesManager";
 import ExpenseExportButton from "./ExpenseExportButton";
+import FinanceExportButton from "./FinanceExportButton";
 
 type TransactionType = "income" | "expense";
 
