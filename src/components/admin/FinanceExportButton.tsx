@@ -54,7 +54,7 @@ const FinanceExportButton = () => {
 
         if (filters.dateFrom) query = query.gte("transaction_date", filters.dateFrom);
         if (filters.dateTo) query = query.lte("transaction_date", filters.dateTo);
-        if (filters.type !== "all") query = query.eq("type", filters.type);
+        if (filters.type !== "all") query = query.eq("type", filters.type as "income" | "expense");
 
         const { data, error } = await query;
         if (error) throw error;
