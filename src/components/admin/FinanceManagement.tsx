@@ -186,14 +186,17 @@ const FinanceManagement = () => {
         </TabsList>
 
         <TabsContent value="transactions" className="space-y-6 mt-4">
-          <div className="flex justify-end">
-            {canEditFinance && (
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button onClick={() => resetForm()}>
-                    <Plus className="mr-2 h-4 w-4" /> Add Transaction
-                  </Button>
-                </DialogTrigger>
+          <div className="flex justify-between items-center">
+            <div />
+            <div className="flex gap-2">
+              <FinanceExportButton />
+              {canEditFinance && (
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button onClick={() => resetForm()}>
+                      <Plus className="mr-2 h-4 w-4" /> Add Transaction
+                    </Button>
+                  </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>{editingTransaction ? "Edit" : "Add"} Transaction</DialogTitle>
