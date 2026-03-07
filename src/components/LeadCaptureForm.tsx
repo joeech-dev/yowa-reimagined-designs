@@ -8,9 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Upload, FileText, IdCard } from "lucide-react";
+import { FileText, IdCard, Send, User, Mail, Phone, MapPin } from "lucide-react";
 
 const POSITION_VALUES = ["employment", "freelancing", "trainee"];
 
@@ -20,7 +19,7 @@ const formSchema = z.object({
   phone: z.string().min(10, "Phone must be at least 10 characters").max(20),
   service: z.string().min(1, "Please select a service"),
   geographic_location: z.string().min(2, "Location is required").max(100),
-  website: z.string().max(0, "").optional(), // honeypot field
+  website: z.string().max(0, "").optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -40,11 +39,18 @@ const positions = [
   { value: "trainee", label: "Trainee" },
 ];
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const ACCEPTED_TYPES = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "image/jpeg", "image/png"];
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const ACCEPTED_TYPES = [
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "image/jpeg",
+  "image/png",
+];
 
 export const LeadCaptureForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [searchParams] = useSearchParams();
   const preselectedService = searchParams.get("service") || "";
   const [cvFile, setCvFile] = useState<File | null>(null);
@@ -87,44 +93,30 @@ export const LeadCaptureForm = () => {
     const safeName = email.replace(/[^a-zA-Z0-9]/g, "_");
     const ext = file.name.split(".").pop();
     const path = `${prefix}/${safeName}_${Date.now()}.${ext}`;
-
-    const { error } = await supabase.storage
-      .from("applicant-documents")
-      .upload(path, file, { upsert: false });
-
-    if (error) {
-      console.error("Upload error:", error);
-      return null;
-    }
+    const { error } = await supabase.storage.from("applicant-documents").upload(path, file, { upsert: false });
+    if (error) { console.error("Upload error:", error); return null; }
     return path;
   };
 
   const onSubmit = async (data: FormData) => {
     if (data.website) {
-      toast.success("Thank you! We'll be in touch soon.");
-      form.reset();
+      setSubmitted(true);
       return;
     }
-
-    // Validate files if position selected
     if (isPosition) {
       const cvValid = validateFile(cvFile, "cv");
       const idValid = validateFile(idFile, "id");
       if (!cvValid || !idValid) return;
     }
-
     setIsSubmitting(true);
-
     try {
       let cvUrl: string | null = null;
       let idUrl: string | null = null;
-
       if (isPosition && cvFile && idFile) {
         const [cvResult, idResult] = await Promise.all([
           uploadFile(cvFile, "cv", data.email),
           uploadFile(idFile, "national-id", data.email),
         ]);
-
         if (!cvResult || !idResult) {
           toast.error("Failed to upload documents. Please try again.");
           setIsSubmitting(false);
@@ -133,7 +125,6 @@ export const LeadCaptureForm = () => {
         cvUrl = cvResult;
         idUrl = idResult;
       }
-
       const { error } = await supabase.from("leads").insert([{
         name: data.name,
         email: data.email,
@@ -145,45 +136,27 @@ export const LeadCaptureForm = () => {
         national_id_url: idUrl,
         is_recruitment: isPosition,
       }]);
-
       if (error) throw error;
 
-      // Fire lead notification email (best-effort, no await blocking UX)
       supabase.functions.invoke('notify-new-lead', {
-        body: {
-          name: data.name,
-          email: data.email,
-          phone: data.phone,
-          industry_type: data.service,
-          geographic_location: data.geographic_location,
-          is_recruitment: isPosition,
-        },
+        body: { name: data.name, email: data.email, phone: data.phone, industry_type: data.service, geographic_location: data.geographic_location, is_recruitment: isPosition },
       }).catch(console.error);
 
       try {
         await supabase.functions.invoke('systeme-add-contact', {
           body: {
-            email: data.email,
-            name: data.name,
-            phone: data.phone,
-            tags: [
-              'new-lead',
-              'website-form',
-              `service-${data.service}`,
-              `location-${data.geographic_location.toLowerCase().replace(/\s+/g, '-')}`,
-            ],
+            email: data.email, name: data.name, phone: data.phone,
+            tags: ['new-lead', 'website-form', `service-${data.service}`, `location-${data.geographic_location.toLowerCase().replace(/\s+/g, '-')}`],
           },
         });
-      } catch (emailError) {
-        console.error('Email automation error:', emailError);
-      }
+      } catch (e) { console.error('Email automation error:', e); }
 
-      toast.success("Thank you! We'll be in touch soon.");
+      setSubmitted(true);
       form.reset();
       setCvFile(null);
       setIdFile(null);
       setFileErrors({});
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error submitting form:", error);
       toast.error("Failed to submit form. Please try again.");
     } finally {
@@ -191,87 +164,139 @@ export const LeadCaptureForm = () => {
     }
   };
 
+  if (submitted) {
+    return (
+      <div className="bg-background rounded-2xl border border-border shadow-card overflow-hidden">
+        <div className="bg-primary p-8 text-center">
+          <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+            <Send className="h-7 w-7 text-secondary-foreground" />
+          </div>
+          <h3 className="text-primary-foreground text-2xl font-display font-bold mb-2">You're all set!</h3>
+          <p className="text-primary-foreground/80 text-sm">We've received your message and will get back to you within 24 hours.</p>
+        </div>
+        <div className="p-8 text-center">
+          <p className="text-muted-foreground text-sm mb-4">In the meantime, explore our work or reach out via WhatsApp.</p>
+          <Button
+            variant="outline"
+            className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+            onClick={() => setSubmitted(false)}
+          >
+            Submit Another Request
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <Card className="w-full max-w-xl mx-auto">
-      <CardHeader>
-        <CardTitle className="text-2xl">Get Started</CardTitle>
-        <CardDescription>
-          Tell us about your project or apply to join our team
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+    <div className="bg-background rounded-2xl border border-border shadow-card overflow-hidden">
+      {/* Form header */}
+      <div className="bg-primary px-8 py-6">
+        <h2 className="text-primary-foreground text-xl font-display font-bold">Get in Touch</h2>
+        <p className="text-primary-foreground/70 text-sm mt-1">
+          {isPosition ? "Apply to join our creative team" : "Tell us about your project"}
+        </p>
+      </div>
+
+      {/* Progress indicator */}
+      <div className="h-1 bg-muted">
+        <div className="h-1 bg-secondary w-0 transition-all duration-500" />
+      </div>
+
+      <div className="px-8 py-7">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="John Doe" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            {/* Name & Email row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+                      <User className="h-3.5 w-3.5" /> Full Name
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder="John Doe" className="bg-muted border-0 focus-visible:ring-primary" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+                      <Mail className="h-3.5 w-3.5" /> Email
+                    </FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="john@example.com" className="bg-muted border-0 focus-visible:ring-primary" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input type="email" placeholder="john@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Phone & Location row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+                      <Phone className="h-3.5 w-3.5" /> Phone
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder="+256 700 000 000" className="bg-muted border-0 focus-visible:ring-primary" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="geographic_location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+                      <MapPin className="h-3.5 w-3.5" /> Location
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder="Kampala, Uganda" className="bg-muted border-0 focus-visible:ring-primary" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone Number</FormLabel>
-                  <FormControl>
-                    <Input placeholder="+1234567890" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
+            {/* Service selector */}
             <FormField
               control={form.control}
               name="service"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>What are you interested in?</FormLabel>
+                  <FormLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                    What are you interested in?
+                  </FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select an option" />
+                      <SelectTrigger className="bg-muted border-0 focus:ring-primary">
+                        <SelectValue placeholder="Select a service or position" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem disabled value="services-header" className="font-semibold text-xs text-muted-foreground uppercase tracking-wide">
-                        Our Services
-                      </SelectItem>
-                      {services.map((service) => (
-                        <SelectItem key={service.value} value={service.value}>
-                          {service.label}
-                        </SelectItem>
+                      <div className="px-2 py-1.5 text-xs font-bold text-muted-foreground uppercase tracking-wide">Our Services</div>
+                      {services.map((s) => (
+                        <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
                       ))}
-                      <SelectItem disabled value="positions-header" className="font-semibold text-xs text-muted-foreground uppercase tracking-wide mt-2">
-                        Join Our Team
-                      </SelectItem>
-                      {positions.map((pos) => (
-                        <SelectItem key={pos.value} value={pos.value}>
-                          {pos.label}
-                        </SelectItem>
+                      <div className="px-2 py-1.5 text-xs font-bold text-muted-foreground uppercase tracking-wide mt-1 border-t border-border">Join Our Team</div>
+                      {positions.map((p) => (
+                        <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -280,99 +305,88 @@ export const LeadCaptureForm = () => {
               )}
             />
 
-            {/* Conditionally show file uploads for positions */}
+            {/* Document uploads for positions */}
             {isPosition && (
-              <div className="space-y-4 p-4 rounded-lg border border-dashed border-primary/30 bg-primary/5">
-                <p className="text-sm font-medium text-primary">
-                  Please attach the following documents:
+              <div className="rounded-xl border border-primary/20 bg-primary/5 p-5 space-y-4">
+                <p className="text-primary text-sm font-semibold flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-bold">!</span>
+                  Please attach the required documents
                 </p>
-
-                {/* CV Upload */}
-                <div>
-                  <label className="text-sm font-medium flex items-center gap-2 mb-2">
-                    <FileText className="h-4 w-4" /> CV / Resume
-                  </label>
-                  <div className="relative">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5 mb-2">
+                      <FileText className="h-3.5 w-3.5" /> CV / Resume
+                    </label>
                     <Input
                       type="file"
                       accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                      className="cursor-pointer"
+                      className="bg-background border-border cursor-pointer text-xs"
                       onChange={(e) => {
                         const file = e.target.files?.[0] || null;
                         setCvFile(file);
                         if (file) validateFile(file, "cv");
                       }}
                     />
+                    {cvFile && <p className="text-xs text-primary mt-1">✓ {cvFile.name}</p>}
+                    {fileErrors.cv && <p className="text-xs text-destructive mt-1">{fileErrors.cv}</p>}
                   </div>
-                  {cvFile && <p className="text-xs text-muted-foreground mt-1">✓ {cvFile.name}</p>}
-                  {fileErrors.cv && <p className="text-xs text-destructive mt-1">{fileErrors.cv}</p>}
-                </div>
-
-                {/* National ID Upload */}
-                <div>
-                  <label className="text-sm font-medium flex items-center gap-2 mb-2">
-                    <IdCard className="h-4 w-4" /> Copy of National ID
-                  </label>
-                  <div className="relative">
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5 mb-2">
+                      <IdCard className="h-3.5 w-3.5" /> National ID
+                    </label>
                     <Input
                       type="file"
                       accept=".pdf,.jpg,.jpeg,.png"
-                      className="cursor-pointer"
+                      className="bg-background border-border cursor-pointer text-xs"
                       onChange={(e) => {
                         const file = e.target.files?.[0] || null;
                         setIdFile(file);
                         if (file) validateFile(file, "id");
                       }}
                     />
+                    {idFile && <p className="text-xs text-primary mt-1">✓ {idFile.name}</p>}
+                    {fileErrors.id && <p className="text-xs text-destructive mt-1">{fileErrors.id}</p>}
                   </div>
-                  {idFile && <p className="text-xs text-muted-foreground mt-1">✓ {idFile.name}</p>}
-                  {fileErrors.id && <p className="text-xs text-destructive mt-1">{fileErrors.id}</p>}
                 </div>
-
-                <p className="text-xs text-muted-foreground">
-                  Accepted: PDF, DOC, DOCX, JPG, PNG (max 5MB each)
-                </p>
+                <p className="text-xs text-muted-foreground">Accepted: PDF, DOC, DOCX, JPG, PNG · Max 5MB each</p>
               </div>
             )}
 
-            <FormField
-              control={form.control}
-              name="geographic_location"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Location</FormLabel>
-                  <FormControl>
-                    <Input placeholder="City, Country" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Honeypot field */}
+            {/* Honeypot */}
             <FormField
               control={form.control}
               name="website"
               render={({ field }) => (
                 <FormItem className="hidden" aria-hidden="true">
-                  <FormLabel>Website</FormLabel>
-                  <FormControl>
-                    <Input tabIndex={-1} autoComplete="off" {...field} />
-                  </FormControl>
+                  <FormControl><Input tabIndex={-1} autoComplete="off" {...field} /></FormControl>
                 </FormItem>
               )}
             />
 
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Submitting..." : isPosition ? "Submit Application" : "Submit"}
+            <Button
+              type="submit"
+              className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-base rounded-xl flex items-center gap-2"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <span className="flex items-center gap-2">
+                  <span className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                  Submitting…
+                </span>
+              ) : (
+                <>
+                  <Send className="h-4 w-4" />
+                  {isPosition ? "Submit Application" : "Send Message"}
+                </>
+              )}
             </Button>
 
-            <p className="text-sm text-muted-foreground text-center">
+            <p className="text-xs text-muted-foreground text-center">
               Prefer chatting? Use the chat bubble at the bottom-right.
             </p>
           </form>
         </Form>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
