@@ -28,17 +28,15 @@ const SEO = ({
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Yowa Innovations",
-    alternateName: "Yowa Innovations Ltd",
+    legalName: "Yowa Innovations Ltd",
+    alternateName: ["Yowa Innovations Ltd", "Yowa"],
     url: "https://yowa.us",
-    logo: "https://yowa.us/logo.png",
-    description: "Content creation and advertising agency in Uganda specializing in video production, photography, and digital marketing.",
+    logo: {
+      "@type": "ImageObject",
+      "url": "https://yowa.us/favicon.png"
+    },
+    description: "Yowa Innovations Ltd is a content creation and advertising agency in Kampala, Uganda, specialising in video production, photography, documentary filmmaking and digital marketing for NGOs, corporates and startups across East Africa.",
     foundingDate: "2018",
-    founders: [
-      {
-        "@type": "Person",
-        name: "Yowa Innovations Team"
-      }
-    ],
     address: {
       "@type": "PostalAddress",
       addressLocality: "Kampala",
