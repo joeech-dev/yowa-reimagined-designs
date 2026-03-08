@@ -336,11 +336,11 @@ export function CSVImportPanel({ selectedClientId, onClientSelected }: Props) {
                 </TableHeader>
                 <TableBody>
                   {parsedRows.map((row, i) => (
-                    <TableRow key={i} className={row.status === "error" ? "bg-destructive/5" : row.status === "imported" ? "bg-green-50 dark:bg-green-950/20" : ""}>
+                    <TableRow key={i} className={row.status === "error" ? "bg-destructive/5" : row.status === "imported" ? "bg-muted/60" : ""}>
                       <TableCell className="text-xs text-muted-foreground">{i + 1}</TableCell>
                       <TableCell>
-                        {row.status === "valid" && <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">Ready</Badge>}
-                        {row.status === "imported" && <Badge variant="secondary" className="text-xs bg-accent text-accent-foreground">Imported</Badge>}
+                        {row.status === "valid" && <Badge variant="secondary" className="text-xs">Ready</Badge>}
+                        {row.status === "imported" && <Badge className="text-xs">Imported</Badge>}
                         {row.status === "error" && <Badge variant="destructive" className="text-xs">Error</Badge>}
                       </TableCell>
                       <TableCell className="text-xs">
