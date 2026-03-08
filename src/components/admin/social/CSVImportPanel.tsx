@@ -272,7 +272,7 @@ export function CSVImportPanel({ selectedClientId, onClientSelected }: Props) {
 
           {parsedRows.length > 0 && (
             <div className="flex flex-wrap gap-3 text-sm">
-              <span className="flex items-center gap-1 text-green-600">
+              <span className="flex items-center gap-1 text-primary">
                 <CheckCircle2 className="h-4 w-4" /> {validCount} valid
               </span>
               {importedCount > 0 && (
