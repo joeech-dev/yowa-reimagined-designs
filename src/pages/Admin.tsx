@@ -24,6 +24,7 @@ import TasksPanel from "@/components/admin/TasksPanel";
 import TasksManagement from "@/components/admin/tasks/TasksManagement";
 import ProductsManagement from "@/components/admin/ProductsManagement";
 import MobileBottomNav from "@/components/admin/MobileBottomNav";
+import { SocialMediaManagement } from "@/components/admin/social/SocialMediaManagement";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -320,6 +321,7 @@ const Admin = () => {
         <Route path="leads" element={<LeadsManagement />} />
         <Route path="analytics" element={<AnalyticsDashboard />} />
         <Route path="products" element={<ProductsManagement />} />
+        <Route path="social-reports" element={<SocialMediaManagement />} />
         <Route path="ai-assistant" element={<AIAssistantPanel />} />
         <Route path="users" element={<UserManagement />} />
         <Route path="settings" element={<AdminSettings />} />

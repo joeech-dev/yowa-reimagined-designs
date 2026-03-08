@@ -1098,6 +1098,137 @@ export type Database = {
           },
         ]
       }
+      social_media_clients: {
+        Row: {
+          contact_email: string | null
+          contact_person: string | null
+          created_at: string
+          created_by: string
+          id: string
+          industry: string | null
+          is_active: boolean
+          name: string
+          platforms: string[]
+          updated_at: string
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_person?: string | null
+          created_at?: string
+          created_by: string
+          id?: string
+          industry?: string | null
+          is_active?: boolean
+          name: string
+          platforms?: string[]
+          updated_at?: string
+        }
+        Update: {
+          contact_email?: string | null
+          contact_person?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          industry?: string | null
+          is_active?: boolean
+          name?: string
+          platforms?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      social_media_reports: {
+        Row: {
+          client_id: string
+          created_at: string
+          created_by: string
+          engagement_rate: number | null
+          followers_count: number | null
+          followers_gained: number | null
+          followers_lost: number | null
+          id: string
+          notes: string | null
+          platform: string
+          profile_visits: number | null
+          report_period_end: string
+          report_period_start: string
+          stories_views: number | null
+          total_clicks: number | null
+          total_comments: number | null
+          total_engagements: number | null
+          total_impressions: number | null
+          total_likes: number | null
+          total_posts: number | null
+          total_reach: number | null
+          total_shares: number | null
+          updated_at: string
+          video_views: number | null
+          watch_time_minutes: number | null
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          created_by: string
+          engagement_rate?: number | null
+          followers_count?: number | null
+          followers_gained?: number | null
+          followers_lost?: number | null
+          id?: string
+          notes?: string | null
+          platform: string
+          profile_visits?: number | null
+          report_period_end: string
+          report_period_start: string
+          stories_views?: number | null
+          total_clicks?: number | null
+          total_comments?: number | null
+          total_engagements?: number | null
+          total_impressions?: number | null
+          total_likes?: number | null
+          total_posts?: number | null
+          total_reach?: number | null
+          total_shares?: number | null
+          updated_at?: string
+          video_views?: number | null
+          watch_time_minutes?: number | null
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          created_by?: string
+          engagement_rate?: number | null
+          followers_count?: number | null
+          followers_gained?: number | null
+          followers_lost?: number | null
+          id?: string
+          notes?: string | null
+          platform?: string
+          profile_visits?: number | null
+          report_period_end?: string
+          report_period_start?: string
+          stories_views?: number | null
+          total_clicks?: number | null
+          total_comments?: number | null
+          total_engagements?: number | null
+          total_impressions?: number | null
+          total_likes?: number | null
+          total_posts?: number | null
+          total_reach?: number | null
+          total_shares?: number | null
+          updated_at?: string
+          video_views?: number | null
+          watch_time_minutes?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_media_reports_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "social_media_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       social_media_webhooks: {
         Row: {
           created_at: string | null
