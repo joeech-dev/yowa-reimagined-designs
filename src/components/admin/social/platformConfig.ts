@@ -1,32 +1,58 @@
-export const PLATFORM_CONFIG: Record<string, { label: string; icon: string; color: string; metrics: string[] }> = {
+export const PLATFORM_CONFIG: Record<string, { label: string; icon: string; color: string; metrics: string[]; urlPlaceholder: string }> = {
   facebook: {
     label: "Facebook",
     icon: "📘",
     color: "#1877F2",
     metrics: ["followers", "reach", "impressions", "engagements", "posts", "stories"],
+    urlPlaceholder: "https://facebook.com/yourpage",
   },
   instagram: {
     label: "Instagram",
     icon: "📸",
     color: "#E1306C",
     metrics: ["followers", "reach", "impressions", "engagements", "posts", "stories", "profile_visits"],
+    urlPlaceholder: "https://instagram.com/yourhandle",
   },
   youtube: {
     label: "YouTube",
     icon: "▶️",
     color: "#FF0000",
     metrics: ["followers", "video_views", "watch_time", "impressions", "engagements", "posts"],
+    urlPlaceholder: "https://youtube.com/@yourchannel",
   },
   twitter: {
     label: "X / Twitter",
     icon: "𝕏",
     color: "#000000",
     metrics: ["followers", "impressions", "engagements", "posts", "profile_visits"],
+    urlPlaceholder: "https://x.com/yourhandle",
   },
   linkedin: {
     label: "LinkedIn",
     icon: "💼",
     color: "#0A66C2",
     metrics: ["followers", "reach", "impressions", "engagements", "posts", "profile_visits"],
+    urlPlaceholder: "https://linkedin.com/company/yourpage",
+  },
+  pinterest: {
+    label: "Pinterest",
+    icon: "📌",
+    color: "#E60023",
+    metrics: ["followers", "impressions", "engagements", "posts", "profile_visits"],
+    urlPlaceholder: "https://pinterest.com/yourprofile",
+  },
+  snapchat: {
+    label: "Snapchat",
+    icon: "👻",
+    color: "#FFFC00",
+    metrics: ["followers", "reach", "impressions", "engagements", "posts", "stories"],
+    urlPlaceholder: "https://snapchat.com/add/yourhandle",
+  },
+  tiktok: {
+    label: "TikTok",
+    icon: "🎵",
+    color: "#010101",
+    metrics: ["followers", "video_views", "reach", "impressions", "engagements", "posts", "profile_visits"],
+    urlPlaceholder: "https://tiktok.com/@yourhandle",
   },
 };
