@@ -105,58 +105,36 @@ const BlogPost = () => {
             )}
 
             {/* Content */}
-             <div className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-a:text-primary">
+            <div className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-a:text-primary prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-muted-foreground prose-img:rounded-lg prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm">
               {blog.content ? (
-                 <ReactMarkdown 
-                   remarkPlugins={[remarkGfm]}
-                   components={{
-                     img: ({ src, alt }) => (
-                       <img 
-                         src={src} 
-                         alt={alt || ''} 
-                         className="rounded-lg max-w-full h-auto my-4"
-                       />
-                     ),
-                     h1: ({ children }) => (
-                       <h1 className="font-display font-bold text-3xl mt-8 mb-4">{children}</h1>
-                     ),
-                     h2: ({ children }) => (
-                       <h2 className="font-display font-bold text-2xl mt-6 mb-3">{children}</h2>
-                     ),
-                     p: ({ children }) => (
-                       <p className="text-foreground leading-relaxed mb-4">{children}</p>
-                     ),
-                     strong: ({ children }) => (
-                       <strong className="font-bold text-foreground">{children}</strong>
-                     ),
-                     ul: ({ children }) => (
-                       <ul className="list-disc list-inside mb-4 space-y-2">{children}</ul>
-                     ),
-                     ol: ({ children }) => (
-                       <ol className="list-decimal list-inside mb-4 space-y-2">{children}</ol>
-                     ),
-                     blockquote: ({ children }) => (
-                       <blockquote className="border-l-4 border-primary pl-4 italic my-4 text-muted-foreground">{children}</blockquote>
-                     ),
-                       a: ({ href, children }) => {
-                         const isInternal = href && (href.startsWith('/') || href.startsWith('https://yowa.us') || href.startsWith('https://yowaa.lovable.app'));
-                         return (
-                           <a 
-                             href={href} 
-                             {...(!isInternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                             className="text-primary underline underline-offset-4 decoration-primary/50 hover:decoration-primary font-medium transition-colors"
-                           >
-                             {children}
-                           </a>
-                         );
-                       },
-                      code: ({ children }) => (
-                        <code className="bg-muted px-1.5 py-0.5 rounded text-sm">{children}</code>
+                blog.content.trimStart().startsWith("<") ? (
+                  // HTML content from WYSIWYG editor
+                  <div dangerouslySetInnerHTML={{ __html: blog.content }} />
+                ) : (
+                  // Legacy markdown fallback
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      img: ({ src, alt }) => (
+                        <img src={src} alt={alt || ""} className="rounded-lg max-w-full h-auto my-4" />
                       ),
-                   }}
-                 >
-                   {blog.content}
-                 </ReactMarkdown>
+                      a: ({ href, children }) => {
+                        const isInternal = href && (href.startsWith("/") || href.startsWith("https://yowa.us") || href.startsWith("https://yowaa.lovable.app"));
+                        return (
+                          <a
+                            href={href}
+                            {...(!isInternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                            className="text-primary underline underline-offset-4 decoration-primary/50 hover:decoration-primary font-medium transition-colors"
+                          >
+                            {children}
+                          </a>
+                        );
+                      },
+                    }}
+                  >
+                    {blog.content}
+                  </ReactMarkdown>
+                )
               ) : (
                 <p className="text-xl text-muted-foreground leading-relaxed mb-8">
                   {blog.excerpt}
