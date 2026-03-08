@@ -1,0 +1,1 @@
+ALTER TABLE public.social_media_clients ADD COLUMN IF NOT EXISTS channel_links jsonb DEFAULT '{}'::jsonb;
