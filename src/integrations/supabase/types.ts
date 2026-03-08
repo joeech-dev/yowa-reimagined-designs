@@ -61,6 +61,7 @@ export type Database = {
           slug: string
           source_name: string
           source_url: string
+          status: string
           title: string
         }
         Insert: {
@@ -76,6 +77,7 @@ export type Database = {
           slug: string
           source_name: string
           source_url: string
+          status?: string
           title: string
         }
         Update: {
@@ -91,6 +93,7 @@ export type Database = {
           slug?: string
           source_name?: string
           source_url?: string
+          status?: string
           title?: string
         }
         Relationships: []

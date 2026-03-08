@@ -12,6 +12,7 @@ export interface BlogPost {
   source_name: string;
   published_at: string;
   content: string | null;
+  status?: string;
 }
 
 export const useBlogs = (category?: string) => {
@@ -20,7 +21,8 @@ export const useBlogs = (category?: string) => {
     queryFn: async () => {
       let query = supabase
         .from("blog_posts")
-        .select("id, title, excerpt, category, image, slug, source_url, source_name, published_at, content")
+        .select("id, title, excerpt, category, image, slug, source_url, source_name, published_at, content, status")
+        .eq("status", "published")
         .order("published_at", { ascending: false });
 
       if (category && category !== "all") {
@@ -49,6 +51,7 @@ export const useBlogBySlug = (slug: string | undefined) => {
         .from("blog_posts")
         .select("*")
         .eq("slug", slug)
+        .eq("status", "published")
         .maybeSingle();
 
       if (error) {
