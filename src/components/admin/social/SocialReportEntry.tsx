@@ -128,6 +128,17 @@ export function SocialReportEntry({ selectedClientId, onClientSelected }: Props)
 
   return (
     <div className="space-y-4">
+      <Tabs defaultValue="manual">
+        <TabsList className="w-full grid grid-cols-2 max-w-sm">
+          <TabsTrigger value="manual" className="text-xs flex items-center gap-1.5">
+            <ClipboardList className="h-3.5 w-3.5" /> Manual Entry
+          </TabsTrigger>
+          <TabsTrigger value="csv" className="text-xs flex items-center gap-1.5">
+            <Upload className="h-3.5 w-3.5" /> CSV Import
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="manual" className="mt-4 space-y-4">
       {/* Client selector */}
       <Card>
         <CardHeader className="pb-3">
