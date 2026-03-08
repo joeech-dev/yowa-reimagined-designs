@@ -37,6 +37,7 @@ const allMenuItems = [
   { icon: Users, label: "Leads", path: "/admin/leads", section: "leads" },
   { icon: ShoppingBag, label: "Products", path: "/admin/products", section: "partners" },
   { icon: BarChart3, label: "Analytics", path: "/admin/analytics", section: "analytics" },
+  { icon: BarChart3, label: "Social Reports", path: "/admin/social-reports", section: "sales_marketing" },
   { icon: Sparkles, label: "AI Assistant", path: "/admin/ai-assistant", section: "ai-assistant" },
   { icon: Users, label: "Users", path: "/admin/users", section: "users" },
   { icon: Settings, label: "Settings", path: "/admin/settings", section: "settings" },
