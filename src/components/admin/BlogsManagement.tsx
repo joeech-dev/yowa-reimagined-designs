@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, ExternalLink, Sparkles, Image, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, ExternalLink, Sparkles, Image, Loader2, Globe, EyeOff } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -38,6 +38,7 @@ interface BlogPost {
   source_name: string;
   published_at: string;
   created_at: string | null;
+  status: string;
 }
 
 const categories = ["Urbanism", "Livelihood", "Technology", "Agriculture", "Environment", "Education"];
@@ -46,6 +47,7 @@ const BlogsManagement = () => {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState<"all" | "draft" | "published">("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBlog, setEditingBlog] = useState<BlogPost | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -59,6 +61,7 @@ const BlogsManagement = () => {
     image: "",
     source_url: "",
     source_name: "",
+    status: "draft",
   });
 
   useEffect(() => {
@@ -70,10 +73,10 @@ const BlogsManagement = () => {
       const { data, error } = await supabase
         .from("blog_posts")
         .select("*")
-        .order("published_at", { ascending: false });
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setBlogs(data || []);
+      setBlogs((data || []) as BlogPost[]);
     } catch (error) {
       console.error("Error fetching blogs:", error);
       toast.error("Failed to load blogs");
@@ -82,8 +85,10 @@ const BlogsManagement = () => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (saveAsDraft = false) => {
     try {
+      const status = saveAsDraft ? "draft" : formData.status;
+
       if (editingBlog) {
         const { error } = await supabase
           .from("blog_posts")
@@ -96,13 +101,13 @@ const BlogsManagement = () => {
             image: formData.image || null,
             source_url: formData.source_url,
             source_name: formData.source_name,
+            status,
           })
           .eq("id", editingBlog.id);
 
         if (error) throw error;
-        toast.success("Blog post updated");
+        toast.success(status === "draft" ? "Saved as draft" : "Blog post updated");
       } else {
-        // Auto-generate source_url if empty
         const sourceUrl = formData.source_url || `https://yowa.us/blog/${formData.slug}-${Date.now()}`;
         const sourceName = formData.source_name || "Yowa Innovations";
         const { error } = await supabase
@@ -117,10 +122,11 @@ const BlogsManagement = () => {
             source_url: sourceUrl,
             source_name: sourceName,
             published_at: new Date().toISOString(),
+            status,
           });
 
         if (error) throw error;
-        toast.success("Blog post created");
+        toast.success(status === "draft" ? "Post saved as draft — review before publishing" : "Blog post published");
       }
 
       setIsDialogOpen(false);
@@ -129,6 +135,21 @@ const BlogsManagement = () => {
     } catch (error) {
       console.error("Error saving blog:", error);
       toast.error("Failed to save blog post");
+    }
+  };
+
+  const togglePublishStatus = async (blog: BlogPost) => {
+    const newStatus = blog.status === "published" ? "draft" : "published";
+    try {
+      const { error } = await supabase
+        .from("blog_posts")
+        .update({ status: newStatus })
+        .eq("id", blog.id);
+      if (error) throw error;
+      toast.success(newStatus === "published" ? "Post published!" : "Post moved to drafts");
+      fetchBlogs();
+    } catch (error) {
+      toast.error("Failed to update status");
     }
   };
 
@@ -161,6 +182,7 @@ const BlogsManagement = () => {
       image: blog.image || "",
       source_url: blog.source_url,
       source_name: blog.source_name,
+      status: blog.status || "draft",
     });
     setIsDialogOpen(true);
   };
@@ -176,6 +198,7 @@ const BlogsManagement = () => {
       image: "",
       source_url: "",
       source_name: "",
+      status: "draft",
     });
   };
 
@@ -200,7 +223,7 @@ const BlogsManagement = () => {
         .from("blog-images")
         .getPublicUrl(fileName);
 
-      setFormData({ ...formData, image: publicUrl });
+      setFormData(prev => ({ ...prev, image: publicUrl }));
       toast.success("Featured image uploaded");
     } catch (error) {
       console.error("Error uploading image:", error);
@@ -210,17 +233,22 @@ const BlogsManagement = () => {
     }
   };
 
-  const filteredBlogs = blogs.filter(blog =>
-    blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    blog.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   const generateSlug = (title: string) => {
     return title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
   };
+
+  const filteredBlogs = blogs.filter(blog => {
+    const matchesSearch = blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      blog.category.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = filterStatus === "all" || blog.status === filterStatus;
+    return matchesSearch && matchesStatus;
+  });
+
+  const draftCount = blogs.filter(b => b.status === "draft").length;
+  const publishedCount = blogs.filter(b => b.status === "published").length;
 
   return (
     <Card>
@@ -234,7 +262,11 @@ const BlogsManagement = () => {
                 AI Enhanced
               </Badge>
             </CardTitle>
-            <CardDescription>Create, edit, and manage your blog content</CardDescription>
+            <CardDescription className="flex items-center gap-3 mt-1">
+              <span>{publishedCount} published</span>
+              <span className="text-muted-foreground/50">·</span>
+              <span className="text-amber-600 font-medium">{draftCount} draft{draftCount !== 1 ? "s" : ""} pending review</span>
+            </CardDescription>
           </div>
           <Button onClick={() => { resetForm(); setIsDialogOpen(true); }} className="bg-primary hover:bg-primary/90">
             <Plus className="h-4 w-4 mr-2" />
@@ -243,13 +275,26 @@ const BlogsManagement = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="mb-6">
+        <div className="mb-6 flex gap-3 items-center">
           <Input
             placeholder="Search blogs..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="max-w-sm"
           />
+          <div className="flex gap-1">
+            {(["all", "draft", "published"] as const).map(s => (
+              <Button
+                key={s}
+                variant={filterStatus === s ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterStatus(s)}
+                className="capitalize"
+              >
+                {s}
+              </Button>
+            ))}
+          </div>
         </div>
 
         {loading ? (
@@ -260,23 +305,46 @@ const BlogsManagement = () => {
               <TableRow>
                 <TableHead>Title</TableHead>
                 <TableHead>Category</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead>Source</TableHead>
-                <TableHead>Published</TableHead>
+                <TableHead>Date</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredBlogs.map((blog) => (
-                <TableRow key={blog.id}>
+                <TableRow key={blog.id} className={blog.status === "draft" ? "opacity-75" : ""}>
                   <TableCell className="font-medium max-w-xs truncate">{blog.title}</TableCell>
                   <TableCell>
                     <Badge variant="outline">{blog.category}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    {blog.status === "published" ? (
+                      <Badge className="bg-green-100 text-green-800 border-0">
+                        <Globe className="h-3 w-3 mr-1" />
+                        Published
+                      </Badge>
+                    ) : (
+                      <Badge className="bg-amber-100 text-amber-800 border-0">
+                        <EyeOff className="h-3 w-3 mr-1" />
+                        Draft
+                      </Badge>
+                    )}
                   </TableCell>
                   <TableCell className="text-muted-foreground">{blog.source_name}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {new Date(blog.published_at).toLocaleDateString()}
                   </TableCell>
-                  <TableCell className="text-right space-x-2">
+                  <TableCell className="text-right space-x-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => togglePublishStatus(blog)}
+                      title={blog.status === "published" ? "Move to Draft" : "Publish"}
+                      className={blog.status === "published" ? "text-amber-600 hover:text-amber-700" : "text-green-600 hover:text-green-700"}
+                    >
+                      {blog.status === "published" ? <EyeOff className="h-4 w-4" /> : <Globe className="h-4 w-4" />}
+                    </Button>
                     <Button variant="ghost" size="icon" onClick={() => window.open(blog.source_url, "_blank")}>
                       <ExternalLink className="h-4 w-4" />
                     </Button>
@@ -295,7 +363,7 @@ const BlogsManagement = () => {
 
         {filteredBlogs.length === 0 && !loading && (
           <div className="text-center py-8 text-muted-foreground">
-            No blog posts found. Create your first post!
+            No blog posts found.
           </div>
         )}
       </CardContent>
@@ -305,7 +373,7 @@ const BlogsManagement = () => {
           <DialogHeader>
             <DialogTitle>{editingBlog ? "Edit Blog Post" : "Create New Blog Post"}</DialogTitle>
             <DialogDescription>
-              Fill in the details below to {editingBlog ? "update" : "create"} a blog post.
+              New posts are saved as <strong>drafts</strong> until you publish them.
             </DialogDescription>
           </DialogHeader>
 
@@ -445,10 +513,15 @@ const BlogsManagement = () => {
             </TabsContent>
           </Tabs>
 
-          <DialogFooter className="mt-4">
+          <DialogFooter className="mt-4 flex gap-2">
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleSubmit} className="bg-primary hover:bg-primary/90">
-              {editingBlog ? "Update" : "Create"} Post
+            <Button variant="outline" onClick={() => handleSubmit(true)} className="border-amber-300 text-amber-700 hover:bg-amber-50">
+              <EyeOff className="h-4 w-4 mr-2" />
+              Save as Draft
+            </Button>
+            <Button onClick={() => { setFormData(prev => ({ ...prev, status: "published" })); handleSubmit(false); }} className="bg-primary hover:bg-primary/90">
+              <Globe className="h-4 w-4 mr-2" />
+              {editingBlog ? "Update & Publish" : "Publish"}
             </Button>
           </DialogFooter>
         </DialogContent>
