@@ -340,7 +340,7 @@ export function CSVImportPanel({ selectedClientId, onClientSelected }: Props) {
                       <TableCell className="text-xs text-muted-foreground">{i + 1}</TableCell>
                       <TableCell>
                         {row.status === "valid" && <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">Ready</Badge>}
-                        {row.status === "imported" && <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">Imported</Badge>}
+                        {row.status === "imported" && <Badge variant="secondary" className="text-xs bg-accent text-accent-foreground">Imported</Badge>}
                         {row.status === "error" && <Badge variant="destructive" className="text-xs">Error</Badge>}
                       </TableCell>
                       <TableCell className="text-xs">
