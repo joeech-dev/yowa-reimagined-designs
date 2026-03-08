@@ -7,9 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSocialMediaClients, useCreateSocialMediaReport, useUpdateSocialMediaReport, useSocialMediaReports, useDeleteSocialMediaReport } from "@/hooks/useSocialMediaReports";
 import { PLATFORM_CONFIG } from "./platformConfig";
-import { PlusCircle, Save, Trash2, Pencil, Upload } from "lucide-react";
+import { CSVImportPanel } from "./CSVImportPanel";
+import { Save, Trash2, Pencil, Upload, ClipboardList } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
@@ -126,6 +128,17 @@ export function SocialReportEntry({ selectedClientId, onClientSelected }: Props)
 
   return (
     <div className="space-y-4">
+      <Tabs defaultValue="manual">
+        <TabsList className="w-full grid grid-cols-2 max-w-sm">
+          <TabsTrigger value="manual" className="text-xs flex items-center gap-1.5">
+            <ClipboardList className="h-3.5 w-3.5" /> Manual Entry
+          </TabsTrigger>
+          <TabsTrigger value="csv" className="text-xs flex items-center gap-1.5">
+            <Upload className="h-3.5 w-3.5" /> CSV Import
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="manual" className="mt-4 space-y-4">
       {/* Client selector */}
       <Card>
         <CardHeader className="pb-3">
@@ -279,7 +292,7 @@ export function SocialReportEntry({ selectedClientId, onClientSelected }: Props)
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive hover:text-destructive">
-                          <Trash2 className="h-3 w-3" />
+                           <Trash2 className="h-3 w-3" />
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
@@ -300,6 +313,15 @@ export function SocialReportEntry({ selectedClientId, onClientSelected }: Props)
           </CardContent>
         </Card>
       )}
+        </TabsContent>
+
+        <TabsContent value="csv" className="mt-4">
+          <CSVImportPanel
+            selectedClientId={selectedClientId}
+            onClientSelected={onClientSelected}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
