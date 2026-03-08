@@ -18,6 +18,12 @@ const SeoRedirects = () => {
       return;
     }
 
+    // /portfolio → /projects (canonical redirect)
+    if (path === "/portfolio") {
+      navigate("/projects", { replace: true });
+      return;
+    }
+
     // /posts?page=X → /blogs
     if (path === "/posts") {
       navigate("/blogs", { replace: true });

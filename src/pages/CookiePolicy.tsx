@@ -5,7 +5,7 @@
  const CookiePolicy = () => {
    return (
      <div className="min-h-screen">
-       <SEO title="Cookie Policy | Yowa Innovations" description="Learn about how Yowa Innovations uses cookies on our website." />
+       <SEO title="Cookie Policy | Yowa Innovations" description="Learn about how Yowa Innovations uses cookies on our website." url="https://yowa.us/cookie-policy" />
        <Navbar />
        
        <main className="pt-24 pb-16">

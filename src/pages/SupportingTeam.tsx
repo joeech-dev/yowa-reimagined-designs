@@ -73,7 +73,7 @@ const SupportingTeam = () => {
       <SEO
         title="Supporting Team | Yowa Innovations"
         description="Meet the extended Yowa Innovations team — employees, freelancers, and trainees powering our creative work."
-        url="https://yowainnovations.com/team"
+        url="https://yowa.us/team"
       />
       <Navbar />
 

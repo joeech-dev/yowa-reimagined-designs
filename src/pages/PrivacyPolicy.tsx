@@ -5,7 +5,7 @@ import SEO from "@/components/SEO";
 const PrivacyPolicy = () => {
   return (
     <div className="min-h-screen">
-      <SEO title="Privacy Policy | Yowa Innovations" description="Learn how Yowa Innovations collects, uses, and protects your personal information." />
+      <SEO title="Privacy Policy | Yowa Innovations" description="Learn how Yowa Innovations collects, uses, and protects your personal information." url="https://yowa.us/privacy-policy" />
       <Navbar />
 
       <main className="pt-24 pb-16">

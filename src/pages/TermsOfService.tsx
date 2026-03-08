@@ -5,7 +5,7 @@ import SEO from "@/components/SEO";
 const TermsOfService = () => {
   return (
     <div className="min-h-screen">
-      <SEO title="Terms of Service | Yowa Innovations" description="Read the terms and conditions for using the Yowa Innovations website and services." />
+      <SEO title="Terms of Service | Yowa Innovations" description="Read the terms and conditions for using the Yowa Innovations website and services." url="https://yowa.us/terms-of-service" />
       <Navbar />
 
       <main className="pt-24 pb-16">
