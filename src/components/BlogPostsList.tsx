@@ -18,6 +18,7 @@ const BlogPostsList = ({ currentSlug }: { currentSlug?: string }) => {
       const { data } = await supabase
         .from("blog_posts")
         .select("id, title, slug, image, category")
+        .eq("status", "published")
         .order("published_at", { ascending: false })
         .limit(20);
       return (data || []) as BlogPostItem[];

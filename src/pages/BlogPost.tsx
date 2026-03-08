@@ -105,7 +105,7 @@ const BlogPost = () => {
             )}
 
             {/* Content */}
-            <div className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-a:text-primary prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-muted-foreground prose-img:rounded-lg prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm">
+            <div className="blog-content max-w-none">
               {blog.content ? (
                 blog.content.trimStart().startsWith("<") ? (
                   // HTML content from WYSIWYG editor
@@ -140,19 +140,6 @@ const BlogPost = () => {
                   {blog.excerpt}
                 </p>
               )}
-
-              {/* Link to full article if external source */}
-              <div className="bg-muted/50 rounded-xl p-6 my-8">
-                <p className="text-foreground mb-4">
-                  Explore our completed projects and see our work in action.
-                </p>
-                <Button asChild>
-                  <Link to="/projects">
-                    <ArrowLeft className="mr-2 h-4 w-4 rotate-180" />
-                    More Projects
-                  </Link>
-                </Button>
-              </div>
             </div>
 
             {/* eBook Promo */}
