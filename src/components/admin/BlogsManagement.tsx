@@ -85,9 +85,9 @@ const BlogsManagement = () => {
     }
   };
 
-  const handleSubmit = async (saveAsDraft = false) => {
+  const handleSubmit = async (targetStatus: string = "draft") => {
     try {
-      const status = saveAsDraft ? "draft" : formData.status;
+      const status = targetStatus;
 
       if (editingBlog) {
         const { error } = await supabase
