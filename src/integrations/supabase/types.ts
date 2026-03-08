@@ -1100,6 +1100,7 @@ export type Database = {
       }
       social_media_clients: {
         Row: {
+          channel_links: Json | null
           contact_email: string | null
           contact_person: string | null
           created_at: string
@@ -1112,6 +1113,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          channel_links?: Json | null
           contact_email?: string | null
           contact_person?: string | null
           created_at?: string
@@ -1124,6 +1126,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          channel_links?: Json | null
           contact_email?: string | null
           contact_person?: string | null
           created_at?: string
