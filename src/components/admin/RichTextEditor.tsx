@@ -113,20 +113,17 @@ const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorProps) =
     },
   });
 
-  // Sync external value changes (e.g. when editing dialog opens with existing content)
+  // Sync initial value when editor first mounts (handles dialog open with existing post)
   useEffect(() => {
     if (!editor) return;
     const currentHTML = editor.getHTML();
-    // Only update if value differs meaningfully (avoid cursor reset during typing)
-    if (value !== currentHTML && value !== undefined) {
-      const isEmpty = !value || value === "<p></p>" || value === "";
-      const editorIsEmpty = currentHTML === "<p></p>" || currentHTML === "";
-      // Only replace if the editor is empty or value is completely different (dialog open)
-      if (editorIsEmpty || !currentHTML) {
-        editor.commands.setContent(value || "", { emitUpdate: false });
-      }
+    const normalizedValue = value || "";
+    // Only set if the editor is blank but we have content to show
+    const editorIsEmpty = currentHTML === "<p></p>" || currentHTML === "";
+    if (editorIsEmpty && normalizedValue && normalizedValue !== "<p></p>") {
+      editor.commands.setContent(normalizedValue, { emitUpdate: false });
     }
-  }, [value, editor]);
+  }, [editor]); // Only run when editor mounts
 
   const handleImageUpload = async (file: File) => {
     if (!file.type.startsWith("image/")) {
