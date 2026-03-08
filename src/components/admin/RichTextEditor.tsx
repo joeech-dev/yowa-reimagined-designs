@@ -123,7 +123,7 @@ const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorProps) =
       const editorIsEmpty = currentHTML === "<p></p>" || currentHTML === "";
       // Only replace if the editor is empty or value is completely different (dialog open)
       if (editorIsEmpty || !currentHTML) {
-        editor.commands.setContent(value || "", false);
+        editor.commands.setContent(value || "", { emitUpdate: false });
       }
     }
   }, [value, editor]);
