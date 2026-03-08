@@ -67,7 +67,7 @@ const About = () => {
         title="About Yowa Innovations | Creative Agency Uganda - Our Story & Mission"
         description="Discover Yowa Innovations, Uganda's leading creative agency. We use media, technology & creativity to drive change in agriculture, environment & education. 50+ projects delivered."
         keywords="about yowa innovations, creative agency Uganda, media production company Kampala, social impact storytelling, documentary filmmaking East Africa, content creation team"
-        url="https://yowainnovations.com/about"
+        url="https://yowa.us/about"
       />
       <Navbar />
 

@@ -5,7 +5,7 @@
  const ContentPolicy = () => {
    return (
      <div className="min-h-screen">
-       <SEO title="Content Use & Copyright Policy | Yowa Innovations" description="Learn about content use and copyright policies at Yowa Innovations." />
+       <SEO title="Content Use & Copyright Policy | Yowa Innovations" description="Learn about content use and copyright policies at Yowa Innovations." url="https://yowa.us/content-policy" />
        <Navbar />
        
        <main className="pt-24 pb-16">
