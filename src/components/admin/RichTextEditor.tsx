@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
@@ -65,7 +65,9 @@ const ToolbarButton = ({
     title={title}
     className={cn(
       "h-8 w-8 p-0 rounded",
-      active && "bg-primary text-primary-foreground hover:bg-primary/90"
+      active
+        ? "bg-primary text-primary-foreground hover:bg-primary/90"
+        : "hover:bg-muted"
     )}
   >
     {children}
@@ -82,6 +84,14 @@ const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorProps) =
     extensions: [
       StarterKit.configure({
         heading: { levels: [1, 2, 3] },
+        bold: {},
+        italic: {},
+        strike: {},
+        code: {},
+        bulletList: {},
+        orderedList: {},
+        blockquote: {},
+        horizontalRule: {},
       }),
       Underline,
       Image.configure({ inline: false, allowBase64: true }),
@@ -92,11 +102,28 @@ const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorProps) =
       TextAlign.configure({ types: ["heading", "paragraph"] }),
       Highlight.configure({ multicolor: false }),
     ],
-    content: value,
+    content: value || "",
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
     },
+    editorProps: {
+      attributes: {
+        class: "outline-none min-h-[400px] px-4 py-3",
+      },
+    },
   });
+
+  // Sync initial value when editor first mounts (handles dialog open with existing post)
+  useEffect(() => {
+    if (!editor) return;
+    const currentHTML = editor.getHTML();
+    const normalizedValue = value || "";
+    // Only set if the editor is blank but we have content to show
+    const editorIsEmpty = currentHTML === "<p></p>" || currentHTML === "";
+    if (editorIsEmpty && normalizedValue && normalizedValue !== "<p></p>") {
+      editor.commands.setContent(normalizedValue, { emitUpdate: false });
+    }
+  }, [editor]); // Only run when editor mounts
 
   const handleImageUpload = async (file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -148,7 +175,7 @@ const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorProps) =
   if (!editor) return null;
 
   return (
-    <div className="border border-input rounded-lg overflow-hidden">
+    <div className="border border-input rounded-lg overflow-hidden bg-background">
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-0.5 p-2 bg-muted/40 border-b border-input">
         {/* History */}
@@ -162,64 +189,127 @@ const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorProps) =
         <Divider />
 
         {/* Headings */}
-        <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} active={editor.isActive("heading", { level: 1 })} title="Heading 1">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+          active={editor.isActive("heading", { level: 1 })}
+          title="Heading 1"
+        >
           <Heading1 className="h-3.5 w-3.5" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} active={editor.isActive("heading", { level: 2 })} title="Heading 2">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          active={editor.isActive("heading", { level: 2 })}
+          title="Heading 2"
+        >
           <Heading2 className="h-3.5 w-3.5" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} active={editor.isActive("heading", { level: 3 })} title="Heading 3">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          active={editor.isActive("heading", { level: 3 })}
+          title="Heading 3"
+        >
           <Heading3 className="h-3.5 w-3.5" />
         </ToolbarButton>
 
         <Divider />
 
         {/* Inline formatting */}
-        <ToolbarButton onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive("bold")} title="Bold">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          active={editor.isActive("bold")}
+          title="Bold (Ctrl+B)"
+        >
           <Bold className="h-3.5 w-3.5" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleItalic().run()} active={editor.isActive("italic")} title="Italic">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          active={editor.isActive("italic")}
+          title="Italic (Ctrl+I)"
+        >
           <Italic className="h-3.5 w-3.5" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleUnderline().run()} active={editor.isActive("underline")} title="Underline">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleUnderline().run()}
+          active={editor.isActive("underline")}
+          title="Underline (Ctrl+U)"
+        >
           <UnderlineIcon className="h-3.5 w-3.5" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleStrike().run()} active={editor.isActive("strike")} title="Strikethrough">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+          active={editor.isActive("strike")}
+          title="Strikethrough"
+        >
           <Strikethrough className="h-3.5 w-3.5" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleHighlight().run()} active={editor.isActive("highlight")} title="Highlight">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleHighlight().run()}
+          active={editor.isActive("highlight")}
+          title="Highlight"
+        >
           <Highlighter className="h-3.5 w-3.5" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleCode().run()} active={editor.isActive("code")} title="Inline Code">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleCode().run()}
+          active={editor.isActive("code")}
+          title="Inline Code"
+        >
           <Code className="h-3.5 w-3.5" />
         </ToolbarButton>
 
         <Divider />
 
         {/* Alignment */}
-        <ToolbarButton onClick={() => editor.chain().focus().setTextAlign("left").run()} active={editor.isActive({ textAlign: "left" })} title="Align Left">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().setTextAlign("left").run()}
+          active={editor.isActive({ textAlign: "left" })}
+          title="Align Left"
+        >
           <AlignLeft className="h-3.5 w-3.5" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().setTextAlign("center").run()} active={editor.isActive({ textAlign: "center" })} title="Align Center">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().setTextAlign("center").run()}
+          active={editor.isActive({ textAlign: "center" })}
+          title="Align Center"
+        >
           <AlignCenter className="h-3.5 w-3.5" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().setTextAlign("right").run()} active={editor.isActive({ textAlign: "right" })} title="Align Right">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().setTextAlign("right").run()}
+          active={editor.isActive({ textAlign: "right" })}
+          title="Align Right"
+        >
           <AlignRight className="h-3.5 w-3.5" />
         </ToolbarButton>
 
         <Divider />
 
         {/* Lists & Blocks */}
-        <ToolbarButton onClick={() => editor.chain().focus().toggleBulletList().run()} active={editor.isActive("bulletList")} title="Bullet List">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          active={editor.isActive("bulletList")}
+          title="Bullet List"
+        >
           <List className="h-3.5 w-3.5" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleOrderedList().run()} active={editor.isActive("orderedList")} title="Numbered List">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          active={editor.isActive("orderedList")}
+          title="Numbered List"
+        >
           <ListOrdered className="h-3.5 w-3.5" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleBlockquote().run()} active={editor.isActive("blockquote")} title="Quote">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          active={editor.isActive("blockquote")}
+          title="Quote"
+        >
           <Quote className="h-3.5 w-3.5" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().setHorizontalRule().run()} title="Divider">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().setHorizontalRule().run()}
+          title="Divider"
+        >
           <Minus className="h-3.5 w-3.5" />
         </ToolbarButton>
 
@@ -231,7 +321,7 @@ const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorProps) =
         </ToolbarButton>
         <ToolbarButton
           onClick={() => {
-            const url = window.prompt("Enter image URL (or use Upload button)");
+            const url = window.prompt("Enter image URL");
             if (url) editor.chain().focus().setImage({ src: url }).run();
           }}
           title="Insert Image by URL"
@@ -239,7 +329,6 @@ const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorProps) =
           <ImageIcon className="h-3.5 w-3.5" />
         </ToolbarButton>
 
-        {/* Upload button */}
         <Button
           type="button"
           variant="ghost"
@@ -258,22 +347,11 @@ const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorProps) =
         </Button>
       </div>
 
-      {/* Editor body */}
-      <EditorContent
-        editor={editor}
-        className="min-h-[420px] px-4 py-3 prose prose-sm max-w-none focus:outline-none
-          prose-headings:text-foreground prose-p:text-foreground prose-strong:font-bold
-          prose-a:text-primary prose-blockquote:border-primary prose-code:bg-muted
-          prose-img:rounded-lg prose-img:max-w-full [&_.ProseMirror]:outline-none
-          [&_.ProseMirror]:min-h-[400px] [&_.ProseMirror_p.is-editor-empty:first-child::before]:text-muted-foreground
-          [&_.ProseMirror_p.is-editor-empty:first-child::before]:content-[attr(data-placeholder)]
-          [&_.ProseMirror_p.is-editor-empty:first-child::before]:pointer-events-none
-          [&_.ProseMirror_p.is-editor-empty:first-child::before]:float-left
-          [&_.ProseMirror_p.is-editor-empty:first-child::before]:h-0
-          text-sm"
-      />
+      {/* Editor body — raw styles so formatting is actually visible */}
+      <div className="rich-editor-content">
+        <EditorContent editor={editor} />
+      </div>
 
-      {/* Hidden file input */}
       <input
         ref={fileInputRef}
         type="file"

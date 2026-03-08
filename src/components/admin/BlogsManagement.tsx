@@ -434,10 +434,11 @@ const BlogsManagement = () => {
 
             <TabsContent value="content" className="mt-4">
               <div className="grid gap-2">
-                <Label>Full Content (Markdown)</Label>
+                <Label>Full Content</Label>
                 <RichTextEditor
+                  key={editingBlog?.id ?? "new"}
                   value={formData.content}
-                  onChange={(value) => setFormData({ ...formData, content: value })}
+                  onChange={(value) => setFormData((prev) => ({ ...prev, content: value }))}
                   placeholder="Write your full blog post content here..."
                 />
               </div>

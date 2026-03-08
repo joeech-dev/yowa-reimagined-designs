@@ -151,3 +151,123 @@ All colors MUST be HSL.
     animation: marquee 15s linear infinite;
   }
 }
+
+/* ===== RICH TEXT EDITOR (TipTap WYSIWYG) ===== */
+.rich-editor-content .ProseMirror {
+  outline: none;
+  min-height: 400px;
+  padding: 1rem;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: hsl(var(--foreground));
+}
+
+/* Placeholder */
+.rich-editor-content .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: hsl(var(--muted-foreground));
+  pointer-events: none;
+  height: 0;
+}
+
+/* Headings */
+.rich-editor-content .ProseMirror h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 1.2rem 0 0.6rem;
+  color: hsl(var(--foreground));
+}
+.rich-editor-content .ProseMirror h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 1rem 0 0.5rem;
+  color: hsl(var(--foreground));
+}
+.rich-editor-content .ProseMirror h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0.8rem 0 0.4rem;
+  color: hsl(var(--foreground));
+}
+
+/* Inline marks */
+.rich-editor-content .ProseMirror strong,
+.rich-editor-content .ProseMirror b {
+  font-weight: 700 !important;
+}
+.rich-editor-content .ProseMirror em,
+.rich-editor-content .ProseMirror i {
+  font-style: italic !important;
+}
+.rich-editor-content .ProseMirror u {
+  text-decoration: underline !important;
+}
+.rich-editor-content .ProseMirror s {
+  text-decoration: line-through !important;
+}
+.rich-editor-content .ProseMirror mark {
+  background-color: #fef08a;
+  border-radius: 2px;
+  padding: 0 2px;
+}
+.rich-editor-content .ProseMirror code {
+  background: hsl(var(--muted));
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-family: monospace;
+  font-size: 0.85em;
+}
+
+/* Lists */
+.rich-editor-content .ProseMirror ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+.rich-editor-content .ProseMirror ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+.rich-editor-content .ProseMirror li {
+  margin: 0.2rem 0;
+}
+
+/* Blockquote */
+.rich-editor-content .ProseMirror blockquote {
+  border-left: 4px solid hsl(var(--primary));
+  padding-left: 1rem;
+  margin: 0.8rem 0;
+  color: hsl(var(--muted-foreground));
+  font-style: italic;
+}
+
+/* Horizontal rule */
+.rich-editor-content .ProseMirror hr {
+  border: none;
+  border-top: 2px solid hsl(var(--border));
+  margin: 1rem 0;
+}
+
+/* Images */
+.rich-editor-content .ProseMirror img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 0.5rem 0;
+}
+
+/* Links */
+.rich-editor-content .ProseMirror a {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Paragraphs */
+.rich-editor-content .ProseMirror p {
+  margin: 0.3rem 0;
+}
