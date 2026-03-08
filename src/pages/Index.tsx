@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
@@ -15,10 +16,34 @@ import EbookPromo from "@/components/EbookPromo";
 import { Button } from "@/components/ui/button";
 import { useBlogs } from "@/hooks/useBlogs";
 import heroBackground from "@/assets/hero-background.jpg";
+import hero1 from "@/assets/hero/hero-1.jpg";
+import hero2 from "@/assets/hero/hero-2.jpg";
+import hero3 from "@/assets/hero/hero-3.jpg";
+import hero4 from "@/assets/hero/hero-4.jpg";
+import hero5 from "@/assets/hero/hero-5.jpg";
+import hero6 from "@/assets/hero/hero-6.jpg";
+import hero7 from "@/assets/hero/hero-7.jpg";
+
+const heroImages = [heroBackground, hero1, hero2, hero3, hero4, hero5, hero6, hero7];
 
 const Index = () => {
   const { data: allBlogs = [] } = useBlogs();
-  
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [nextSlide, setNextSlide] = useState(1);
+  const [transitioning, setTransitioning] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTransitioning(true);
+      setTimeout(() => {
+        setCurrentSlide((prev) => (prev + 1) % heroImages.length);
+        setNextSlide((prev) => (prev + 1) % heroImages.length);
+        setTransitioning(false);
+      }, 1000);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   const latestBlogs = allBlogs.slice(0, 3);
   const urbanismBlogs = allBlogs.filter((b) => b.category.toLowerCase() === "urbanism").slice(0, 2);
   const livelihoodBlogs = allBlogs.filter((b) => b.category.toLowerCase() === "livelihood").slice(0, 2);
@@ -30,22 +55,34 @@ const Index = () => {
       <main>
 
       {/* Hero Section */}
-       <section className="relative pt-32 pb-20 overflow-hidden min-h-[80vh] flex items-center bg-foreground">
-         <img 
-           src={heroBackground}
-           alt="Yowa Innovations hero background"
-           className="absolute inset-0 w-full h-full object-cover object-center"
-           fetchPriority="high"
-           decoding="async"
-           loading="eager"
-         />
-        <div className="absolute inset-0 bg-black/40"></div>
-        <div className="container mx-auto px-4 relative z-10">
+      <section className="relative pt-32 pb-20 overflow-hidden min-h-[80vh] flex items-center bg-foreground">
+        {/* Background slides */}
+        {heroImages.map((img, index) => (
+          <img
+            key={index}
+            src={img}
+            alt={`Yowa Innovations hero background ${index + 1}`}
+            className="absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000"
+            style={{
+              opacity: index === currentSlide ? (transitioning ? 0 : 1) : index === nextSlide && transitioning ? 1 : 0,
+              zIndex: index === currentSlide ? 1 : index === nextSlide ? 2 : 0,
+            }}
+            fetchPriority={index === 0 ? "high" : "low"}
+            decoding="async"
+            loading={index === 0 ? "eager" : "lazy"}
+          />
+        ))}
+
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black/50 z-[3]" />
+
+        {/* Content */}
+        <div className="container mx-auto px-4 relative z-[4]">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="font-display font-bold text-5xl md:text-7xl mb-6 text-white">
+            <h1 className="font-display font-bold text-5xl md:text-7xl mb-6 text-white drop-shadow-lg">
               Yowa Innovations
             </h1>
-            <p className="text-2xl md:text-3xl font-display font-semibold mb-6 text-white">
+            <p className="text-2xl md:text-3xl font-display font-semibold mb-6 text-white drop-shadow-md">
               We Turn Impact into Stories That Create Opportunity
             </p>
             <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed">
@@ -62,12 +99,26 @@ const Index = () => {
                 </Button>
               </Link>
               <Link to="/about">
-                <Button size="lg" variant="outline" className="hover:border-primary hover:text-primary transition-smooth">
+                <Button size="lg" variant="outline" className="border-white/70 text-white hover:bg-white/20 hover:border-white transition-smooth backdrop-blur-sm">
                   Learn More
                 </Button>
               </Link>
             </div>
           </div>
+        </div>
+
+        {/* Slide indicators */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-[4]">
+          {heroImages.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => { setCurrentSlide(index); setNextSlide((index + 1) % heroImages.length); }}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                index === currentSlide ? "w-8 bg-white" : "w-2 bg-white/50"
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
         </div>
       </section>
 
