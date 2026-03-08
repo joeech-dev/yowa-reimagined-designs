@@ -515,11 +515,11 @@ const BlogsManagement = () => {
 
           <DialogFooter className="mt-4 flex gap-2">
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-            <Button variant="outline" onClick={() => handleSubmit(true)} className="border-amber-300 text-amber-700 hover:bg-amber-50">
+            <Button variant="outline" onClick={() => handleSubmit("draft")} className="border-amber-300 text-amber-700 hover:bg-amber-50">
               <EyeOff className="h-4 w-4 mr-2" />
               Save as Draft
             </Button>
-            <Button onClick={() => { setFormData(prev => ({ ...prev, status: "published" })); handleSubmit(false); }} className="bg-primary hover:bg-primary/90">
+            <Button onClick={() => handleSubmit("published")} className="bg-primary hover:bg-primary/90">
               <Globe className="h-4 w-4 mr-2" />
               {editingBlog ? "Update & Publish" : "Publish"}
             </Button>
