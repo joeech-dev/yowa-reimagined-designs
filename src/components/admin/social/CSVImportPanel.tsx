@@ -164,9 +164,22 @@ export function CSVImportPanel({ selectedClientId, onClientSelected }: Props) {
           report_period_start: raw.report_period_start,
           report_period_end: raw.report_period_end,
           created_by: user.id,
-          ...Object.fromEntries(
-            Array.from(NUMERIC_COLS).map((col) => [col, raw[col] ? Number(raw[col]) : 0])
-          ),
+          followers_count: raw.followers_count ? Number(raw.followers_count) : 0,
+          followers_gained: raw.followers_gained ? Number(raw.followers_gained) : 0,
+          followers_lost: raw.followers_lost ? Number(raw.followers_lost) : 0,
+          total_posts: raw.total_posts ? Number(raw.total_posts) : 0,
+          total_reach: raw.total_reach ? Number(raw.total_reach) : 0,
+          total_impressions: raw.total_impressions ? Number(raw.total_impressions) : 0,
+          total_engagements: raw.total_engagements ? Number(raw.total_engagements) : 0,
+          total_likes: raw.total_likes ? Number(raw.total_likes) : 0,
+          total_comments: raw.total_comments ? Number(raw.total_comments) : 0,
+          total_shares: raw.total_shares ? Number(raw.total_shares) : 0,
+          total_clicks: raw.total_clicks ? Number(raw.total_clicks) : 0,
+          video_views: raw.video_views ? Number(raw.video_views) : 0,
+          watch_time_minutes: raw.watch_time_minutes ? Number(raw.watch_time_minutes) : 0,
+          stories_views: raw.stories_views ? Number(raw.stories_views) : 0,
+          profile_visits: raw.profile_visits ? Number(raw.profile_visits) : 0,
+          engagement_rate: raw.engagement_rate ? Number(raw.engagement_rate) : 0,
           notes: raw.notes || null,
         });
         updated[i] = { ...updated[i], status: "imported" };
