@@ -2,27 +2,42 @@ import { Link } from "react-router-dom";
 import { Building2, Heart, Lightbulb, Landmark, ArrowRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import ssaLogo from "@/assets/partners/ssa.jpg";
+import fesLogo from "@/assets/partners/fes.png";
+import coslLogo from "@/assets/partners/cosl.png";
 
 const sectors = [
   {
     icon: Heart,
     title: "NGOs & Development Organisations",
     text: "Documentary storytelling, impact documentation, and programme visibility for NGOs implementing social change initiatives.",
+    exampleLogo: ssaLogo,
+    exampleName: "SSA",
+    exampleType: "logo",
   },
   {
     icon: Landmark,
     title: "Foundations & Donor Agencies",
     text: "Documentary films and visual documentation that capture programme outcomes and strengthen donor communication.",
+    exampleLogo: fesLogo,
+    exampleName: "FES",
+    exampleType: "logo",
   },
   {
     icon: Lightbulb,
     title: "Social Enterprises",
     text: "Strategic storytelling and digital communication to help social enterprises communicate their mission and reach wider audiences.",
+    exampleLogo: null,
+    exampleName: "Asaak",
+    exampleType: "text",
   },
   {
     icon: Building2,
     title: "Institutions & Cooperatives",
     text: "Research publications, documentary films, and communication support that document institutional impact and legacy.",
+    exampleLogo: coslLogo,
+    exampleName: "COSL",
+    exampleType: "logo",
   },
 ];
 
