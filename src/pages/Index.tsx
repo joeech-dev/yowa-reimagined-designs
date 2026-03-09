@@ -10,7 +10,7 @@ import WhoWeWorkWith from "@/components/WhoWeWorkWith";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import StatsSection from "@/components/StatsSection";
 import ProblemSection from "@/components/ProblemSection";
-import SolutionSection from "@/components/SolutionSection";
+
 import OurModelSection from "@/components/OurModelSection";
 import ServicesSection from "@/components/ServicesSection";
 import FeaturedImpactStory from "@/components/FeaturedImpactStory";
@@ -130,9 +130,6 @@ const Index = () => {
 
       {/* 7. Problem */}
       <ProblemSection />
-
-      {/* 8. Solution */}
-      <SolutionSection />
 
       {/* 9. Youth Model */}
       <OurModelSection />
