@@ -389,9 +389,9 @@ const ProjectsManagement = () => {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Total</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{stats.total}</div></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Leads</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-yellow-600">{stats.lead}</div></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm">In Progress</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-blue-600">{stats.inProgress}</div></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Completed</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-green-600">{stats.completed}</div></CardContent></Card>
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Leads</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-secondary">{stats.lead}</div></CardContent></Card>
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm">In Progress</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-primary">{stats.inProgress}</div></CardContent></Card>
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Completed</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-foreground">{stats.completed}</div></CardContent></Card>
       </div>
 
       <Tabs defaultValue="projects">
