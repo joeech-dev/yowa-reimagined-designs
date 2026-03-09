@@ -67,7 +67,21 @@ const WhoWeWorkWith = () => {
                   <Icon className="text-primary-foreground" size={22} />
                 </div>
                 <h3 className="font-display font-semibold text-lg mb-3">{sector.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">{sector.text}</p>
+                <p className="text-muted-foreground text-sm leading-relaxed mb-4">{sector.text}</p>
+                <div className="mt-auto pt-3 border-t border-border">
+                  <p className="text-xs text-muted-foreground mb-2">Example client</p>
+                  {sector.exampleType === "logo" && sector.exampleLogo ? (
+                    <img
+                      src={sector.exampleLogo}
+                      alt={sector.exampleName}
+                      className="h-7 object-contain object-left grayscale opacity-70 group-hover:opacity-100 group-hover:grayscale-0 transition-smooth"
+                    />
+                  ) : (
+                    <span className="inline-block text-xs font-semibold tracking-wide px-2 py-1 rounded bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-smooth">
+                      {sector.exampleName}
+                    </span>
+                  )}
+                </div>
               </Card>
             );
           })}
