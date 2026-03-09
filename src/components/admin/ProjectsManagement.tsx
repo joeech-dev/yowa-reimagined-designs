@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Plus, Users, Trash2, Edit, ArrowRight, FolderKanban, FileText } from "lucide-react";
 import NewRequisitionButton from "./NewRequisitionButton";
