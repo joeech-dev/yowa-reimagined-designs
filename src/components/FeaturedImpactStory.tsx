@@ -19,10 +19,10 @@ const FeaturedImpactStory = () => {
 
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
           {/* Video Embed */}
-          <div className="rounded-xl overflow-hidden shadow-lg aspect-video bg-muted relative group cursor-pointer">
+          <div className="rounded-xl overflow-hidden shadow-lg aspect-video bg-muted">
             <iframe
-              src="https://www.youtube.com/embed/videoseries?list=PLQ1IuNyXlNaGdLXI8BHd-hqLhTGHVKHCo"
-              title="Yowa Innovations — Featured Impact Story"
+              src="https://www.youtube-nocookie.com/embed/d3WQQw6R3IY"
+              title="Wakisa Ministry — Featured Impact Story"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               className="w-full h-full"
@@ -31,22 +31,29 @@ const FeaturedImpactStory = () => {
 
           {/* Description */}
           <div className="flex flex-col justify-center space-y-5">
+            <span className="text-xs font-semibold uppercase tracking-widest text-primary">
+              Client: Wakisa Ministry
+            </span>
             <h3 className="font-display font-bold text-2xl md:text-3xl">
-              Documenting Community Impact Through Storytelling
+              Heartfelt Storytelling for Transformative Work
             </h3>
             <p className="text-muted-foreground leading-relaxed">
-              Yowa Innovations partnered with development organisations to document real stories
-              from communities benefiting from social programmes. Through documentary filmmaking and
-              photography, we captured authentic voices, programme outcomes, and powerful narratives
-              that strengthened stakeholder engagement.
+              Yowa Innovations partnered with Wakisa Ministry to document the heartfelt and
+              transformative work they do for vulnerable young women in Uganda. Through documentary
+              filmmaking, we captured authentic voices, real programme outcomes, and compelling
+              narratives that strengthen stakeholder trust and donor communication.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
-              <Link to="/portfolio">
+              <a
+                href="https://www.youtube.com/watch?v=d3WQQw6R3IY"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Button size="lg" className="hover:scale-105 transition-smooth">
                   <Play className="mr-2 h-4 w-4" />
                   Watch the Story
                 </Button>
-              </Link>
+              </a>
               <Link to="/portfolio">
                 <Button size="lg" variant="outline" className="hover:scale-105 transition-smooth">
                   View More Projects
