@@ -396,7 +396,8 @@ const ProjectsManagement = () => {
 
       <Tabs defaultValue="projects">
         <TabsList>
-          <TabsTrigger value="projects"><FolderKanban className="mr-2 h-4 w-4" />Projects</TabsTrigger>
+          <TabsTrigger value="projects"><FolderKanban className="mr-2 h-4 w-4" />All Projects</TabsTrigger>
+          <TabsTrigger value="training"><GraduationCap className="mr-2 h-4 w-4" />Training Programs</TabsTrigger>
           <TabsTrigger value="convert"><ArrowRight className="mr-2 h-4 w-4" />Convert Leads ({leads.length})</TabsTrigger>
         </TabsList>
 
