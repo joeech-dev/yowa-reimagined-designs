@@ -6,12 +6,16 @@ import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import BlogCard from "@/components/BlogCard";
 import PartnersSection from "@/components/PartnersSection";
+import WhoWeWorkWith from "@/components/WhoWeWorkWith";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import StatsSection from "@/components/StatsSection";
 import ProblemSection from "@/components/ProblemSection";
 import SolutionSection from "@/components/SolutionSection";
 import OurModelSection from "@/components/OurModelSection";
 import ServicesSection from "@/components/ServicesSection";
+import FeaturedImpactStory from "@/components/FeaturedImpactStory";
+import WhyChooseYowa from "@/components/WhyChooseYowa";
+import HowWeWork from "@/components/HowWeWork";
 import EbookPromo from "@/components/EbookPromo";
 import { Button } from "@/components/ui/button";
 import { useBlogs } from "@/hooks/useBlogs";
@@ -45,8 +49,6 @@ const Index = () => {
   }, []);
 
   const latestBlogs = allBlogs.slice(0, 3);
-  const urbanismBlogs = allBlogs.filter((b) => b.category.toLowerCase() === "urbanism").slice(0, 2);
-  const livelihoodBlogs = allBlogs.filter((b) => b.category.toLowerCase() === "livelihood").slice(0, 2);
 
   return (
     <div className="min-h-screen">
@@ -54,9 +56,8 @@ const Index = () => {
       <Navbar />
       <main>
 
-      {/* Hero Section */}
+      {/* 1. Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden min-h-[80vh] flex items-center bg-foreground">
-        {/* Background slides */}
         {heroImages.map((img, index) => (
           <img
             key={index}
@@ -72,42 +73,32 @@ const Index = () => {
             loading={index === 0 ? "eager" : "lazy"}
           />
         ))}
-
-        {/* Overlay */}
         <div className="absolute inset-0 bg-black/50 z-[3]" />
-
-        {/* Content */}
         <div className="container mx-auto px-4 relative z-[4]">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="font-display font-bold text-5xl md:text-7xl mb-6 text-white drop-shadow-lg">
-              Yowa Innovations
+              Turning Development Impact into Powerful Stories
             </h1>
-            <p className="text-2xl md:text-3xl font-display font-semibold mb-6 text-white drop-shadow-md">
-              We Turn Impact into Stories That Create Opportunity
-            </p>
-            <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed">
-              We help NGOs and social impact organisations communicate their work clearly while empowering young creatives with practical skills, income opportunities, and visibility.
-            </p>
-            <p className="text-xl font-semibold mb-8 text-white">
-              We create. We connect. We innovate.
+            <p className="text-xl md:text-2xl font-display font-semibold mb-6 text-white drop-shadow-md">
+              We help NGOs, social enterprises, and institutions document their work through
+              documentary film, research, and strategic storytelling—while creating opportunities
+              for young creatives.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/get-started">
                 <Button size="lg" className="bg-primary hover:bg-primary/90 text-lg shadow-primary hover:scale-105 transition-smooth">
-                  Get Started
+                  Start a Project
                   <ArrowRight className="ml-2" />
                 </Button>
               </Link>
-              <Link to="/about">
+              <Link to="/portfolio">
                 <Button size="lg" variant="outline" className="border-white/70 text-white hover:bg-white/20 hover:border-white transition-smooth backdrop-blur-sm">
-                  Learn More
+                  View Our Work
                 </Button>
               </Link>
             </div>
           </div>
         </div>
-
-        {/* Slide indicators */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-[4]">
           {heroImages.map((_, index) => (
             <button
@@ -122,30 +113,46 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Partners Section */}
+      {/* 2. Trusted Organisations */}
       <PartnersSection />
 
-      {/* Services Section */}
+      {/* 3. Who We Work With */}
+      <WhoWeWorkWith />
+
+      {/* 4. Services */}
       <ServicesSection />
 
-      {/* Stats Section */}
+      {/* 5. Featured Impact Story */}
+      <FeaturedImpactStory />
+
+      {/* 6. Impact Numbers */}
       <StatsSection />
 
-      {/* The Problem */}
+      {/* 7. Problem */}
       <ProblemSection />
 
-      {/* The Solution */}
+      {/* 8. Solution */}
       <SolutionSection />
 
-      {/* Our Model */}
+      {/* 9. Youth Model */}
       <OurModelSection />
 
-      {/* Latest Blog Posts */}
+      {/* 10. Why Choose Yowa */}
+      <WhyChooseYowa />
+
+      {/* 11. How We Work */}
+      <HowWeWork />
+
+      {/* 12. Blog / Insights */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <h2 className="font-display font-bold text-3xl md:text-4xl mb-12 text-center">
-            Latest Blog Posts
+          <h2 className="font-display font-bold text-3xl md:text-4xl mb-4 text-center">
+            Insights on Storytelling, Development & Impact
           </h2>
+          <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
+            Perspectives on impact communication, documentary storytelling, and the creative
+            economy across Africa.
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {latestBlogs.map((blog) => (
               <BlogCard key={blog.id} {...blog} published_at={blog.published_at} />
@@ -154,7 +161,7 @@ const Index = () => {
           <div className="text-center mt-12">
             <Link to="/blogs">
               <Button variant="outline" size="lg">
-                View All Posts
+                View All Insights
                 <ArrowRight className="ml-2" />
               </Button>
             </Link>
@@ -162,56 +169,37 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Best from Urbanism */}
-      <section className="py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <h2 className="font-display font-bold text-3xl md:text-4xl mb-12">
-            Best from Urbanism
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {urbanismBlogs.map((blog) => (
-              <BlogCard key={blog.id} {...blog} published_at={blog.published_at} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Best from Livelihood */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="font-display font-bold text-3xl md:text-4xl mb-12">
-            Best from Livelihood
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {livelihoodBlogs.map((blog) => (
-              <BlogCard key={blog.id} {...blog} published_at={blog.published_at} />
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* eBook Promo */}
       <EbookPromo variant="banner" />
 
-      {/* Testimonials Section */}
+      {/* Testimonials */}
       <TestimonialsSection />
 
-      {/* CTA Section */}
-      <section className="py-16 bg-primary text-primary-foreground">
+      {/* 13. Final CTA */}
+      <section className="py-20 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
           <h2 className="font-display font-bold text-3xl md:text-4xl mb-4">
-            See Our Work in Action
+            Let's Tell Your Impact Story
           </h2>
-          <p className="text-lg mb-8 max-w-2xl mx-auto opacity-90">
-            Explore our projects that have made a difference across
-            communities and industries.
+          <p className="text-lg mb-10 max-w-2xl mx-auto opacity-90">
+            If your organisation is implementing meaningful work that deserves stronger visibility,
+            we would love to collaborate with you. From documentary production to research
+            publications and digital communication, we help institutions transform their impact
+            into powerful narratives.
           </p>
-          <Button size="lg" variant="secondary" asChild className="hover:scale-105 transition-smooth">
-            <Link to="/projects">
-              View Projects
-              <ArrowRight className="ml-2" />
-            </Link>
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" variant="secondary" asChild className="hover:scale-105 transition-smooth">
+              <Link to="/get-started">
+                Start a Project
+                <ArrowRight className="ml-2" />
+              </Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild className="border-primary-foreground/70 text-primary-foreground hover:bg-primary-foreground/10 hover:border-primary-foreground transition-smooth">
+              <Link to="/contact">
+                Contact Us
+              </Link>
+            </Button>
+          </div>
         </div>
       </section>
 
