@@ -131,9 +131,6 @@ const Index = () => {
       {/* 7. Problem */}
       <ProblemSection />
 
-      {/* 8. Solution */}
-      <SolutionSection />
-
       {/* 9. Youth Model */}
       <OurModelSection />
 
