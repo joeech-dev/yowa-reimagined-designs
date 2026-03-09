@@ -1,4 +1,6 @@
-import { Target } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Target, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const SolutionSection = () => {
   return (
@@ -11,22 +13,27 @@ const SolutionSection = () => {
           <h2 className="font-display font-bold text-3xl md:text-4xl mb-6">
             Impact Communication That Builds Capacity
           </h2>
-          <div className="space-y-4 text-muted-foreground text-lg leading-relaxed">
+          <div className="space-y-4 text-muted-foreground text-lg leading-relaxed mb-8">
             <p>
-              Yowa Innovations provides professional documentary filmmaking, photography, and
-              digital storytelling services tailored for NGOs, social enterprises, and development
+              Yowa Innovations provides documentary filmmaking, photography, and strategic
+              storytelling services tailored for NGOs, social enterprises, and development
               institutions.
             </p>
             <p>
-              We translate complex development work into clear, credible narratives that strengthen
-              donor confidence, improve visibility, amplify community voices, and support advocacy
-              and policy engagement.
+              We translate complex programmes into clear and credible narratives that strengthen
+              donor confidence, amplify community voices, and support advocacy.
             </p>
             <p>
-              Our work is grounded in ethics, accuracy, and a deep understanding of development
-              contexts.
+              Our work is grounded in ethical storytelling, research-driven documentation, and deep
+              understanding of development contexts.
             </p>
           </div>
+          <Link to="/portfolio">
+            <Button size="lg" className="hover:scale-105 transition-smooth">
+              Explore Documentary Projects
+              <ArrowRight className="ml-2" />
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
