@@ -12,7 +12,7 @@ const stats = [
     icon: Users,
     value: "30+",
     label: "Partner Organizations",
-    description: "NGOs, corporates, and startups across East Africa",
+    description: "NGOs, cooperatives, and institutions across East Africa",
   },
   {
     icon: Award,
@@ -34,10 +34,12 @@ const StatsSection = () => {
       <div className="absolute inset-0 gradient-hero opacity-5"></div>
       <div className="container mx-auto px-4 relative z-10">
         <h2 className="font-display font-bold text-3xl md:text-4xl mb-4 text-center">
-          Impact by the Numbers
+          Our Impact in Numbers
         </h2>
         <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
-          Our track record speaks for itself—measurable results that matter.
+          Since our founding, Yowa Innovations has worked with organisations across Uganda and East
+          Africa to document impact, tell powerful stories, and expand opportunities for young
+          creatives.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, index) => {

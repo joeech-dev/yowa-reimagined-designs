@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
 // Fallback static data
@@ -52,26 +55,23 @@ const PartnersSection = () => {
     fetchPartners();
   }, []);
 
-  // Use database partners if available, otherwise fallback to static
-  const displayPartners = partners.length > 0 
-    ? partners.map(p => ({ name: p.name, logo: p.logo_url, website: p.website_url }))
-    : staticPartners.map(p => ({ name: p.name, logo: p.logo, website: null }));
+  const displayPartners =
+    partners.length > 0
+      ? partners.map((p) => ({ name: p.name, logo: p.logo_url, website: p.website_url }))
+      : staticPartners.map((p) => ({ name: p.name, logo: p.logo, website: null }));
 
-  // Scale animation duration with partner count (~3s per partner for smooth viewing)
   const animationDuration = Math.max(displayPartners.length * 3, 15);
 
   return (
     <section className="py-16 bg-muted/20 overflow-hidden">
       <div className="container mx-auto px-4">
-        <h2 className="font-display font-bold text-3xl md:text-4xl mb-4 text-center">
+        <h2 className="font-display font-bold text-3xl md:text-4xl mb-2 text-center">
           Trusted by Leading Organizations
         </h2>
-        <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
-          We've partnered with renowned institutions and organizations to deliver impactful content
-          that drives change.
+        <p className="text-center text-muted-foreground mb-10 max-w-xl mx-auto text-sm">
+          Organisations that trust our storytelling
         </p>
-        <div className="relative overflow-hidden">
-          {/* Two identical strips for seamless infinite loop */}
+        <div className="relative overflow-hidden mb-10">
           <div
             className="flex w-fit"
             style={{
@@ -105,6 +105,14 @@ const PartnersSection = () => {
               </div>
             ))}
           </div>
+        </div>
+        <div className="text-center">
+          <Link to="/portfolio">
+            <Button variant="outline" size="lg" className="hover:scale-105 transition-smooth">
+              View Projects
+              <ArrowRight className="ml-2" />
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

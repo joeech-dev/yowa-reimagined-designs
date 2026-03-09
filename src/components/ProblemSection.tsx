@@ -1,4 +1,6 @@
-import { AlertTriangle } from "lucide-react";
+import { Link } from "react-router-dom";
+import { AlertTriangle, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const ProblemSection = () => {
   return (
@@ -11,21 +13,30 @@ const ProblemSection = () => {
           <h2 className="font-display font-bold text-3xl md:text-4xl mb-6">
             Great Work Deserves to Be Seen
           </h2>
-          <div className="space-y-4 text-muted-foreground text-lg leading-relaxed">
+          <div className="space-y-4 text-muted-foreground text-lg leading-relaxed mb-8">
             <p>
-              Many NGOs and social impact organisations implement powerful projects, yet their
-              impact often remains invisible. Stories are buried in technical reports, poorly
-              documented, or inconsistently shared—limiting funding opportunities, public trust,
-              and policy influence.
+              Across Africa, NGOs and social impact organisations are implementing powerful
+              programmes that transform lives. Yet much of this impact remains hidden inside
+              technical reports or poorly documented materials.
             </p>
             <p>
-              At the same time, talented young creatives struggle to access real work opportunities
-              that allow them to build sustainable careers.
+              When stories are not clearly communicated, organisations lose opportunities to build
+              trust, influence policy, and attract funding.
+            </p>
+            <p>
+              At the same time, many talented young creatives struggle to access real opportunities
+              that allow them to develop sustainable careers.
             </p>
             <p className="font-semibold text-foreground text-xl">
               Yowa Innovations exists to solve both challenges.
             </p>
           </div>
+          <Link to="/about">
+            <Button size="lg" variant="outline" className="hover:scale-105 transition-smooth">
+              Learn About Our Approach
+              <ArrowRight className="ml-2" />
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

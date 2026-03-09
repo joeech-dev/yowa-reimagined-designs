@@ -1,5 +1,7 @@
-import { Sparkles, BookOpen, Briefcase, DollarSign, Eye } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Sparkles, BookOpen, Briefcase, DollarSign, Eye, ArrowRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 const highlights = [
   { icon: BookOpen, label: "Project-based training" },
@@ -17,24 +19,24 @@ const OurModelSection = () => {
             <Sparkles className="text-accent-foreground" size={32} />
           </div>
           <h2 className="font-display font-bold text-3xl md:text-4xl mb-6">
-            Where Storytelling Creates Jobs
+            Where Storytelling Creates Opportunity
           </h2>
           <div className="space-y-4 text-muted-foreground text-lg leading-relaxed mb-10">
             <p>
-              What makes Yowa Innovations different is our integrated youth empowerment model.
+              What makes Yowa Innovations unique is our integrated youth empowerment model.
             </p>
             <p>
               We embed training, mentorship, and paid project opportunities for young creatives
-              directly into our service delivery. Through structured, project-based learning, young
-              people gain practical skills in photography and visual storytelling while working on
-              real NGO assignments.
+              directly into our service delivery. Through project-based learning, young people gain
+              practical skills in photography and visual storytelling while working on real
+              assignments with NGOs and development organisations.
             </p>
             <p>
-              Each year, we train and engage young creatives, creating a sustainable pipeline of
-              skilled professionals and contributing to youth employment in the creative sector.
+              This approach ensures organisations receive professional storytelling services while
+              contributing to youth employment and skills development.
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl mx-auto mb-10">
             {highlights.map((item, index) => {
               const Icon = item.icon;
               return (
@@ -50,6 +52,12 @@ const OurModelSection = () => {
               );
             })}
           </div>
+          <Link to="/about">
+            <Button size="lg" variant="outline" className="hover:scale-105 transition-smooth">
+              Learn About Youth Training
+              <ArrowRight className="ml-2" />
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

@@ -10,7 +10,7 @@ const services = [
     slug: "communication-strategy",
     title: "Communication Strategy & Advisory",
     summary:
-      "We begin with clarity. Before production, we assess how your organisation communicates impact, engages stakeholders, and documents progress.",
+      "Before storytelling begins, we help organisations clarify how their work is communicated. We assess messaging, audiences, and documentation systems to ensure communication aligns with programme impact and stakeholder engagement.",
     detail: (
       <div className="space-y-3 text-sm text-muted-foreground leading-relaxed">
         <p>
@@ -41,7 +41,7 @@ const services = [
     slug: "video-production",
     title: "Video & Documentary Production",
     summary:
-      "We produce structured visual narratives that strengthen stakeholder confidence and preserve institutional memory. Research-driven and strategically aligned.",
+      "We produce documentary films and visual narratives that capture real impact stories. Our productions help organisations communicate programme results, amplify community voices, and strengthen institutional visibility.",
     detail: (
       <div className="space-y-3 text-sm text-muted-foreground leading-relaxed">
         <p className="font-semibold text-foreground">Includes:</p>
@@ -65,7 +65,7 @@ const services = [
     slug: "research-book-writing",
     title: "Research & Book Writing",
     summary:
-      "We transform institutional work into documented knowledge products that preserve legacy and strengthen thought leadership.",
+      "We transform institutional knowledge, programmes, and insights into structured publications, reports, and books that preserve legacy, strengthen thought leadership, and contribute to sector knowledge.",
     detail: (
       <div className="space-y-3 text-sm text-muted-foreground leading-relaxed">
         <p className="font-semibold text-foreground">Includes:</p>
@@ -86,9 +86,9 @@ const services = [
   {
     icon: Share2,
     slug: "digital-marketing",
-    title: "Digital Marketing & Social Media Management",
+    title: "Digital Marketing & Social Media",
     summary:
-      "We provide structured digital presence management aligned with institutional goals and stakeholder engagement priorities. Professional positioning, not trend chasing.",
+      "We manage structured digital communication for institutions that need consistent, credible online presence. Our focus is professional storytelling and stakeholder engagement—not trend-driven content.",
     detail: (
       <div className="space-y-3 text-sm text-muted-foreground leading-relaxed">
         <p className="font-semibold text-foreground">Includes:</p>
@@ -111,7 +111,7 @@ const services = [
     slug: "photography",
     title: "Photography & Visual Documentation",
     summary:
-      "We provide professional visual documentation that supports reporting, visibility, and archival needs.",
+      "We provide high-quality visual documentation that supports project reporting, institutional archives, donor communication, and media visibility.",
     detail: (
       <div className="space-y-3 text-sm text-muted-foreground leading-relaxed">
         <p className="font-semibold text-foreground">Includes:</p>
@@ -163,17 +163,14 @@ const ServiceCard = ({ service }: { service: (typeof services)[0] }) => {
             </>
           ) : (
             <>
-              Read more… <ChevronDown size={14} />
+              Read more <ArrowRight size={14} />
             </>
           )}
         </button>
 
         {expanded && (
           <Link to={`/get-started?service=${service.slug}`} className="w-full">
-            <Button
-              size="sm"
-              className="w-full hover:scale-105 transition-smooth"
-            >
+            <Button size="sm" className="w-full hover:scale-105 transition-smooth">
               Get Started
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -192,11 +189,12 @@ const ServicesSection = () => {
           id="services-heading"
           className="font-display font-bold text-3xl md:text-4xl mb-4 text-center"
         >
-          Our Services
+          How We Help Organisations Communicate Impact
         </h2>
         <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
-          We partner with NGOs, cooperatives, and social impact institutions to communicate their
-          work with clarity, credibility, and lasting visibility.
+          Many organisations are doing powerful work but struggle to communicate their impact
+          clearly. Our services help transform complex programmes into compelling stories that
+          strengthen visibility, donor confidence, and public engagement.
         </p>
 
         {/* Schema.org structured data for SEO */}
