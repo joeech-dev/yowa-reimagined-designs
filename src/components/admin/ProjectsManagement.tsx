@@ -11,8 +11,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Plus, Users, Trash2, Edit, ArrowRight, FolderKanban, FileText } from "lucide-react";
+import { Plus, Users, Trash2, Edit, ArrowRight, FolderKanban, FileText, GraduationCap } from "lucide-react";
 import NewRequisitionButton from "./NewRequisitionButton";
 import { format } from "date-fns";
 
@@ -388,14 +389,15 @@ const ProjectsManagement = () => {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Total</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold">{stats.total}</div></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Leads</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-yellow-600">{stats.lead}</div></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm">In Progress</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-blue-600">{stats.inProgress}</div></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Completed</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-green-600">{stats.completed}</div></CardContent></Card>
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Leads</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-secondary">{stats.lead}</div></CardContent></Card>
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm">In Progress</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-primary">{stats.inProgress}</div></CardContent></Card>
+        <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Completed</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-foreground">{stats.completed}</div></CardContent></Card>
       </div>
 
       <Tabs defaultValue="projects">
         <TabsList>
-          <TabsTrigger value="projects"><FolderKanban className="mr-2 h-4 w-4" />Projects</TabsTrigger>
+          <TabsTrigger value="projects"><FolderKanban className="mr-2 h-4 w-4" />All Projects</TabsTrigger>
+          <TabsTrigger value="training"><GraduationCap className="mr-2 h-4 w-4" />Training Programs</TabsTrigger>
           <TabsTrigger value="convert"><ArrowRight className="mr-2 h-4 w-4" />Convert Leads ({leads.length})</TabsTrigger>
         </TabsList>
 
@@ -445,6 +447,76 @@ const ProjectsManagement = () => {
                   </TableBody>
                 </Table>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="training">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <GraduationCap className="h-5 w-5 text-primary" />
+                Training Programs
+              </CardTitle>
+              <CardDescription>Projects categorised as training programs, workshops or capacity building</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? <p>Loading...</p> : (() => {
+                const trainingKeywords = ["training program", "training", "workshop", "capacity building"];
+                const trainingProjects = projects.filter(p =>
+                  trainingKeywords.some(kw => p.title.toLowerCase().includes(kw)) ||
+                  (p.description && trainingKeywords.some(kw => p.description!.toLowerCase().includes(kw)))
+                );
+                return trainingProjects.length === 0 ? (
+                  <div className="text-center py-10">
+                    <GraduationCap className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
+                    <p className="text-muted-foreground">No training program projects yet.</p>
+                    <p className="text-sm text-muted-foreground/70 mt-1">Create a new project and include "Training" in the title or description to see it here.</p>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Project</TableHead>
+                        <TableHead>Client</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Website</TableHead>
+                        <TableHead>Budget</TableHead>
+                        <TableHead>Deadline</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {trainingProjects.map((p) => (
+                        <TableRow key={p.id}>
+                          <TableCell className="font-medium">{p.title}</TableCell>
+                          <TableCell>{p.client_name}</TableCell>
+                          <TableCell><Badge className={statusColors[p.status]}>{p.status.replace("_", " ")}</Badge></TableCell>
+                          <TableCell>
+                            <span className={`px-2 py-1 rounded-full text-xs ${(p as any).show_on_website ? "bg-primary/20 text-primary" : "text-muted-foreground"}`}>
+                              {(p as any).show_on_website ? "Visible" : "Hidden"}
+                            </span>
+                          </TableCell>
+                          <TableCell>{p.budget ? `$${Number(p.budget).toLocaleString()}` : "-"}</TableCell>
+                          <TableCell>{p.deadline ? format(new Date(p.deadline), "MMM d, yyyy") : "-"}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-1">
+                              <Button variant="ghost" size="sm" onClick={() => openTeamDialog(p.id)} title="Team"><Users className="h-4 w-4" /></Button>
+                              <Button variant="ghost" size="sm" onClick={() => handleEdit(p)} title="Edit"><Edit className="h-4 w-4" /></Button>
+                              {p.status === "completed" && (
+                                <Button variant="ghost" size="sm" onClick={() => postAsBlogMutation.mutate(p)} title="Post as Blog">
+                                  <FileText className="h-4 w-4 text-secondary" />
+                                </Button>
+                              )}
+                              <Button variant="ghost" size="sm" onClick={() => deleteMutation.mutate(p.id)} title="Delete"><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                );
+              })()}
             </CardContent>
           </Card>
         </TabsContent>
