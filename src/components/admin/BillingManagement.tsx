@@ -1,10 +1,40 @@
+import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileText, ClipboardList, Receipt, FileCheck } from "lucide-react";
 import QuotationsManagement from "./QuotationsManagement";
 import WorkOrdersManagement from "./WorkOrdersManagement";
 import InvoicesManagement from "./InvoicesManagement";
+import type { InvoiceItem } from "./InvoiceTemplate";
+
+export interface BillingPrefill {
+  client_name: string;
+  client_address?: string;
+  client_phone?: string;
+  client_email?: string;
+  items: InvoiceItem[];
+  tax_rate: number;
+  notes?: string;
+  project_id?: string;
+  requested_by?: string;
+  provided_by?: string;
+  sourceRef?: string; // e.g. "QT-001" or "WO-001"
+}
 
 const BillingManagement = () => {
+  const [activeTab, setActiveTab] = useState("quotations");
+  const [workOrderPrefill, setWorkOrderPrefill] = useState<BillingPrefill | null>(null);
+  const [invoicePrefill, setInvoicePrefill] = useState<BillingPrefill | null>(null);
+
+  const handleMakeOrderForm = (prefill: BillingPrefill) => {
+    setWorkOrderPrefill(prefill);
+    setActiveTab("work-orders");
+  };
+
+  const handleMakeInvoice = (prefill: BillingPrefill) => {
+    setInvoicePrefill(prefill);
+    setActiveTab("invoices");
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -12,7 +42,7 @@ const BillingManagement = () => {
         <p className="text-muted-foreground mt-1 text-sm md:text-base">Manage quotations, work orders, invoices & receipts</p>
       </div>
 
-      <Tabs defaultValue="quotations" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-4 md:w-auto md:inline-grid">
           <TabsTrigger value="quotations" className="gap-2">
             <FileCheck className="h-4 w-4 hidden md:block" />
@@ -33,15 +63,22 @@ const BillingManagement = () => {
         </TabsList>
 
         <TabsContent value="quotations" className="mt-6">
-          <QuotationsManagement />
+          <QuotationsManagement onMakeOrderForm={handleMakeOrderForm} />
         </TabsContent>
 
         <TabsContent value="work-orders" className="mt-6">
-          <WorkOrdersManagement />
+          <WorkOrdersManagement
+            prefill={workOrderPrefill}
+            onPrefillConsumed={() => setWorkOrderPrefill(null)}
+            onMakeInvoice={handleMakeInvoice}
+          />
         </TabsContent>
 
         <TabsContent value="invoices" className="mt-6">
-          <InvoicesManagement />
+          <InvoicesManagement
+            prefill={invoicePrefill}
+            onPrefillConsumed={() => setInvoicePrefill(null)}
+          />
         </TabsContent>
 
         <TabsContent value="receipts" className="mt-6">
