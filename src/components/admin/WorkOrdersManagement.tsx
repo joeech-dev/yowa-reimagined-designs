@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Plus, Printer, Trash2, FileText, Pencil, FileText as InvoiceIcon } from "lucide-react";
+import { Plus, Printer, Trash2, FileText, Pencil, FileCheck } from "lucide-react";
 import { format } from "date-fns";
 import { useUserRole } from "@/hooks/useUserRole";
 import WorkOrderTemplate from "./WorkOrderTemplate";
