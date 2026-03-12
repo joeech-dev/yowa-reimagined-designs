@@ -343,7 +343,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
                             project_id: w.project_id || undefined,
                             sourceRef: w.work_order_number,
                           })} className="text-xs gap-1">
-                            <InvoiceIcon className="h-3 w-3" /> Make Invoice
+                            <FileText className="h-3 w-3" /> Make Invoice
                           </Button>
                         )}
                         {canEditFinance && <Button variant="ghost" size="sm" title="Delete" onClick={() => deleteMutation.mutate(w.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>}
