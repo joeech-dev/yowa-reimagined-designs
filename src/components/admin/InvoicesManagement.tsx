@@ -44,12 +44,6 @@ interface InvoiceRow {
 
 const defaultItem: InvoiceItem = { description: "", quantity: "1", unit_cost: 0, total: 0 };
 
-
-  receiptMode?: boolean;
-  prefill?: BillingPrefill | null;
-  onPrefillConsumed?: () => void;
-}
-
 const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: InvoicesManagementProps) => {
   const queryClient = useQueryClient();
   const { canEdit } = useUserRole();

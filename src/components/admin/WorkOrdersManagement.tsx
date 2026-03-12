@@ -41,12 +41,6 @@ interface WorkOrderRow {
 
 const defaultItem: InvoiceItem = { description: "", quantity: "1", unit_cost: 0, total: 0 };
 
-
-  prefill?: BillingPrefill | null;
-  onPrefillConsumed?: () => void;
-  onMakeInvoice?: (prefill: BillingPrefill) => void;
-}
-
 const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: WorkOrdersManagementProps) => {
   const queryClient = useQueryClient();
   const { canEdit } = useUserRole();
