@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -10,12 +10,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Plus, Printer, Trash2, FileText, Pencil } from "lucide-react";
+import { Plus, Printer, Trash2, FileText, Pencil, FileCheck } from "lucide-react";
 import { format } from "date-fns";
 import { useUserRole } from "@/hooks/useUserRole";
 import WorkOrderTemplate from "./WorkOrderTemplate";
 import type { InvoiceItem } from "./InvoiceTemplate";
 import { printDocument } from "@/lib/printDocument";
+import type { BillingPrefill } from "./BillingManagement";
 
 interface WorkOrderRow {
   id: string;
@@ -40,7 +41,13 @@ interface WorkOrderRow {
 
 const defaultItem: InvoiceItem = { description: "", quantity: "1", unit_cost: 0, total: 0 };
 
-const WorkOrdersManagement = () => {
+interface WorkOrdersManagementProps {
+  prefill?: BillingPrefill | null;
+  onPrefillConsumed?: () => void;
+  onMakeInvoice?: (prefill: BillingPrefill) => void;
+}
+
+const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: WorkOrdersManagementProps) => {
   const queryClient = useQueryClient();
   const { canEdit } = useUserRole();
   const canEditFinance = canEdit("finance");
@@ -49,6 +56,7 @@ const WorkOrdersManagement = () => {
   const [previewWorkOrder, setPreviewWorkOrder] = useState<WorkOrderRow | null>(null);
   const printRef = useRef<HTMLDivElement>(null);
 
+  // Consume prefill data from quotation conversion
   const [form, setForm] = useState({
     work_order_number: "",
     work_order_date: new Date().toISOString().split("T")[0],
@@ -64,6 +72,28 @@ const WorkOrdersManagement = () => {
     requested_by: "",
     provided_by: "Yowa Innovations Ltd",
   });
+
+  useEffect(() => {
+    if (prefill) {
+      setForm(prev => ({
+        ...prev,
+        client_name: prefill.client_name,
+        client_address: prefill.client_address || "",
+        client_phone: prefill.client_phone || "",
+        client_email: prefill.client_email || "",
+        items: prefill.items,
+        tax_rate: prefill.tax_rate,
+        notes: prefill.notes || "",
+        project_id: prefill.project_id || "",
+        requested_by: prefill.requested_by || "",
+        provided_by: prefill.provided_by || "Yowa Innovations Ltd",
+      }));
+      setIsCreateOpen(true);
+      onPrefillConsumed?.();
+    }
+  }, [prefill]);
+
+
 
   const { data: workOrders = [], isLoading } = useQuery({
     queryKey: ["work_orders"],
@@ -301,6 +331,21 @@ const WorkOrdersManagement = () => {
                       <div className="flex gap-1">
                         <Button variant="ghost" size="sm" title="View" onClick={() => setPreviewWorkOrder(w)}><FileText className="h-4 w-4" /></Button>
                         {canEditFinance && <Button variant="ghost" size="sm" title="Edit" onClick={() => setEditWorkOrder({ ...w })}><Pencil className="h-4 w-4" /></Button>}
+                        {canEditFinance && onMakeInvoice && (
+                          <Button variant="outline" size="sm" title="Convert to Invoice" onClick={() => onMakeInvoice({
+                            client_name: w.client_name,
+                            client_address: w.client_address || undefined,
+                            client_phone: w.client_phone || undefined,
+                            client_email: w.client_email || undefined,
+                            items: w.items,
+                            tax_rate: w.tax_rate,
+                            notes: w.notes || undefined,
+                            project_id: w.project_id || undefined,
+                            sourceRef: w.work_order_number,
+                          })} className="text-xs gap-1">
+                            <FileText className="h-3 w-3" /> Make Invoice
+                          </Button>
+                        )}
                         {canEditFinance && <Button variant="ghost" size="sm" title="Delete" onClick={() => deleteMutation.mutate(w.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>}
                       </div>
                     </TableCell>

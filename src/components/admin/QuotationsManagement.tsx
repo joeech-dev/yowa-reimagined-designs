@@ -10,12 +10,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Plus, Printer, Trash2, FileText, Pencil } from "lucide-react";
+import { Plus, Printer, Trash2, FileText, Pencil, ClipboardList } from "lucide-react";
 import { format } from "date-fns";
 import { useUserRole } from "@/hooks/useUserRole";
 import QuotationTemplate from "./QuotationTemplate";
 import type { InvoiceItem } from "./InvoiceTemplate";
 import { printDocument } from "@/lib/printDocument";
+import type { BillingPrefill } from "./BillingManagement";
 
 interface QuotationRow {
   id: string;
@@ -40,7 +41,11 @@ interface QuotationRow {
 
 const defaultItem: InvoiceItem = { description: "", quantity: "1", unit_cost: 0, total: 0 };
 
-const QuotationsManagement = () => {
+interface QuotationsManagementProps {
+  onMakeOrderForm?: (prefill: BillingPrefill) => void;
+}
+
+const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) => {
   const queryClient = useQueryClient();
   const { canEdit } = useUserRole();
   const canEditFinance = canEdit("finance");
@@ -298,9 +303,26 @@ const QuotationsManagement = () => {
                     <TableCell>{q.client_name}</TableCell>
                     <TableCell className="text-right font-medium">{Number(q.total).toLocaleString()}/=</TableCell>
                     <TableCell>
-                      <div className="flex gap-1">
+                      <div className="flex flex-wrap gap-1">
                         <Button variant="ghost" size="sm" title="View" onClick={() => setPreviewQuotation(q)}><FileText className="h-4 w-4" /></Button>
                         {canEditFinance && <Button variant="ghost" size="sm" title="Edit" onClick={() => setEditQuotation({ ...q })}><Pencil className="h-4 w-4" /></Button>}
+                        {canEditFinance && onMakeOrderForm && (
+                          <Button variant="outline" size="sm" title="Convert to Work Order" onClick={() => onMakeOrderForm({
+                            client_name: q.client_name,
+                            client_address: q.client_address || undefined,
+                            client_phone: q.client_phone || undefined,
+                            client_email: q.client_email || undefined,
+                            items: q.items,
+                            tax_rate: q.tax_rate,
+                            notes: q.notes || undefined,
+                            project_id: q.project_id || undefined,
+                            requested_by: q.requested_by || undefined,
+                            provided_by: q.provided_by || undefined,
+                            sourceRef: q.quotation_number,
+                          })} className="text-xs gap-1">
+                            <ClipboardList className="h-3 w-3" /> Make Order Form
+                          </Button>
+                        )}
                         {canEditFinance && <Button variant="ghost" size="sm" title="Delete" onClick={() => deleteMutation.mutate(q.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>}
                       </div>
                     </TableCell>

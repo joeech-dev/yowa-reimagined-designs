@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import InvoiceTemplate from "./InvoiceTemplate";
 import ReceiptTemplate from "./ReceiptTemplate";
 import type { InvoiceItem } from "./InvoiceTemplate";
 import { printDocument } from "@/lib/printDocument";
+import type { BillingPrefill } from "./BillingManagement";
 
 interface InvoiceRow {
   id: string;
@@ -43,7 +44,13 @@ interface InvoiceRow {
 
 const defaultItem: InvoiceItem = { description: "", quantity: "1", unit_cost: 0, total: 0 };
 
-const InvoicesManagement = ({ receiptMode }: { receiptMode?: boolean }) => {
+interface InvoicesManagementProps {
+  receiptMode?: boolean;
+  prefill?: BillingPrefill | null;
+  onPrefillConsumed?: () => void;
+}
+
+const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: InvoicesManagementProps) => {
   const queryClient = useQueryClient();
   const { canEdit } = useUserRole();
   const canEditFinance = canEdit("finance");
@@ -53,6 +60,7 @@ const InvoicesManagement = ({ receiptMode }: { receiptMode?: boolean }) => {
   const [previewType, setPreviewType] = useState<"invoice" | "receipt">("invoice");
   const printRef = useRef<HTMLDivElement>(null);
 
+  // Consume prefill data from work order conversion
   const [form, setForm] = useState({
     invoice_number: "",
     invoice_date: new Date().toISOString().split("T")[0],
@@ -66,6 +74,26 @@ const InvoicesManagement = ({ receiptMode }: { receiptMode?: boolean }) => {
     notes: "",
     project_id: "",
   });
+
+  useEffect(() => {
+    if (prefill) {
+      setForm(prev => ({
+        ...prev,
+        client_name: prefill.client_name,
+        client_address: prefill.client_address || "",
+        client_phone: prefill.client_phone || "",
+        client_email: prefill.client_email || "",
+        items: prefill.items,
+        tax_rate: prefill.tax_rate,
+        notes: prefill.notes || "",
+        project_id: prefill.project_id || "",
+      }));
+      setIsCreateOpen(true);
+      onPrefillConsumed?.();
+    }
+  }, [prefill]);
+
+
 
   const { data: invoices = [], isLoading } = useQuery({
     queryKey: ["invoices"],

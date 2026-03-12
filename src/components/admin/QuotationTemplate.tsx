@@ -49,17 +49,17 @@ const QuotationTemplate = forwardRef<HTMLDivElement, QuotationTemplateProps>(
         </div>
 
         {/* Client & Quotation Info */}
-        <div className="flex justify-between mb-4 border-t border-b border-gray-200 py-3">
-          <div>
+        <div className="flex flex-wrap justify-between gap-3 mb-4 border-t border-b border-gray-200 py-3">
+          <div className="min-w-0 flex-1">
             <p className="text-xs text-gray-500 uppercase mb-1">Quotation for:</p>
             <p className="font-bold text-sm">{data.client_name}</p>
             {data.client_address && <p className="text-xs text-gray-600 leading-relaxed whitespace-pre-line">{data.client_address}</p>}
             {data.client_phone && <p className="text-xs text-gray-600">{data.client_phone}</p>}
             {data.client_email && <p className="text-xs text-gray-600">{data.client_email}</p>}
           </div>
-          <div className="text-right">
-            <p className="text-xs text-gray-500">Quotation No: <span className="font-bold text-black">{data.quotation_number}</span></p>
-            <p className="text-xs text-gray-500">Date: <span className="font-bold text-black">{format(new Date(data.quotation_date), "dd / MM / yyyy")}</span></p>
+          <div className="text-right flex-shrink-0">
+            <p className="text-xs text-gray-500 whitespace-nowrap">Quotation No: <span className="font-bold text-black">{data.quotation_number}</span></p>
+            <p className="text-xs text-gray-500 whitespace-nowrap">Date: <span className="font-bold text-black">{format(new Date(data.quotation_date), "dd / MM / yyyy")}</span></p>
           </div>
         </div>
 
