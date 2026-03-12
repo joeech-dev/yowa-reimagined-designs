@@ -331,6 +331,21 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
                       <div className="flex gap-1">
                         <Button variant="ghost" size="sm" title="View" onClick={() => setPreviewWorkOrder(w)}><FileText className="h-4 w-4" /></Button>
                         {canEditFinance && <Button variant="ghost" size="sm" title="Edit" onClick={() => setEditWorkOrder({ ...w })}><Pencil className="h-4 w-4" /></Button>}
+                        {canEditFinance && onMakeInvoice && (
+                          <Button variant="outline" size="sm" title="Convert to Invoice" onClick={() => onMakeInvoice({
+                            client_name: w.client_name,
+                            client_address: w.client_address || undefined,
+                            client_phone: w.client_phone || undefined,
+                            client_email: w.client_email || undefined,
+                            items: w.items,
+                            tax_rate: w.tax_rate,
+                            notes: w.notes || undefined,
+                            project_id: w.project_id || undefined,
+                            sourceRef: w.work_order_number,
+                          })} className="text-xs gap-1">
+                            <InvoiceIcon className="h-3 w-3" /> Make Invoice
+                          </Button>
+                        )}
                         {canEditFinance && <Button variant="ghost" size="sm" title="Delete" onClick={() => deleteMutation.mutate(w.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>}
                       </div>
                     </TableCell>
