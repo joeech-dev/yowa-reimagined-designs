@@ -303,9 +303,26 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
                     <TableCell>{q.client_name}</TableCell>
                     <TableCell className="text-right font-medium">{Number(q.total).toLocaleString()}/=</TableCell>
                     <TableCell>
-                      <div className="flex gap-1">
+                      <div className="flex flex-wrap gap-1">
                         <Button variant="ghost" size="sm" title="View" onClick={() => setPreviewQuotation(q)}><FileText className="h-4 w-4" /></Button>
                         {canEditFinance && <Button variant="ghost" size="sm" title="Edit" onClick={() => setEditQuotation({ ...q })}><Pencil className="h-4 w-4" /></Button>}
+                        {canEditFinance && onMakeOrderForm && (
+                          <Button variant="outline" size="sm" title="Convert to Work Order" onClick={() => onMakeOrderForm({
+                            client_name: q.client_name,
+                            client_address: q.client_address || undefined,
+                            client_phone: q.client_phone || undefined,
+                            client_email: q.client_email || undefined,
+                            items: q.items,
+                            tax_rate: q.tax_rate,
+                            notes: q.notes || undefined,
+                            project_id: q.project_id || undefined,
+                            requested_by: q.requested_by || undefined,
+                            provided_by: q.provided_by || undefined,
+                            sourceRef: q.quotation_number,
+                          })} className="text-xs gap-1">
+                            <ClipboardList className="h-3 w-3" /> Make Order Form
+                          </Button>
+                        )}
                         {canEditFinance && <Button variant="ghost" size="sm" title="Delete" onClick={() => deleteMutation.mutate(q.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>}
                       </div>
                     </TableCell>

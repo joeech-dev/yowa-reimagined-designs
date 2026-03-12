@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -10,37 +10,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Plus, Printer, Trash2, FileText, Pencil } from "lucide-react";
+import { Plus, Printer, Trash2, FileText, Pencil, FileText as InvoiceIcon } from "lucide-react";
 import { format } from "date-fns";
 import { useUserRole } from "@/hooks/useUserRole";
 import WorkOrderTemplate from "./WorkOrderTemplate";
 import type { InvoiceItem } from "./InvoiceTemplate";
 import { printDocument } from "@/lib/printDocument";
+import type { BillingPrefill } from "./BillingManagement";
 
-interface WorkOrderRow {
-  id: string;
-  work_order_number: string;
-  work_order_date: string;
-  client_name: string;
-  client_address: string | null;
-  client_phone: string | null;
-  client_email: string | null;
-  items: InvoiceItem[];
-  subtotal: number;
-  tax_rate: number;
-  tax_amount: number;
-  total: number;
-  status: string;
-  notes: string | null;
-  project_id: string | null;
-  requested_by: string | null;
-  provided_by: string | null;
-  created_at: string;
+interface WorkOrdersManagementProps {
+  prefill?: BillingPrefill | null;
+  onPrefillConsumed?: () => void;
+  onMakeInvoice?: (prefill: BillingPrefill) => void;
 }
 
-const defaultItem: InvoiceItem = { description: "", quantity: "1", unit_cost: 0, total: 0 };
-
-const WorkOrdersManagement = () => {
+const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: WorkOrdersManagementProps) => {
   const queryClient = useQueryClient();
   const { canEdit } = useUserRole();
   const canEditFinance = canEdit("finance");

@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -18,32 +18,15 @@ import InvoiceTemplate from "./InvoiceTemplate";
 import ReceiptTemplate from "./ReceiptTemplate";
 import type { InvoiceItem } from "./InvoiceTemplate";
 import { printDocument } from "@/lib/printDocument";
+import type { BillingPrefill } from "./BillingManagement";
 
-interface InvoiceRow {
-  id: string;
-  invoice_number: string;
-  invoice_date: string;
-  client_name: string;
-  client_address: string | null;
-  client_phone: string | null;
-  client_email: string | null;
-  items: InvoiceItem[];
-  subtotal: number;
-  tax_rate: number;
-  tax_amount: number;
-  total: number;
-  status: string;
-  notes: string | null;
-  project_id: string | null;
-  payment_date: string | null;
-  payment_method: string | null;
-  is_receipt_generated: boolean;
-  created_at: string;
+interface InvoicesManagementProps {
+  receiptMode?: boolean;
+  prefill?: BillingPrefill | null;
+  onPrefillConsumed?: () => void;
 }
 
-const defaultItem: InvoiceItem = { description: "", quantity: "1", unit_cost: 0, total: 0 };
-
-const InvoicesManagement = ({ receiptMode }: { receiptMode?: boolean }) => {
+const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: InvoicesManagementProps) => {
   const queryClient = useQueryClient();
   const { canEdit } = useUserRole();
   const canEditFinance = canEdit("finance");
