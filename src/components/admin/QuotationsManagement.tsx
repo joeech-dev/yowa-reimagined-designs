@@ -10,12 +10,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Plus, Printer, Trash2, FileText, Pencil } from "lucide-react";
+import { Plus, Printer, Trash2, FileText, Pencil, ClipboardList } from "lucide-react";
 import { format } from "date-fns";
 import { useUserRole } from "@/hooks/useUserRole";
 import QuotationTemplate from "./QuotationTemplate";
 import type { InvoiceItem } from "./InvoiceTemplate";
 import { printDocument } from "@/lib/printDocument";
+import type { BillingPrefill } from "./BillingManagement";
 
 interface QuotationRow {
   id: string;
@@ -40,7 +41,11 @@ interface QuotationRow {
 
 const defaultItem: InvoiceItem = { description: "", quantity: "1", unit_cost: 0, total: 0 };
 
-const QuotationsManagement = () => {
+interface QuotationsManagementProps {
+  onMakeOrderForm?: (prefill: BillingPrefill) => void;
+}
+
+const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) => {
   const queryClient = useQueryClient();
   const { canEdit } = useUserRole();
   const canEditFinance = canEdit("finance");
