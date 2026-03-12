@@ -56,6 +56,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
   const [previewWorkOrder, setPreviewWorkOrder] = useState<WorkOrderRow | null>(null);
   const printRef = useRef<HTMLDivElement>(null);
 
+  // Consume prefill data from quotation conversion
   const [form, setForm] = useState({
     work_order_number: "",
     work_order_date: new Date().toISOString().split("T")[0],
@@ -71,6 +72,28 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
     requested_by: "",
     provided_by: "Yowa Innovations Ltd",
   });
+
+  useEffect(() => {
+    if (prefill) {
+      setForm(prev => ({
+        ...prev,
+        client_name: prefill.client_name,
+        client_address: prefill.client_address || "",
+        client_phone: prefill.client_phone || "",
+        client_email: prefill.client_email || "",
+        items: prefill.items,
+        tax_rate: prefill.tax_rate,
+        notes: prefill.notes || "",
+        project_id: prefill.project_id || "",
+        requested_by: prefill.requested_by || "",
+        provided_by: prefill.provided_by || "Yowa Innovations Ltd",
+      }));
+      setIsCreateOpen(true);
+      onPrefillConsumed?.();
+    }
+  }, [prefill]);
+
+
 
   const { data: workOrders = [], isLoading } = useQuery({
     queryKey: ["work_orders"],

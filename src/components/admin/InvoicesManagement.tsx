@@ -60,6 +60,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
   const [previewType, setPreviewType] = useState<"invoice" | "receipt">("invoice");
   const printRef = useRef<HTMLDivElement>(null);
 
+  // Consume prefill data from work order conversion
   const [form, setForm] = useState({
     invoice_number: "",
     invoice_date: new Date().toISOString().split("T")[0],
@@ -73,6 +74,26 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
     notes: "",
     project_id: "",
   });
+
+  useEffect(() => {
+    if (prefill) {
+      setForm(prev => ({
+        ...prev,
+        client_name: prefill.client_name,
+        client_address: prefill.client_address || "",
+        client_phone: prefill.client_phone || "",
+        client_email: prefill.client_email || "",
+        items: prefill.items,
+        tax_rate: prefill.tax_rate,
+        notes: prefill.notes || "",
+        project_id: prefill.project_id || "",
+      }));
+      setIsCreateOpen(true);
+      onPrefillConsumed?.();
+    }
+  }, [prefill]);
+
+
 
   const { data: invoices = [], isLoading } = useQuery({
     queryKey: ["invoices"],
