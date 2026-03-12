@@ -20,7 +20,31 @@ import type { InvoiceItem } from "./InvoiceTemplate";
 import { printDocument } from "@/lib/printDocument";
 import type { BillingPrefill } from "./BillingManagement";
 
-interface InvoicesManagementProps {
+interface InvoiceRow {
+  id: string;
+  invoice_number: string;
+  invoice_date: string;
+  client_name: string;
+  client_address: string | null;
+  client_phone: string | null;
+  client_email: string | null;
+  items: InvoiceItem[];
+  subtotal: number;
+  tax_rate: number;
+  tax_amount: number;
+  total: number;
+  status: string;
+  notes: string | null;
+  project_id: string | null;
+  payment_date: string | null;
+  payment_method: string | null;
+  is_receipt_generated: boolean;
+  created_at: string;
+}
+
+const defaultItem: InvoiceItem = { description: "", quantity: "1", unit_cost: 0, total: 0 };
+
+
   receiptMode?: boolean;
   prefill?: BillingPrefill | null;
   onPrefillConsumed?: () => void;

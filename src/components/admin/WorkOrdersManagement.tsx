@@ -18,7 +18,30 @@ import type { InvoiceItem } from "./InvoiceTemplate";
 import { printDocument } from "@/lib/printDocument";
 import type { BillingPrefill } from "./BillingManagement";
 
-interface WorkOrdersManagementProps {
+interface WorkOrderRow {
+  id: string;
+  work_order_number: string;
+  work_order_date: string;
+  client_name: string;
+  client_address: string | null;
+  client_phone: string | null;
+  client_email: string | null;
+  items: InvoiceItem[];
+  subtotal: number;
+  tax_rate: number;
+  tax_amount: number;
+  total: number;
+  status: string;
+  notes: string | null;
+  project_id: string | null;
+  requested_by: string | null;
+  provided_by: string | null;
+  created_at: string;
+}
+
+const defaultItem: InvoiceItem = { description: "", quantity: "1", unit_cost: 0, total: 0 };
+
+
   prefill?: BillingPrefill | null;
   onPrefillConsumed?: () => void;
   onMakeInvoice?: (prefill: BillingPrefill) => void;
