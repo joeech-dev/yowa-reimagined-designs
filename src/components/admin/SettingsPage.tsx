@@ -332,7 +332,7 @@ const SettingsPage = () => {
                                 {integration.comingSoon ? (
                                   <Badge variant="secondary" className="text-xs">Coming Soon</Badge>
                                 ) : isConfigured ? (
-                                  <Badge className="text-xs bg-green-500/15 text-green-700 border-green-200 gap-1">
+                                  <Badge className="text-xs bg-primary/10 text-primary border-primary/20 gap-1">
                                     <CheckCircle2 className="h-3 w-3" /> Connected
                                   </Badge>
                                 ) : (
