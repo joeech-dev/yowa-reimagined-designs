@@ -216,16 +216,39 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
 
   const markPaidMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("invoices").update({
+      const paymentDate = new Date().toISOString().split("T")[0];
+
+      // Mark invoice as paid
+      const { error: invError } = await supabase.from("invoices").update({
         status: "paid",
-        payment_date: new Date().toISOString().split("T")[0],
+        payment_date: paymentDate,
         is_receipt_generated: true,
       }).eq("id", id);
-      if (error) throw error;
+      if (invError) throw invError;
+
+      // Fetch the invoice to get its total and details
+      const { data: inv, error: fetchError } = await supabase
+        .from("invoices")
+        .select("total, client_name, invoice_number, project_id")
+        .eq("id", id)
+        .single();
+      if (fetchError) throw fetchError;
+
+      // Create a finance income transaction
+      const { error: finError } = await supabase.from("finance_transactions").insert([{
+        type: "income",
+        amount: inv.total,
+        description: `Payment received for Invoice ${inv.invoice_number} from ${inv.client_name}`,
+        category: "Project Payment",
+        project_id: inv.project_id || null,
+        transaction_date: paymentDate,
+      }]);
+      if (finError) throw finError;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
-      toast.success("Invoice marked as paid");
+      queryClient.invalidateQueries({ queryKey: ["finance-transactions"] });
+      toast.success("Invoice marked as paid & income recorded in Finance");
     },
     onError: (e) => toast.error(e.message),
   });
