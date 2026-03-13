@@ -168,17 +168,6 @@ const AdminDashboardHome = () => {
   );
 };
 
-const AdminSettings = () => (
-  <Card>
-    <CardHeader>
-      <CardTitle>Settings</CardTitle>
-      <CardDescription>Configure your dashboard preferences</CardDescription>
-    </CardHeader>
-    <CardContent>
-      <p className="text-muted-foreground">Settings panel coming soon...</p>
-    </CardContent>
-  </Card>
-);
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
