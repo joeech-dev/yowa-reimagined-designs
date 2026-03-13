@@ -434,10 +434,12 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                     <TableCell>{statusBadge(inv.status)}</TableCell>
                     <TableCell>
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="sm" title="View Invoice" onClick={() => { setPreviewInvoice(inv); setPreviewType("invoice"); }}>
-                          <FileText className="h-4 w-4" />
-                        </Button>
-                        {inv.status === "paid" && (
+                        {!receiptMode && (
+                          <Button variant="ghost" size="sm" title="View Invoice" onClick={() => { setPreviewInvoice(inv); setPreviewType("invoice"); }}>
+                            <FileText className="h-4 w-4" />
+                          </Button>
+                        )}
+                        {(receiptMode || inv.status === "paid") && (
                           <Button variant="ghost" size="sm" title="View Receipt" onClick={() => { setPreviewInvoice(inv); setPreviewType("receipt"); }}>
                             <Receipt className="h-4 w-4" />
                           </Button>
