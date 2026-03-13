@@ -25,6 +25,7 @@ import TasksManagement from "@/components/admin/tasks/TasksManagement";
 import ProductsManagement from "@/components/admin/ProductsManagement";
 import MobileBottomNav from "@/components/admin/MobileBottomNav";
 import { SocialMediaManagement } from "@/components/admin/social/SocialMediaManagement";
+import SettingsPage from "@/components/admin/SettingsPage";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -167,17 +168,6 @@ const AdminDashboardHome = () => {
   );
 };
 
-const AdminSettings = () => (
-  <Card>
-    <CardHeader>
-      <CardTitle>Settings</CardTitle>
-      <CardDescription>Configure your dashboard preferences</CardDescription>
-    </CardHeader>
-    <CardContent>
-      <p className="text-muted-foreground">Settings panel coming soon...</p>
-    </CardContent>
-  </Card>
-);
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
@@ -324,7 +314,7 @@ const Admin = () => {
         <Route path="social-reports" element={<SocialMediaManagement />} />
         <Route path="ai-assistant" element={<AIAssistantPanel />} />
         <Route path="users" element={<UserManagement />} />
-        <Route path="settings" element={<AdminSettings />} />
+        <Route path="settings" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Routes>
     </AdminLayout>
