@@ -180,6 +180,7 @@ const LeadsManagement = () => {
                 <TableHead>Lead</TableHead>
                 <TableHead>Contact</TableHead>
                 <TableHead>Details</TableHead>
+                <TableHead>Submitted By</TableHead>
                 <TableHead>Score</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Next Followup</TableHead>
