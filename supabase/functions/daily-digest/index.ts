@@ -178,7 +178,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         from: "Yowa Innovations <notifications@yowa.us>",
-        to: ["info@yowa.us"],
+        to: ["info@yowa.us", "lubangakene@yowa.us", "joel@yowa.us"],
         subject,
         html: wrapEmail(subject, body),
       }),
