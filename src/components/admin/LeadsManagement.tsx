@@ -227,6 +227,11 @@ const LeadsManagement = () => {
                       </div>
                     </TableCell>
                     <TableCell>
+                      <span className="text-sm text-muted-foreground">
+                        {lead.submitted_by_name || "—"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
                       <div className="flex items-center gap-2">
                         <div className="w-12 h-2 bg-muted rounded-full overflow-hidden">
                           <div 
