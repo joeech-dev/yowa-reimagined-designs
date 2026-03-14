@@ -773,7 +773,7 @@ const ExpenseRequisitionForm = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Banknote className="h-5 w-5 text-green-600" /> Confirm Payment
+              <Banknote className="h-5 w-5 text-primary" /> Confirm Payment
             </DialogTitle>
           </DialogHeader>
           {confirmPayDialogReq && (
