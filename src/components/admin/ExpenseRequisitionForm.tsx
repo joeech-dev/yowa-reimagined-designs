@@ -208,6 +208,16 @@ const ExpenseRequisitionForm = () => {
         supporting_notes: data.supporting_notes || null,
       }]);
       if (error) throw error;
+      // Notify finance team
+      sendInternalNotification("requisition_submitted", {
+        title: data.title,
+        requester_name: data.requester_name,
+        department: data.department,
+        amount: parseFloat(data.amount),
+        category: data.category,
+        urgency: data.urgency,
+        justification: data.justification,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["expense-requisitions"] });
