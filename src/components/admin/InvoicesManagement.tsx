@@ -434,7 +434,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                           </Button>
                         )}
                         {canEditFinance && inv.status !== "paid" && (
-                          <Button variant="ghost" size="sm" title="Mark as Paid" onClick={() => markPaidMutation.mutate(inv.id)}>
+                          <Button variant="ghost" size="sm" title="Mark as Paid" onClick={() => markPaidMutation.mutate(inv)}>
                             <Badge variant="outline" className="text-xs">Pay</Badge>
                           </Button>
                         )}
