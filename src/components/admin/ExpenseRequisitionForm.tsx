@@ -676,7 +676,7 @@ const ExpenseRequisitionForm = () => {
                               </Button>
                             )}
                             {canApprove(req) && (
-                              <Button size="sm" variant="outline" className="text-primary text-xs" onClick={() => approveMutation.mutate({ id: req.id, amount: req.amount })}>
+                              <Button size="sm" variant="outline" className="text-primary text-xs" onClick={() => approveMutation.mutate({ id: req.id, amount: req.amount, req })}>
                                 <CheckCircle className="h-3.5 w-3.5 mr-1" /> Approve
                               </Button>
                             )}
