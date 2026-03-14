@@ -122,11 +122,13 @@ const DetailRow = ({ icon: Icon, label, value }: { icon?: any; label: string; va
 const ExpenseRequisitionForm = () => {
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editReq, setEditReq] = useState<ExpenseRequisition | null>(null);
   const [viewReq, setViewReq] = useState<ExpenseRequisition | null>(null);
   const [rejectDialogId, setRejectDialogId] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
   const [confirmPayDialogReq, setConfirmPayDialogReq] = useState<ExpenseRequisition | null>(null);
   const [formData, setFormData] = useState(EMPTY_FORM);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   const [userRole, setUserRole] = useState<string | null>(null);
 
