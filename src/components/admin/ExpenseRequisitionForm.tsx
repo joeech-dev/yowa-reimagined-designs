@@ -217,6 +217,36 @@ const ExpenseRequisitionForm = () => {
     onError: (error) => toast.error(`Error: ${error.message}`),
   });
 
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: typeof formData }) => {
+      const { error } = await supabase.from("expense_requisitions").update({
+        requester_name: data.requester_name || null,
+        department: data.department || null,
+        title: data.title,
+        description: data.description,
+        justification: data.justification || null,
+        amount: parseFloat(data.amount),
+        category: data.category,
+        budget_line: data.budget_line || null,
+        project_id: data.project_id || null,
+        urgency: data.urgency,
+        payee_name: data.payee_name || null,
+        payee_contact: data.payee_contact || null,
+        payment_method: data.payment_method || null,
+        expected_date: data.expected_date || null,
+        supporting_notes: data.supporting_notes || null,
+      }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["expense-requisitions"] });
+      toast.success("Requisition updated");
+      setEditReq(null);
+      setFormData(EMPTY_FORM);
+    },
+    onError: (error) => toast.error(`Error: ${error.message}`),
+  });
+
   const approveMutation = useMutation({
     mutationFn: async ({ id, amount }: { id: string; amount: number }) => {
       const { data: { user } } = await supabase.auth.getUser();
