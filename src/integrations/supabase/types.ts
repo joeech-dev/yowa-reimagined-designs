@@ -187,66 +187,96 @@ export type Database = {
       expense_requisitions: {
         Row: {
           amount: number
+          budget_line: string | null
           category: string
           created_at: string
+          department: string | null
           description: string
+          expected_date: string | null
           finance_approved_at: string | null
           finance_approved_by: string | null
           id: string
+          justification: string | null
           paid_at: string | null
           paid_by: string | null
+          payee_contact: string | null
+          payee_name: string | null
+          payment_method: string | null
           project_id: string | null
           rejected_at: string | null
           rejected_by: string | null
           rejection_reason: string | null
           requester_id: string
+          requester_name: string | null
           status: string
           super_admin_approved_at: string | null
           super_admin_approved_by: string | null
+          supporting_notes: string | null
           title: string
           updated_at: string
+          urgency: string | null
         }
         Insert: {
           amount: number
+          budget_line?: string | null
           category: string
           created_at?: string
+          department?: string | null
           description: string
+          expected_date?: string | null
           finance_approved_at?: string | null
           finance_approved_by?: string | null
           id?: string
+          justification?: string | null
           paid_at?: string | null
           paid_by?: string | null
+          payee_contact?: string | null
+          payee_name?: string | null
+          payment_method?: string | null
           project_id?: string | null
           rejected_at?: string | null
           rejected_by?: string | null
           rejection_reason?: string | null
           requester_id: string
+          requester_name?: string | null
           status?: string
           super_admin_approved_at?: string | null
           super_admin_approved_by?: string | null
+          supporting_notes?: string | null
           title: string
           updated_at?: string
+          urgency?: string | null
         }
         Update: {
           amount?: number
+          budget_line?: string | null
           category?: string
           created_at?: string
+          department?: string | null
           description?: string
+          expected_date?: string | null
           finance_approved_at?: string | null
           finance_approved_by?: string | null
           id?: string
+          justification?: string | null
           paid_at?: string | null
           paid_by?: string | null
+          payee_contact?: string | null
+          payee_name?: string | null
+          payment_method?: string | null
           project_id?: string | null
           rejected_at?: string | null
           rejected_by?: string | null
           rejection_reason?: string | null
           requester_id?: string
+          requester_name?: string | null
           status?: string
           super_admin_approved_at?: string | null
           super_admin_approved_by?: string | null
+          supporting_notes?: string | null
           title?: string
           updated_at?: string
+          urgency?: string | null
         }
         Relationships: [
           {
