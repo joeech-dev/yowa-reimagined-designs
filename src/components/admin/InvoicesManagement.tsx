@@ -216,15 +216,23 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
   });
 
   const markPaidMutation = useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async (inv: InvoiceRow) => {
       const paymentDate = new Date().toISOString().split("T")[0];
       // The DB trigger `on_invoice_paid` automatically creates the finance_transaction
       const { error } = await supabase.from("invoices").update({
         status: "paid",
         payment_date: paymentDate,
         is_receipt_generated: true,
-      }).eq("id", id);
+      }).eq("id", inv.id);
       if (error) throw new Error(`Could not mark invoice as paid: ${error.message}`);
+      // Notify finance/admin team
+      sendInternalNotification("invoice_paid", {
+        invoice_number: inv.invoice_number,
+        client_name: inv.client_name,
+        amount: inv.total,
+        payment_method: inv.payment_method ?? "—",
+        payment_date: paymentDate,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
