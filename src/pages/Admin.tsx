@@ -9,6 +9,7 @@ import DashboardStats from "@/components/admin/DashboardStats";
 import BlogsManagement from "@/components/admin/BlogsManagement";
 import PartnersManagement from "@/components/admin/PartnersManagement";
 import LeadAcquisitionForm from "@/components/admin/LeadAcquisitionForm";
+import LeadsManagement from "@/components/admin/LeadsManagement";
 import AnalyticsDashboard from "@/components/admin/AnalyticsDashboard";
 import FinanceManagement from "@/components/admin/FinanceManagement";
 import BillingManagement from "@/components/admin/BillingManagement";
