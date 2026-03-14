@@ -687,7 +687,7 @@ const ExpenseRequisitionForm = () => {
                               </Button>
                             )}
                             {canReject && (req.status === "pending" || req.status === "finance_approved") && (
-                              <Button size="sm" variant="ghost" className="text-destructive text-xs" onClick={() => setRejectDialogId(req.id)}>
+                              <Button size="sm" variant="ghost" className="text-destructive text-xs" onClick={() => { setRejectDialogId(req.id); setRejectDialogReq(req); }}>
                                 <XCircle className="h-3.5 w-3.5 mr-1" /> Reject
                               </Button>
                             )}
