@@ -1004,7 +1004,7 @@ const ExpenseRequisitionForm = () => {
             <Button
               variant="destructive"
               className="w-full"
-              onClick={() => rejectDialogId && rejectMutation.mutate({ id: rejectDialogId, reason: rejectionReason })}
+              onClick={() => rejectDialogId && rejectDialogReq && rejectMutation.mutate({ id: rejectDialogId, reason: rejectionReason, req: rejectDialogReq })}
               disabled={!rejectionReason.trim()}
             >
               Confirm Rejection
