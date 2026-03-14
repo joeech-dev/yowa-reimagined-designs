@@ -11,11 +11,11 @@ interface RolePermissions {
 }
 
 const viewPermissions: Record<AppRole, string[]> = {
-  super_admin: ["dashboard", "projects", "hr", "finance", "requisitions", "blogs", "partners", "leads", "analytics", "ai-assistant", "users", "settings", "sales_marketing"],
-  admin: ["dashboard", "projects", "hr", "finance", "requisitions", "blogs", "partners", "leads", "analytics", "ai-assistant", "users", "settings", "sales_marketing"],
-  finance: ["dashboard", "projects", "finance", "requisitions", "partners", "leads", "analytics"],
-  sales_marketing: ["dashboard", "projects", "blogs", "leads", "sales_marketing"],
-  project_team: ["dashboard", "projects"],
+  super_admin: ["dashboard", "projects", "hr", "finance", "requisitions", "blogs", "partners", "leads", "analytics", "ai-assistant", "users", "settings", "sales_marketing", "submit-lead"],
+  admin: ["dashboard", "projects", "hr", "finance", "requisitions", "blogs", "partners", "leads", "analytics", "ai-assistant", "users", "settings", "sales_marketing", "submit-lead"],
+  finance: ["dashboard", "projects", "finance", "requisitions", "partners", "leads", "analytics", "submit-lead"],
+  sales_marketing: ["dashboard", "projects", "blogs", "leads", "sales_marketing", "submit-lead"],
+  project_team: ["dashboard", "projects", "submit-lead"],
 };
 
 const editPermissions: Record<AppRole, string[]> = {
