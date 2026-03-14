@@ -259,28 +259,44 @@ const ExpenseRequisitionForm = () => {
   });
 
   const approveMutation = useMutation({
-    mutationFn: async ({ id, amount }: { id: string; amount: number }) => {
+    mutationFn: async ({ id, amount, req }: { id: string; amount: number; req: ExpenseRequisition }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
       const isFinanceOrAdmin = userRole === "finance" || userRole === "admin";
       const isSuperAdmin = userRole === "super_admin";
+      let newStatus = "approved";
 
       if (amount < 100000 && isFinanceOrAdmin) {
         const { error } = await supabase.from("expense_requisitions")
           .update({ status: "approved", finance_approved_by: user.id, finance_approved_at: new Date().toISOString() })
           .eq("id", id);
         if (error) throw error;
+        newStatus = "approved";
       } else if (amount >= 100000 && isFinanceOrAdmin) {
         const { error } = await supabase.from("expense_requisitions")
           .update({ status: "finance_approved", finance_approved_by: user.id, finance_approved_at: new Date().toISOString() })
           .eq("id", id);
         if (error) throw error;
+        newStatus = "finance_approved";
       } else if (isSuperAdmin) {
         const { error } = await supabase.from("expense_requisitions")
           .update({ status: "approved", super_admin_approved_by: user.id, super_admin_approved_at: new Date().toISOString() })
           .eq("id", id);
         if (error) throw error;
+        newStatus = "approved";
       }
+
+      // Notify the requester
+      const { data: profile } = await supabase.from("profiles").select("full_name").eq("user_id", user.id).maybeSingle();
+      const { data: requesterAuth } = await supabase.auth.admin ? 
+        { data: null } : { data: null }; // service role not available client-side
+      sendInternalNotification("requisition_approved", {
+        title: req.title,
+        amount: req.amount,
+        status: newStatus,
+        approved_by_name: profile?.full_name ?? "Finance Team",
+        requester_email: "info@yowa.us", // fallback — requester email resolved server-side
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["expense-requisitions"] });
@@ -319,13 +335,20 @@ const ExpenseRequisitionForm = () => {
   });
 
   const rejectMutation = useMutation({
-    mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
+    mutationFn: async ({ id, reason, req }: { id: string; reason: string; req: ExpenseRequisition }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
       const { error } = await supabase.from("expense_requisitions")
         .update({ status: "rejected", rejected_by: user.id, rejected_at: new Date().toISOString(), rejection_reason: reason })
         .eq("id", id);
       if (error) throw error;
+      // Notify the requester
+      sendInternalNotification("requisition_rejected", {
+        title: req.title,
+        amount: req.amount,
+        rejection_reason: reason,
+        requester_email: "info@yowa.us",
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["expense-requisitions"] });
