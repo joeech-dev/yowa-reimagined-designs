@@ -793,7 +793,8 @@ const ExpenseRequisitionForm = () => {
               <div className="flex gap-2">
                 <Button variant="outline" className="flex-1" onClick={() => setConfirmPayDialogReq(null)}>Cancel</Button>
                 <Button
-                  className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                  className="flex-1"
+                  variant="default"
                   disabled={confirmPaymentMutation.isPending}
                   onClick={() => confirmPaymentMutation.mutate(confirmPayDialogReq)}
                 >
