@@ -355,6 +355,7 @@ const ExpenseRequisitionForm = () => {
       queryClient.invalidateQueries({ queryKey: ["expense-requisitions"] });
       toast.success("Requisition rejected");
       setRejectDialogId(null);
+      setRejectDialogReq(null);
       setRejectionReason("");
     },
     onError: (error) => toast.error(`Error: ${error.message}`),
