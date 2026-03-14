@@ -751,7 +751,7 @@ const ExpenseRequisitionForm = () => {
                       </Button>
                     )}
                     {canConfirmPayment(viewReq) && (
-                      <Button className="flex-1 bg-green-600 hover:bg-green-700 text-white" onClick={() => { setConfirmPayDialogReq(viewReq); setViewReq(null); }}>
+                      <Button className="flex-1" variant="default" onClick={() => { setConfirmPayDialogReq(viewReq); setViewReq(null); }}>
                         <Banknote className="h-4 w-4 mr-2" /> Confirm Payment
                       </Button>
                     )}
