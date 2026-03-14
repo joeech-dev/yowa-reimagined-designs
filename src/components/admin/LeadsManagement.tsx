@@ -333,6 +333,10 @@ const LeadsManagement = () => {
                   <label className="text-sm text-muted-foreground">Lead Score</label>
                   <p className="font-bold text-lg">{getLeadScore(selectedLead)}/100</p>
                 </div>
+                <div className="col-span-2">
+                  <label className="text-sm text-muted-foreground">Submitted By</label>
+                  <p>{selectedLead.submitted_by_name || "—"}</p>
+                </div>
               </div>
               {(selectedLead.cv_url || selectedLead.national_id_url) && (
                 <div className="border-t pt-4 space-y-2">
