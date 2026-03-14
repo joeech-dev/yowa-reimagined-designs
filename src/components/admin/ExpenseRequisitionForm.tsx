@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
-import { Plus, CheckCircle, XCircle, Clock, AlertTriangle, Banknote, Eye, User, Building2, CalendarDays, CreditCard, FileText } from "lucide-react";
+import { Plus, CheckCircle, XCircle, Clock, AlertTriangle, Banknote, Eye, Pencil, User, Building2, CalendarDays, CreditCard, FileText } from "lucide-react";
 import { format } from "date-fns";
 import { useExpenseCategories } from "@/hooks/useExpenseCategories";
 
@@ -122,11 +122,13 @@ const DetailRow = ({ icon: Icon, label, value }: { icon?: any; label: string; va
 const ExpenseRequisitionForm = () => {
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editReq, setEditReq] = useState<ExpenseRequisition | null>(null);
   const [viewReq, setViewReq] = useState<ExpenseRequisition | null>(null);
   const [rejectDialogId, setRejectDialogId] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
   const [confirmPayDialogReq, setConfirmPayDialogReq] = useState<ExpenseRequisition | null>(null);
   const [formData, setFormData] = useState(EMPTY_FORM);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   const [userRole, setUserRole] = useState<string | null>(null);
 
@@ -135,6 +137,7 @@ const ExpenseRequisitionForm = () => {
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
+      setCurrentUserId(user.id);
       const { data } = await supabase
         .from("user_roles")
         .select("role")
@@ -210,6 +213,36 @@ const ExpenseRequisitionForm = () => {
       toast.success("Expense requisition submitted");
       setFormData(EMPTY_FORM);
       setIsDialogOpen(false);
+    },
+    onError: (error) => toast.error(`Error: ${error.message}`),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: typeof formData }) => {
+      const { error } = await supabase.from("expense_requisitions").update({
+        requester_name: data.requester_name || null,
+        department: data.department || null,
+        title: data.title,
+        description: data.description,
+        justification: data.justification || null,
+        amount: parseFloat(data.amount),
+        category: data.category,
+        budget_line: data.budget_line || null,
+        project_id: data.project_id || null,
+        urgency: data.urgency,
+        payee_name: data.payee_name || null,
+        payee_contact: data.payee_contact || null,
+        payment_method: data.payment_method || null,
+        expected_date: data.expected_date || null,
+        supporting_notes: data.supporting_notes || null,
+      }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["expense-requisitions"] });
+      toast.success("Requisition updated");
+      setEditReq(null);
+      setFormData(EMPTY_FORM);
     },
     onError: (error) => toast.error(`Error: ${error.message}`),
   });
@@ -583,6 +616,31 @@ const ExpenseRequisitionForm = () => {
                             <Button size="sm" variant="ghost" onClick={() => setViewReq(req)} title="View details">
                               <Eye className="h-4 w-4" />
                             </Button>
+                            {/* Edit — only own pending requisitions */}
+                            {req.requester_id === currentUserId && req.status === "pending" && (
+                              <Button size="sm" variant="ghost" title="Edit" onClick={() => {
+                                setEditReq(req);
+                                setFormData({
+                                  requester_name: req.requester_name || "",
+                                  department: req.department || "",
+                                  title: req.title,
+                                  description: req.description,
+                                  justification: req.justification || "",
+                                  amount: String(req.amount),
+                                  category: req.category,
+                                  budget_line: req.budget_line || "",
+                                  project_id: req.project_id || "",
+                                  urgency: req.urgency || "normal",
+                                  payee_name: req.payee_name || "",
+                                  payee_contact: req.payee_contact || "",
+                                  payment_method: req.payment_method || "bank_transfer",
+                                  expected_date: req.expected_date || "",
+                                  supporting_notes: req.supporting_notes || "",
+                                });
+                              }}>
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                            )}
                             {canApprove(req) && (
                               <Button size="sm" variant="outline" className="text-primary text-xs" onClick={() => approveMutation.mutate({ id: req.id, amount: req.amount })}>
                                 <CheckCircle className="h-3.5 w-3.5 mr-1" /> Approve
@@ -609,6 +667,90 @@ const ExpenseRequisitionForm = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* ─── Edit Requisition Dialog (requester, pending only) ─── */}
+      <Dialog open={!!editReq} onOpenChange={(open) => { if (!open) { setEditReq(null); setFormData(EMPTY_FORM); } }}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Pencil className="h-5 w-5" /> Edit Requisition
+            </DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="max-h-[75vh] pr-4">
+            <form onSubmit={(e) => { e.preventDefault(); editReq && updateMutation.mutate({ id: editReq.id, data: formData }); }} className="space-y-5 pb-2">
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label>Full Name *</Label><Input value={formData.requester_name} onChange={e => setFormData(f => ({ ...f, requester_name: e.target.value }))} required /></div>
+                <div>
+                  <Label>Department *</Label>
+                  <Select value={formData.department} onValueChange={v => setFormData(f => ({ ...f, department: v }))}>
+                    <SelectTrigger><SelectValue placeholder="Select department" /></SelectTrigger>
+                    <SelectContent>{DEPARTMENTS.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <Separator />
+              <div><Label>Requisition Title *</Label><Input value={formData.title} onChange={e => setFormData(f => ({ ...f, title: e.target.value }))} required /></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Amount (UGX) *</Label>
+                  <Input type="number" step="1" value={formData.amount} onChange={e => setFormData(f => ({ ...f, amount: e.target.value }))} required />
+                  {parseFloat(formData.amount) >= 100000 && (
+                    <p className="text-xs text-secondary mt-1 flex items-center gap-1"><AlertTriangle className="h-3 w-3" /> Requires Finance + Super Admin approval</p>
+                  )}
+                </div>
+                <div>
+                  <Label>Category *</Label>
+                  <Select value={formData.category} onValueChange={v => setFormData(f => ({ ...f, category: v }))}>
+                    <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
+                    <SelectContent>{expenseCategories.map(cat => <SelectItem key={cat.id} value={cat.name}>{cat.name}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div><Label>Brief Description *</Label><Input value={formData.description} onChange={e => setFormData(f => ({ ...f, description: e.target.value }))} required /></div>
+              <div><Label>Detailed Justification *</Label><Textarea value={formData.justification} onChange={e => setFormData(f => ({ ...f, justification: e.target.value }))} className="min-h-[80px]" required /></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label>Payee / Vendor Name</Label><Input value={formData.payee_name} onChange={e => setFormData(f => ({ ...f, payee_name: e.target.value }))} /></div>
+                <div><Label>Payee Contact / Account</Label><Input value={formData.payee_contact} onChange={e => setFormData(f => ({ ...f, payee_contact: e.target.value }))} /></div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Payment Method</Label>
+                  <Select value={formData.payment_method} onValueChange={v => setFormData(f => ({ ...f, payment_method: v }))}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>{PAYMENT_METHODS.map(m => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Urgency</Label>
+                  <Select value={formData.urgency} onValueChange={v => setFormData(f => ({ ...f, urgency: v }))}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {URGENCY_LEVELS.map(u => <SelectItem key={u.value} value={u.value}>{u.label.split(" — ")[0]}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Linked Project (Optional)</Label>
+                  <Select value={formData.project_id || "none"} onValueChange={v => setFormData(f => ({ ...f, project_id: v === "none" ? "" : v }))}>
+                    <SelectTrigger><SelectValue placeholder="Select project" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {projects.map(p => <SelectItem key={p.id} value={p.id}>{p.title}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div><Label>Expected Payment Date</Label><Input type="date" value={formData.expected_date} onChange={e => setFormData(f => ({ ...f, expected_date: e.target.value }))} /></div>
+              </div>
+              <div><Label>Additional Notes</Label><Textarea value={formData.supporting_notes} onChange={e => setFormData(f => ({ ...f, supporting_notes: e.target.value }))} className="min-h-[60px]" /></div>
+              <Button type="submit" className="w-full" disabled={updateMutation.isPending}>
+                {updateMutation.isPending ? "Saving..." : "Save Changes"}
+              </Button>
+            </form>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
 
       {/* ─── View Detail Dialog (Finance View) ─── */}
       <Dialog open={!!viewReq} onOpenChange={() => setViewReq(null)}>
