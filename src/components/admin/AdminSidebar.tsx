@@ -14,6 +14,7 @@ import {
   ClipboardList,
   FileText as FileTextIcon,
   ShoppingBag,
+  UserPlus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,6 +30,7 @@ const allMenuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/admin", section: "dashboard" },
   { icon: FolderKanban, label: "Projects", path: "/admin/projects", section: "projects" },
   { icon: ClipboardList, label: "Tasks", path: "/admin/tasks", section: "dashboard" },
+  { icon: UserPlus, label: "Submit Lead", path: "/admin/submit-lead", section: "submit-lead" },
   { icon: UserCheck, label: "HR", path: "/admin/hr", section: "hr" },
   { icon: DollarSign, label: "Finance", path: "/admin/finance", section: "finance" },
   { icon: FileTextIcon, label: "Billing", path: "/admin/billing", section: "finance" },

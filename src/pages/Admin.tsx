@@ -8,6 +8,7 @@ import AdminSidebar from "@/components/admin/AdminSidebar";
 import DashboardStats from "@/components/admin/DashboardStats";
 import BlogsManagement from "@/components/admin/BlogsManagement";
 import PartnersManagement from "@/components/admin/PartnersManagement";
+import LeadAcquisitionForm from "@/components/admin/LeadAcquisitionForm";
 import LeadsManagement from "@/components/admin/LeadsManagement";
 import AnalyticsDashboard from "@/components/admin/AnalyticsDashboard";
 import FinanceManagement from "@/components/admin/FinanceManagement";
@@ -309,6 +310,7 @@ const Admin = () => {
         <Route path="blogs" element={<BlogsManagement />} />
         <Route path="partners" element={<PartnersManagement />} />
         <Route path="leads" element={<LeadsManagement />} />
+        <Route path="submit-lead" element={<LeadAcquisitionForm />} />
         <Route path="analytics" element={<AnalyticsDashboard />} />
         <Route path="products" element={<ProductsManagement />} />
         <Route path="social-reports" element={<SocialMediaManagement />} />

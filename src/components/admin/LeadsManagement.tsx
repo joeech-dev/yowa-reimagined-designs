@@ -42,6 +42,7 @@ interface Lead {
   created_at: string | null;
   cv_url: string | null;
   national_id_url: string | null;
+  submitted_by_name: string | null;
 }
 
 const statusColors: Record<string, string> = {
@@ -179,6 +180,7 @@ const LeadsManagement = () => {
                 <TableHead>Lead</TableHead>
                 <TableHead>Contact</TableHead>
                 <TableHead>Details</TableHead>
+                <TableHead>Submitted By</TableHead>
                 <TableHead>Score</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Next Followup</TableHead>
@@ -223,6 +225,11 @@ const LeadsManagement = () => {
                           </div>
                         )}
                       </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm text-muted-foreground">
+                        {lead.submitted_by_name || "—"}
+                      </span>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
@@ -325,6 +332,10 @@ const LeadsManagement = () => {
                 <div>
                   <label className="text-sm text-muted-foreground">Lead Score</label>
                   <p className="font-bold text-lg">{getLeadScore(selectedLead)}/100</p>
+                </div>
+                <div className="col-span-2">
+                  <label className="text-sm text-muted-foreground">Submitted By</label>
+                  <p>{selectedLead.submitted_by_name || "—"}</p>
                 </div>
               </div>
               {(selectedLead.cv_url || selectedLead.national_id_url) && (
