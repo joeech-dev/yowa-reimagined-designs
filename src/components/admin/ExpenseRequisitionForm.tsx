@@ -616,6 +616,31 @@ const ExpenseRequisitionForm = () => {
                             <Button size="sm" variant="ghost" onClick={() => setViewReq(req)} title="View details">
                               <Eye className="h-4 w-4" />
                             </Button>
+                            {/* Edit — only own pending requisitions */}
+                            {req.requester_id === currentUserId && req.status === "pending" && (
+                              <Button size="sm" variant="ghost" title="Edit" onClick={() => {
+                                setEditReq(req);
+                                setFormData({
+                                  requester_name: req.requester_name || "",
+                                  department: req.department || "",
+                                  title: req.title,
+                                  description: req.description,
+                                  justification: req.justification || "",
+                                  amount: String(req.amount),
+                                  category: req.category,
+                                  budget_line: req.budget_line || "",
+                                  project_id: req.project_id || "",
+                                  urgency: req.urgency || "normal",
+                                  payee_name: req.payee_name || "",
+                                  payee_contact: req.payee_contact || "",
+                                  payment_method: req.payment_method || "bank_transfer",
+                                  expected_date: req.expected_date || "",
+                                  supporting_notes: req.supporting_notes || "",
+                                });
+                              }}>
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                            )}
                             {canApprove(req) && (
                               <Button size="sm" variant="outline" className="text-primary text-xs" onClick={() => approveMutation.mutate({ id: req.id, amount: req.amount })}>
                                 <CheckCircle className="h-3.5 w-3.5 mr-1" /> Approve
