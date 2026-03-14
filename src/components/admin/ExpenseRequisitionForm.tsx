@@ -922,7 +922,7 @@ const ExpenseRequisitionForm = () => {
                   {/* Action Buttons in detail view */}
                   <div className="flex gap-2 pt-1">
                     {canApprove(viewReq) && (
-                      <Button className="flex-1" variant="outline" onClick={() => { approveMutation.mutate({ id: viewReq.id, amount: viewReq.amount }); setViewReq(null); }}>
+                      <Button className="flex-1" variant="outline" onClick={() => { approveMutation.mutate({ id: viewReq.id, amount: viewReq.amount, req: viewReq }); setViewReq(null); }}>
                         <CheckCircle className="h-4 w-4 mr-2" /> Approve
                       </Button>
                     )}
