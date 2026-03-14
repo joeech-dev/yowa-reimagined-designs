@@ -321,7 +321,7 @@ const ExpenseRequisitionForm = () => {
               </span>
             )}
             {awaitingPaymentCount > 0 && (
-              <span className="flex items-center gap-1 text-sm text-green-600">
+              <span className="flex items-center gap-1 text-sm text-primary">
                 <Banknote className="h-4 w-4" /> {awaitingPaymentCount} awaiting payment
               </span>
             )}
