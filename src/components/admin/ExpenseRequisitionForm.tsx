@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
-import { Plus, CheckCircle, XCircle, Clock, AlertTriangle, Banknote, Eye, User, Building2, CalendarDays, CreditCard, FileText } from "lucide-react";
+import { Plus, CheckCircle, XCircle, Clock, AlertTriangle, Banknote, Eye, Pencil, User, Building2, CalendarDays, CreditCard, FileText } from "lucide-react";
 import { format } from "date-fns";
 import { useExpenseCategories } from "@/hooks/useExpenseCategories";
 
