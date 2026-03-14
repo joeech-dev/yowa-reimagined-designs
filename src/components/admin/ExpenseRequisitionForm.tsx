@@ -126,6 +126,7 @@ const ExpenseRequisitionForm = () => {
   const [editReq, setEditReq] = useState<ExpenseRequisition | null>(null);
   const [viewReq, setViewReq] = useState<ExpenseRequisition | null>(null);
   const [rejectDialogId, setRejectDialogId] = useState<string | null>(null);
+  const [rejectDialogReq, setRejectDialogReq] = useState<ExpenseRequisition | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
   const [confirmPayDialogReq, setConfirmPayDialogReq] = useState<ExpenseRequisition | null>(null);
   const [formData, setFormData] = useState(EMPTY_FORM);
