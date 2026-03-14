@@ -42,6 +42,7 @@ interface Lead {
   created_at: string | null;
   cv_url: string | null;
   national_id_url: string | null;
+  submitted_by_name: string | null;
 }
 
 const statusColors: Record<string, string> = {
