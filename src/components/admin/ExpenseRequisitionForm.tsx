@@ -668,6 +668,90 @@ const ExpenseRequisitionForm = () => {
         </CardContent>
       </Card>
 
+      {/* ─── Edit Requisition Dialog (requester, pending only) ─── */}
+      <Dialog open={!!editReq} onOpenChange={(open) => { if (!open) { setEditReq(null); setFormData(EMPTY_FORM); } }}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Pencil className="h-5 w-5" /> Edit Requisition
+            </DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="max-h-[75vh] pr-4">
+            <form onSubmit={(e) => { e.preventDefault(); editReq && updateMutation.mutate({ id: editReq.id, data: formData }); }} className="space-y-5 pb-2">
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label>Full Name *</Label><Input value={formData.requester_name} onChange={e => setFormData(f => ({ ...f, requester_name: e.target.value }))} required /></div>
+                <div>
+                  <Label>Department *</Label>
+                  <Select value={formData.department} onValueChange={v => setFormData(f => ({ ...f, department: v }))}>
+                    <SelectTrigger><SelectValue placeholder="Select department" /></SelectTrigger>
+                    <SelectContent>{DEPARTMENTS.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <Separator />
+              <div><Label>Requisition Title *</Label><Input value={formData.title} onChange={e => setFormData(f => ({ ...f, title: e.target.value }))} required /></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Amount (UGX) *</Label>
+                  <Input type="number" step="1" value={formData.amount} onChange={e => setFormData(f => ({ ...f, amount: e.target.value }))} required />
+                  {parseFloat(formData.amount) >= 100000 && (
+                    <p className="text-xs text-secondary mt-1 flex items-center gap-1"><AlertTriangle className="h-3 w-3" /> Requires Finance + Super Admin approval</p>
+                  )}
+                </div>
+                <div>
+                  <Label>Category *</Label>
+                  <Select value={formData.category} onValueChange={v => setFormData(f => ({ ...f, category: v }))}>
+                    <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
+                    <SelectContent>{expenseCategories.map(cat => <SelectItem key={cat.id} value={cat.name}>{cat.name}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div><Label>Brief Description *</Label><Input value={formData.description} onChange={e => setFormData(f => ({ ...f, description: e.target.value }))} required /></div>
+              <div><Label>Detailed Justification *</Label><Textarea value={formData.justification} onChange={e => setFormData(f => ({ ...f, justification: e.target.value }))} className="min-h-[80px]" required /></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label>Payee / Vendor Name</Label><Input value={formData.payee_name} onChange={e => setFormData(f => ({ ...f, payee_name: e.target.value }))} /></div>
+                <div><Label>Payee Contact / Account</Label><Input value={formData.payee_contact} onChange={e => setFormData(f => ({ ...f, payee_contact: e.target.value }))} /></div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Payment Method</Label>
+                  <Select value={formData.payment_method} onValueChange={v => setFormData(f => ({ ...f, payment_method: v }))}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>{PAYMENT_METHODS.map(m => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Urgency</Label>
+                  <Select value={formData.urgency} onValueChange={v => setFormData(f => ({ ...f, urgency: v }))}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {URGENCY_LEVELS.map(u => <SelectItem key={u.value} value={u.value}>{u.label.split(" — ")[0]}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Linked Project (Optional)</Label>
+                  <Select value={formData.project_id || "none"} onValueChange={v => setFormData(f => ({ ...f, project_id: v === "none" ? "" : v }))}>
+                    <SelectTrigger><SelectValue placeholder="Select project" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {projects.map(p => <SelectItem key={p.id} value={p.id}>{p.title}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div><Label>Expected Payment Date</Label><Input type="date" value={formData.expected_date} onChange={e => setFormData(f => ({ ...f, expected_date: e.target.value }))} /></div>
+              </div>
+              <div><Label>Additional Notes</Label><Textarea value={formData.supporting_notes} onChange={e => setFormData(f => ({ ...f, supporting_notes: e.target.value }))} className="min-h-[60px]" /></div>
+              <Button type="submit" className="w-full" disabled={updateMutation.isPending}>
+                {updateMutation.isPending ? "Saving..." : "Save Changes"}
+              </Button>
+            </form>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
       {/* ─── View Detail Dialog (Finance View) ─── */}
       <Dialog open={!!viewReq} onOpenChange={() => setViewReq(null)}>
         <DialogContent className="max-w-xl">
