@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { sendInternalNotification } from "@/hooks/useInternalNotify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -125,6 +126,7 @@ const ExpenseRequisitionForm = () => {
   const [editReq, setEditReq] = useState<ExpenseRequisition | null>(null);
   const [viewReq, setViewReq] = useState<ExpenseRequisition | null>(null);
   const [rejectDialogId, setRejectDialogId] = useState<string | null>(null);
+  const [rejectDialogReq, setRejectDialogReq] = useState<ExpenseRequisition | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
   const [confirmPayDialogReq, setConfirmPayDialogReq] = useState<ExpenseRequisition | null>(null);
   const [formData, setFormData] = useState(EMPTY_FORM);
@@ -207,6 +209,16 @@ const ExpenseRequisitionForm = () => {
         supporting_notes: data.supporting_notes || null,
       }]);
       if (error) throw error;
+      // Notify finance team
+      sendInternalNotification("requisition_submitted", {
+        title: data.title,
+        requester_name: data.requester_name,
+        department: data.department,
+        amount: parseFloat(data.amount),
+        category: data.category,
+        urgency: data.urgency,
+        justification: data.justification,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["expense-requisitions"] });
@@ -248,28 +260,44 @@ const ExpenseRequisitionForm = () => {
   });
 
   const approveMutation = useMutation({
-    mutationFn: async ({ id, amount }: { id: string; amount: number }) => {
+    mutationFn: async ({ id, amount, req }: { id: string; amount: number; req: ExpenseRequisition }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
       const isFinanceOrAdmin = userRole === "finance" || userRole === "admin";
       const isSuperAdmin = userRole === "super_admin";
+      let newStatus = "approved";
 
       if (amount < 100000 && isFinanceOrAdmin) {
         const { error } = await supabase.from("expense_requisitions")
           .update({ status: "approved", finance_approved_by: user.id, finance_approved_at: new Date().toISOString() })
           .eq("id", id);
         if (error) throw error;
+        newStatus = "approved";
       } else if (amount >= 100000 && isFinanceOrAdmin) {
         const { error } = await supabase.from("expense_requisitions")
           .update({ status: "finance_approved", finance_approved_by: user.id, finance_approved_at: new Date().toISOString() })
           .eq("id", id);
         if (error) throw error;
+        newStatus = "finance_approved";
       } else if (isSuperAdmin) {
         const { error } = await supabase.from("expense_requisitions")
           .update({ status: "approved", super_admin_approved_by: user.id, super_admin_approved_at: new Date().toISOString() })
           .eq("id", id);
         if (error) throw error;
+        newStatus = "approved";
       }
+
+      // Notify the requester
+      const { data: profile } = await supabase.from("profiles").select("full_name").eq("user_id", user.id).maybeSingle();
+      const { data: requesterAuth } = await supabase.auth.admin ? 
+        { data: null } : { data: null }; // service role not available client-side
+      sendInternalNotification("requisition_approved", {
+        title: req.title,
+        amount: req.amount,
+        status: newStatus,
+        approved_by_name: profile?.full_name ?? "Finance Team",
+        requester_email: "info@yowa.us", // fallback — requester email resolved server-side
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["expense-requisitions"] });
@@ -308,18 +336,26 @@ const ExpenseRequisitionForm = () => {
   });
 
   const rejectMutation = useMutation({
-    mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
+    mutationFn: async ({ id, reason, req }: { id: string; reason: string; req: ExpenseRequisition }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
       const { error } = await supabase.from("expense_requisitions")
         .update({ status: "rejected", rejected_by: user.id, rejected_at: new Date().toISOString(), rejection_reason: reason })
         .eq("id", id);
       if (error) throw error;
+      // Notify the requester
+      sendInternalNotification("requisition_rejected", {
+        title: req.title,
+        amount: req.amount,
+        rejection_reason: reason,
+        requester_email: "info@yowa.us",
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["expense-requisitions"] });
       toast.success("Requisition rejected");
       setRejectDialogId(null);
+      setRejectDialogReq(null);
       setRejectionReason("");
     },
     onError: (error) => toast.error(`Error: ${error.message}`),
@@ -642,7 +678,7 @@ const ExpenseRequisitionForm = () => {
                               </Button>
                             )}
                             {canApprove(req) && (
-                              <Button size="sm" variant="outline" className="text-primary text-xs" onClick={() => approveMutation.mutate({ id: req.id, amount: req.amount })}>
+                              <Button size="sm" variant="outline" className="text-primary text-xs" onClick={() => approveMutation.mutate({ id: req.id, amount: req.amount, req })}>
                                 <CheckCircle className="h-3.5 w-3.5 mr-1" /> Approve
                               </Button>
                             )}
@@ -652,7 +688,7 @@ const ExpenseRequisitionForm = () => {
                               </Button>
                             )}
                             {canReject && (req.status === "pending" || req.status === "finance_approved") && (
-                              <Button size="sm" variant="ghost" className="text-destructive text-xs" onClick={() => setRejectDialogId(req.id)}>
+                              <Button size="sm" variant="ghost" className="text-destructive text-xs" onClick={() => { setRejectDialogId(req.id); setRejectDialogReq(req); }}>
                                 <XCircle className="h-3.5 w-3.5 mr-1" /> Reject
                               </Button>
                             )}
@@ -888,7 +924,7 @@ const ExpenseRequisitionForm = () => {
                   {/* Action Buttons in detail view */}
                   <div className="flex gap-2 pt-1">
                     {canApprove(viewReq) && (
-                      <Button className="flex-1" variant="outline" onClick={() => { approveMutation.mutate({ id: viewReq.id, amount: viewReq.amount }); setViewReq(null); }}>
+                      <Button className="flex-1" variant="outline" onClick={() => { approveMutation.mutate({ id: viewReq.id, amount: viewReq.amount, req: viewReq }); setViewReq(null); }}>
                         <CheckCircle className="h-4 w-4 mr-2" /> Approve
                       </Button>
                     )}
@@ -898,7 +934,7 @@ const ExpenseRequisitionForm = () => {
                       </Button>
                     )}
                     {canReject && (viewReq.status === "pending" || viewReq.status === "finance_approved") && (
-                      <Button className="flex-1" variant="destructive" onClick={() => { setRejectDialogId(viewReq.id); setViewReq(null); }}>
+                      <Button className="flex-1" variant="destructive" onClick={() => { setRejectDialogId(viewReq.id); setRejectDialogReq(viewReq); setViewReq(null); }}>
                         <XCircle className="h-4 w-4 mr-2" /> Reject
                       </Button>
                     )}
@@ -969,7 +1005,7 @@ const ExpenseRequisitionForm = () => {
             <Button
               variant="destructive"
               className="w-full"
-              onClick={() => rejectDialogId && rejectMutation.mutate({ id: rejectDialogId, reason: rejectionReason })}
+              onClick={() => rejectDialogId && rejectDialogReq && rejectMutation.mutate({ id: rejectDialogId, reason: rejectionReason, req: rejectDialogReq })}
               disabled={!rejectionReason.trim()}
             >
               Confirm Rejection
