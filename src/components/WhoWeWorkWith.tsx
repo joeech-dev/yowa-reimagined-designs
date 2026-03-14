@@ -27,9 +27,9 @@ const sectors = [
     icon: Lightbulb,
     title: "Social Enterprises",
     text: "Strategic storytelling and digital communication to help social enterprises communicate their mission and reach wider audiences.",
-    exampleLogo: null,
+    exampleLogo: "https://opekwztldtrylagmupoo.supabase.co/storage/v1/object/public/partner-logos/1773437493973-l0wg1jf0wgr.png",
     exampleName: "Asaak",
-    exampleType: "text",
+    exampleType: "logo",
   },
   {
     icon: Building2,
