@@ -137,6 +137,7 @@ const ExpenseRequisitionForm = () => {
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
+      setCurrentUserId(user.id);
       const { data } = await supabase
         .from("user_roles")
         .select("role")
