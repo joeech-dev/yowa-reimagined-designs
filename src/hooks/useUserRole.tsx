@@ -15,7 +15,7 @@ const viewPermissions: Record<AppRole, string[]> = {
   admin: ["dashboard", "projects", "hr", "finance", "requisitions", "blogs", "partners", "leads", "analytics", "ai-assistant", "users", "settings", "sales_marketing", "submit-lead"],
   finance: ["dashboard", "projects", "finance", "requisitions", "partners", "leads", "analytics", "submit-lead"],
   sales_marketing: ["dashboard", "projects", "blogs", "leads", "sales_marketing", "submit-lead"],
-  project_team: ["dashboard", "projects", "submit-lead"],
+  project_team: ["dashboard", "projects", "leads", "submit-lead"],
 };
 
 const editPermissions: Record<AppRole, string[]> = {
