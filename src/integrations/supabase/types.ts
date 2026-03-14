@@ -513,6 +513,8 @@ export type Database = {
           next_followup_date: string | null
           phone: string
           status: string | null
+          submitted_by_id: string | null
+          submitted_by_name: string | null
           updated_at: string | null
         }
         Insert: {
@@ -531,6 +533,8 @@ export type Database = {
           next_followup_date?: string | null
           phone: string
           status?: string | null
+          submitted_by_id?: string | null
+          submitted_by_name?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -549,6 +553,8 @@ export type Database = {
           next_followup_date?: string | null
           phone?: string
           status?: string | null
+          submitted_by_id?: string | null
+          submitted_by_name?: string | null
           updated_at?: string | null
         }
         Relationships: []
