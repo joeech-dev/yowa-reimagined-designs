@@ -309,6 +309,7 @@ const Admin = () => {
         <Route path="blogs" element={<BlogsManagement />} />
         <Route path="partners" element={<PartnersManagement />} />
         <Route path="leads" element={<LeadsManagement />} />
+        <Route path="submit-lead" element={<LeadAcquisitionForm />} />
         <Route path="analytics" element={<AnalyticsDashboard />} />
         <Route path="products" element={<ProductsManagement />} />
         <Route path="social-reports" element={<SocialMediaManagement />} />
