@@ -8,7 +8,7 @@ import AdminSidebar from "@/components/admin/AdminSidebar";
 import DashboardStats from "@/components/admin/DashboardStats";
 import BlogsManagement from "@/components/admin/BlogsManagement";
 import PartnersManagement from "@/components/admin/PartnersManagement";
-import LeadsManagement from "@/components/admin/LeadsManagement";
+import LeadAcquisitionForm from "@/components/admin/LeadAcquisitionForm";
 import AnalyticsDashboard from "@/components/admin/AnalyticsDashboard";
 import FinanceManagement from "@/components/admin/FinanceManagement";
 import BillingManagement from "@/components/admin/BillingManagement";
