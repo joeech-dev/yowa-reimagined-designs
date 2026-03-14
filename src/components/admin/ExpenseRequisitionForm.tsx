@@ -716,20 +716,20 @@ const ExpenseRequisitionForm = () => {
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Approval Trail</p>
                     <div className="space-y-1 text-sm">
-                      {viewReq.finance_approved_at && (
-                        <p className="flex items-center gap-1 text-green-700">
+                  {viewReq.finance_approved_at && (
+                        <p className="flex items-center gap-1 text-primary">
                           <CheckCircle className="h-3.5 w-3.5" />
                           Finance approved on {format(new Date(viewReq.finance_approved_at), "MMM d, yyyy h:mm a")}
                         </p>
                       )}
                       {viewReq.super_admin_approved_at && (
-                        <p className="flex items-center gap-1 text-green-700">
+                        <p className="flex items-center gap-1 text-primary">
                           <CheckCircle className="h-3.5 w-3.5" />
                           Super Admin approved on {format(new Date(viewReq.super_admin_approved_at), "MMM d, yyyy h:mm a")}
                         </p>
                       )}
                       {viewReq.paid_at && (
-                        <p className="flex items-center gap-1 text-blue-700">
+                        <p className="flex items-center gap-1 text-foreground font-medium">
                           <Banknote className="h-3.5 w-3.5" />
                           Payment confirmed on {format(new Date(viewReq.paid_at), "MMM d, yyyy h:mm a")}
                         </p>
