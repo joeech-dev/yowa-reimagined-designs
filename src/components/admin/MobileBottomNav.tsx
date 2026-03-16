@@ -16,6 +16,7 @@ import {
   ClipboardList,
   X,
   ShoppingBag,
+  UserPlus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUserRole } from "@/hooks/useUserRole";
