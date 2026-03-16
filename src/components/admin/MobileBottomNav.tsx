@@ -16,6 +16,7 @@ import {
   ClipboardList,
   X,
   ShoppingBag,
+  UserPlus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -32,12 +33,14 @@ const primaryTabs = [
 
 const moreItems = [
   { icon: ClipboardList, label: "Tasks", path: "/admin/tasks", section: "dashboard" },
+  { icon: UserPlus, label: "Submit Lead", path: "/admin/submit-lead", section: "submit-lead" },
   { icon: UserCheck, label: "HR", path: "/admin/hr", section: "hr" },
   { icon: FileText, label: "Billing", path: "/admin/billing", section: "finance" },
   { icon: FileText, label: "Blog Posts", path: "/admin/blogs", section: "blogs" },
   { icon: Building2, label: "Partners", path: "/admin/partners", section: "partners" },
   { icon: ShoppingBag, label: "Products", path: "/admin/products", section: "partners" },
   { icon: BarChart3, label: "Analytics", path: "/admin/analytics", section: "analytics" },
+  { icon: BarChart3, label: "Social Reports", path: "/admin/social-reports", section: "sales_marketing" },
   { icon: Sparkles, label: "AI Assistant", path: "/admin/ai-assistant", section: "ai-assistant" },
   { icon: Users, label: "Users", path: "/admin/users", section: "users" },
   { icon: Settings, label: "Settings", path: "/admin/settings", section: "settings" },
