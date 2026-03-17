@@ -1,6 +1,14 @@
 import { Link } from "react-router-dom";
-import { AlertTriangle, Target, Lightbulb, ArrowRight } from "lucide-react";
+import { AlertTriangle, Target, Sparkles, BookOpen, Briefcase, DollarSign, Eye, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+
+const modelHighlights = [
+  { icon: BookOpen, label: "Project-based training" },
+  { icon: Briefcase, label: "Real clients and real briefs" },
+  { icon: DollarSign, label: "Paid opportunities" },
+  { icon: Eye, label: "Professional exposure" },
+];
 
 const ProblemSection = () => {
   return (
@@ -73,32 +81,42 @@ const ProblemSection = () => {
             </Link>
           </div>
 
-          {/* Column 3 — Opportunity */}
+          {/* Column 3 — Where Storytelling Creates Opportunity */}
           <div className="flex flex-col">
-            <div className="w-14 h-14 rounded-full bg-accent/20 flex items-center justify-center mb-6">
-              <Lightbulb className="text-accent-foreground" size={28} />
+            <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center mb-6">
+              <Sparkles className="text-accent-foreground" size={28} />
             </div>
             <h2 className="font-display font-bold text-2xl md:text-3xl mb-5">
               Where Storytelling Creates Opportunity
             </h2>
-            <div className="space-y-4 text-muted-foreground leading-relaxed mb-8 flex-1">
+            <div className="space-y-4 text-muted-foreground leading-relaxed mb-6 flex-1">
+              <p>What makes Yowa Innovations unique is our integrated youth empowerment model.</p>
               <p>
-                Every compelling story opens a door — to new funders, to wider audiences, to
-                communities ready to engage. We harness narrative to unlock possibilities that
-                data and reports alone cannot reach.
+                We embed training, mentorship, and paid project opportunities for young creatives
+                directly into our service delivery. Through project-based learning, young people gain
+                practical skills while working on real assignments with NGOs and development organisations.
               </p>
               <p>
-                By weaving together creative media, research evidence, and deep sector knowledge,
-                we connect organisations with the people who need to hear their message most.
-              </p>
-              <p>
-                The result is not just visibility — it is lasting influence, stronger partnerships,
-                and meaningful change that speaks for itself.
+                This approach ensures organisations receive professional storytelling services while
+                contributing to youth employment and skills development.
               </p>
             </div>
-            <Link to="/get-started">
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              {modelHighlights.map((item, index) => {
+                const Icon = item.icon;
+                return (
+                  <Card key={index} className="p-3 flex items-center gap-3 border-border hover:shadow-warm transition-smooth">
+                    <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
+                      <Icon className="text-primary-foreground" size={16} />
+                    </div>
+                    <span className="font-semibold text-xs leading-tight">{item.label}</span>
+                  </Card>
+                );
+              })}
+            </div>
+            <Link to="/about">
               <Button size="lg" variant="outline" className="hover:scale-105 transition-smooth w-fit">
-                Start Your Story
+                Learn About Youth Training
                 <ArrowRight className="ml-2" />
               </Button>
             </Link>
