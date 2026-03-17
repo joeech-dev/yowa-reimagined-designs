@@ -74,7 +74,7 @@ const handler = async (req: Request): Promise<Response> => {
           const searchData = await searchResponse.json();
           if (searchData.items && searchData.items.length > 0) {
             contactData = searchData.items[0];
-            console.log("Found existing contact:", contactData.id);
+            console.log("Found existing contact");
             
             // Update the existing contact with new fields if provided
             if (contactFields.length > 0) {
