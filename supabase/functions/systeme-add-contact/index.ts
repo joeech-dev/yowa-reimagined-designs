@@ -105,7 +105,7 @@ const handler = async (req: Request): Promise<Response> => {
       }
     } else {
       contactData = await contactResponse.json();
-      console.log("Contact created successfully:", contactData);
+      console.log("Contact created successfully");
     }
 
     // Add tags if provided
