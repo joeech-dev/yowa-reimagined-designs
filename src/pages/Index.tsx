@@ -11,7 +11,7 @@ import TestimonialsSection from "@/components/TestimonialsSection";
 import StatsSection from "@/components/StatsSection";
 import ProblemSection from "@/components/ProblemSection";
 
-import OurModelSection from "@/components/OurModelSection";
+
 import ServicesSection from "@/components/ServicesSection";
 import FeaturedImpactStory from "@/components/FeaturedImpactStory";
 import WhyChooseYowa from "@/components/WhyChooseYowa";
@@ -128,13 +128,10 @@ const Index = () => {
       {/* 6. Impact Numbers */}
       <StatsSection />
 
-      {/* 7. Problem */}
+      {/* 7. Problem / Solution / Opportunity */}
       <ProblemSection />
 
-      {/* 9. Youth Model */}
-      <OurModelSection />
-
-      {/* 10. Why Choose Yowa */}
+      {/* 8. Why Choose Yowa */}
       <WhyChooseYowa />
 
       {/* 11. How We Work */}
