@@ -28,7 +28,7 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { email, name, phone, fields = [], tags = [] }: ContactRequest = await req.json();
 
-    console.log("Adding contact to systeme.io:", { email, name });
+    console.log("Adding contact to systeme.io");
 
     // Build contact fields with only standard fields
     const contactFields = [];
