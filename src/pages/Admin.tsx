@@ -309,6 +309,7 @@ const Admin = () => {
         <Route path="finance" element={<FinanceManagement />} />
         <Route path="billing" element={<BillingManagement />} />
         <Route path="blogs" element={<BlogsManagement />} />
+        <Route path="blog-comments" element={<BlogCommentsModeration />} />
         <Route path="partners" element={<PartnersManagement />} />
         <Route path="leads" element={<LeadsManagement />} />
         <Route path="submit-lead" element={<LeadAcquisitionForm />} />
