@@ -143,6 +143,9 @@ const BlogPost = () => {
               )}
             </div>
 
+            {/* Comments Section */}
+            <BlogComments blogPostId={blog.id} />
+
             {/* eBook Promo */}
             <EbookPromo variant="compact" />
 

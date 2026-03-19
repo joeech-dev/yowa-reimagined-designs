@@ -45,8 +45,14 @@ const BlogComments = ({ blogPostId }: BlogCommentsProps) => {
   });
 
   const onSubmit = (values: CommentFormValues) => {
+    const payload: { blog_post_id: string; author_name: string; author_email: string; content: string } = {
+      blog_post_id: blogPostId,
+      author_name: values.author_name,
+      author_email: values.author_email,
+      content: values.content,
+    };
     submitComment(
-      { blog_post_id: blogPostId, ...values },
+      payload,
       {
         onSuccess: () => {
           setSubmitted(true);
