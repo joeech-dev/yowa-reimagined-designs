@@ -24,6 +24,7 @@ import Shop from "./pages/Shop";
 import OrderNow from "./pages/OrderNow";
 import useGoogleAnalytics from "@/hooks/useGoogleAnalytics";
 import SeoRedirects from "@/components/SeoRedirects";
+import TranslateWidget from "@/components/TranslateWidget";
 
 const queryClient = new QueryClient();
 
@@ -71,6 +72,7 @@ const App = () => (
         </Routes>
         <WhatsAppButton />
         <CookieConsent />
+        <TranslateWidget />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

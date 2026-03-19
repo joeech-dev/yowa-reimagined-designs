@@ -15,6 +15,7 @@ import {
   FileText as FileTextIcon,
   ShoppingBag,
   UserPlus,
+  MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,6 +36,7 @@ const allMenuItems = [
   { icon: DollarSign, label: "Finance", path: "/admin/finance", section: "finance" },
   { icon: FileTextIcon, label: "Billing", path: "/admin/billing", section: "finance" },
   { icon: FileText, label: "Blog Posts", path: "/admin/blogs", section: "blogs" },
+  { icon: MessageSquare, label: "Comments", path: "/admin/blog-comments", section: "blogs" },
   { icon: Building2, label: "Partner Brands", path: "/admin/partners", section: "partners" },
   { icon: Users, label: "Leads", path: "/admin/leads", section: "leads" },
   { icon: ShoppingBag, label: "Products", path: "/admin/products", section: "partners" },

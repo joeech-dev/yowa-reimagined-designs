@@ -7,6 +7,7 @@ import { User } from "@supabase/supabase-js";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import DashboardStats from "@/components/admin/DashboardStats";
 import BlogsManagement from "@/components/admin/BlogsManagement";
+import BlogCommentsModeration from "@/components/admin/BlogCommentsModeration";
 import PartnersManagement from "@/components/admin/PartnersManagement";
 import LeadAcquisitionForm from "@/components/admin/LeadAcquisitionForm";
 import LeadsManagement from "@/components/admin/LeadsManagement";
@@ -308,6 +309,7 @@ const Admin = () => {
         <Route path="finance" element={<FinanceManagement />} />
         <Route path="billing" element={<BillingManagement />} />
         <Route path="blogs" element={<BlogsManagement />} />
+        <Route path="blog-comments" element={<BlogCommentsModeration />} />
         <Route path="partners" element={<PartnersManagement />} />
         <Route path="leads" element={<LeadsManagement />} />
         <Route path="submit-lead" element={<LeadAcquisitionForm />} />

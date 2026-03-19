@@ -9,8 +9,9 @@ import { ArrowLeft, ExternalLink, Calendar } from "lucide-react";
 import EbookPromo from "@/components/EbookPromo";
 import { useBlogBySlug } from "@/hooks/useBlogs";
 import BlogPostsList from "@/components/BlogPostsList";
- import ReactMarkdown from "react-markdown";
- import remarkGfm from "remark-gfm";
+import BlogComments from "@/components/BlogComments";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -141,6 +142,9 @@ const BlogPost = () => {
                 </p>
               )}
             </div>
+
+            {/* Comments Section */}
+            <BlogComments blogPostId={blog.id} />
 
             {/* eBook Promo */}
             <EbookPromo variant="compact" />
