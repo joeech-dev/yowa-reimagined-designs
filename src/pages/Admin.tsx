@@ -7,6 +7,7 @@ import { User } from "@supabase/supabase-js";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import DashboardStats from "@/components/admin/DashboardStats";
 import BlogsManagement from "@/components/admin/BlogsManagement";
+import BlogCommentsModeration from "@/components/admin/BlogCommentsModeration";
 import PartnersManagement from "@/components/admin/PartnersManagement";
 import LeadAcquisitionForm from "@/components/admin/LeadAcquisitionForm";
 import LeadsManagement from "@/components/admin/LeadsManagement";
