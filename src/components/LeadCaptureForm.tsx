@@ -11,8 +11,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { toast } from "sonner";
 import { FileText, IdCard, Send, User, Mail, Phone, MapPin } from "lucide-react";
 
-const POSITION_VALUES = ["employment", "freelancing", "trainee"];
-
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(100),
   email: z.string().email("Invalid email address").max(255),
@@ -31,21 +29,6 @@ const services = [
   { value: "post-production", label: "Post Production" },
   { value: "creative-strategy", label: "Creative Strategy" },
   { value: "digital-marketing", label: "Digital Marketing" },
-];
-
-const positions = [
-  { value: "employment", label: "Employment" },
-  { value: "freelancing", label: "Freelancing" },
-  { value: "trainee", label: "Trainee" },
-];
-
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
-const ACCEPTED_TYPES = [
-  "application/pdf",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  "image/jpeg",
-  "image/png",
 ];
 
 export const LeadCaptureForm = () => {
