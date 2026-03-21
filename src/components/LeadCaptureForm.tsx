@@ -2,14 +2,14 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
-import { Send, User, Mail, Phone, MapPin, Briefcase } from "lucide-react";
+import { Send, User, Mail, Phone, MapPin } from "lucide-react";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(100),
@@ -264,13 +264,6 @@ export const LeadCaptureForm = () => {
               )}
             </Button>
 
-            {/* Careers nudge */}
-            <p className="text-xs text-muted-foreground text-center">
-              Looking to join our team?{" "}
-              <Link to="/careers" className="text-primary font-medium hover:underline inline-flex items-center gap-1">
-                <Briefcase className="h-3 w-3" /> View open positions
-              </Link>
-            </p>
           </form>
         </Form>
       </div>
