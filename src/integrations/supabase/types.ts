@@ -495,6 +495,48 @@ export type Database = {
           },
         ]
       }
+      job_postings: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string
+          description: string | null
+          display_order: number
+          id: string
+          is_active: boolean
+          location: string | null
+          requirements: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          created_by: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          requirements?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          requirements?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       lead_sequence_assignments: {
         Row: {
           completed_at: string | null

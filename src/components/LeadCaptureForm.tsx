@@ -2,16 +2,14 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
-import { FileText, IdCard, Send, User, Mail, Phone, MapPin } from "lucide-react";
-
-const POSITION_VALUES = ["employment", "freelancing", "trainee"];
+import { Send, User, Mail, Phone, MapPin, Briefcase } from "lucide-react";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(100),
@@ -33,29 +31,11 @@ const services = [
   { value: "digital-marketing", label: "Digital Marketing" },
 ];
 
-const positions = [
-  { value: "employment", label: "Employment" },
-  { value: "freelancing", label: "Freelancing" },
-  { value: "trainee", label: "Trainee" },
-];
-
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
-const ACCEPTED_TYPES = [
-  "application/pdf",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  "image/jpeg",
-  "image/png",
-];
-
 export const LeadCaptureForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [searchParams] = useSearchParams();
   const preselectedService = searchParams.get("service") || "";
-  const [cvFile, setCvFile] = useState<File | null>(null);
-  const [idFile, setIdFile] = useState<File | null>(null);
-  const [fileErrors, setFileErrors] = useState<{ cv?: string; id?: string }>({});
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -69,62 +49,13 @@ export const LeadCaptureForm = () => {
     },
   });
 
-  const selectedService = form.watch("service");
-  const isPosition = POSITION_VALUES.includes(selectedService);
-
-  const validateFile = (file: File | null, field: "cv" | "id"): boolean => {
-    if (!file) {
-      setFileErrors((prev) => ({ ...prev, [field]: `Please attach your ${field === "cv" ? "CV" : "National ID"}` }));
-      return false;
-    }
-    if (file.size > MAX_FILE_SIZE) {
-      setFileErrors((prev) => ({ ...prev, [field]: "File must be under 5MB" }));
-      return false;
-    }
-    if (!ACCEPTED_TYPES.includes(file.type)) {
-      setFileErrors((prev) => ({ ...prev, [field]: "Only PDF, DOC, DOCX, JPG, PNG allowed" }));
-      return false;
-    }
-    setFileErrors((prev) => ({ ...prev, [field]: undefined }));
-    return true;
-  };
-
-  const uploadFile = async (file: File, prefix: string, email: string): Promise<string | null> => {
-    const safeName = email.replace(/[^a-zA-Z0-9]/g, "_");
-    const ext = file.name.split(".").pop();
-    const path = `${prefix}/${safeName}_${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from("applicant-documents").upload(path, file, { upsert: false });
-    if (error) { console.error("Upload error:", error); return null; }
-    return path;
-  };
-
   const onSubmit = async (data: FormData) => {
     if (data.website) {
       setSubmitted(true);
       return;
     }
-    if (isPosition) {
-      const cvValid = validateFile(cvFile, "cv");
-      const idValid = validateFile(idFile, "id");
-      if (!cvValid || !idValid) return;
-    }
     setIsSubmitting(true);
     try {
-      let cvUrl: string | null = null;
-      let idUrl: string | null = null;
-      if (isPosition && cvFile && idFile) {
-        const [cvResult, idResult] = await Promise.all([
-          uploadFile(cvFile, "cv", data.email),
-          uploadFile(idFile, "national-id", data.email),
-        ]);
-        if (!cvResult || !idResult) {
-          toast.error("Failed to upload documents. Please try again.");
-          setIsSubmitting(false);
-          return;
-        }
-        cvUrl = cvResult;
-        idUrl = idResult;
-      }
       const { error } = await supabase.from("leads").insert([{
         name: data.name,
         email: data.email,
@@ -132,30 +63,36 @@ export const LeadCaptureForm = () => {
         industry_type: data.service,
         geographic_location: data.geographic_location,
         status: "new",
-        cv_url: cvUrl,
-        national_id_url: idUrl,
-        is_recruitment: isPosition,
+        is_recruitment: false,
       }]);
       if (error) throw error;
 
-      supabase.functions.invoke('notify-new-lead', {
-        body: { name: data.name, email: data.email, phone: data.phone, industry_type: data.service, geographic_location: data.geographic_location, is_recruitment: isPosition },
+      supabase.functions.invoke("notify-new-lead", {
+        body: {
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          industry_type: data.service,
+          geographic_location: data.geographic_location,
+          is_recruitment: false,
+        },
       }).catch(console.error);
 
       try {
-        await supabase.functions.invoke('systeme-add-contact', {
+        await supabase.functions.invoke("systeme-add-contact", {
           body: {
-            email: data.email, name: data.name, phone: data.phone,
-            tags: ['new-lead', 'website-form', `service-${data.service}`, `location-${data.geographic_location.toLowerCase().replace(/\s+/g, '-')}`],
+            email: data.email,
+            name: data.name,
+            phone: data.phone,
+            tags: ["new-lead", "website-form", `service-${data.service}`, `location-${data.geographic_location.toLowerCase().replace(/\s+/g, "-")}`],
           },
         });
-      } catch (e) { console.error('Email automation error:', e); }
+      } catch (e) {
+        console.error("Email automation error:", e);
+      }
 
       setSubmitted(true);
       form.reset();
-      setCvFile(null);
-      setIdFile(null);
-      setFileErrors({});
     } catch (error: unknown) {
       console.error("Error submitting form:", error);
       toast.error("Failed to submit form. Please try again.");
@@ -193,9 +130,7 @@ export const LeadCaptureForm = () => {
       {/* Form header */}
       <div className="bg-primary px-8 py-6">
         <h2 className="text-primary-foreground text-xl font-display font-bold">Get in Touch</h2>
-        <p className="text-primary-foreground/70 text-sm mt-1">
-          {isPosition ? "Apply to join our creative team" : "Tell us about your project"}
-        </p>
+        <p className="text-primary-foreground/70 text-sm mt-1">Tell us about your project</p>
       </div>
 
       {/* Progress indicator */}
@@ -281,22 +216,17 @@ export const LeadCaptureForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                    What are you interested in?
+                    What service are you interested in?
                   </FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger className="bg-muted border-0 focus:ring-primary">
-                        <SelectValue placeholder="Select a service or position" />
+                        <SelectValue placeholder="Select a service" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <div className="px-2 py-1.5 text-xs font-bold text-muted-foreground uppercase tracking-wide">Our Services</div>
                       {services.map((s) => (
                         <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
-                      ))}
-                      <div className="px-2 py-1.5 text-xs font-bold text-muted-foreground uppercase tracking-wide mt-1 border-t border-border">Join Our Team</div>
-                      {positions.map((p) => (
-                        <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -304,53 +234,6 @@ export const LeadCaptureForm = () => {
                 </FormItem>
               )}
             />
-
-            {/* Document uploads for positions */}
-            {isPosition && (
-              <div className="rounded-xl border border-primary/20 bg-primary/5 p-5 space-y-4">
-                <p className="text-primary text-sm font-semibold flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-bold">!</span>
-                  Please attach the required documents
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5 mb-2">
-                      <FileText className="h-3.5 w-3.5" /> CV / Resume
-                    </label>
-                    <Input
-                      type="file"
-                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                      className="bg-background border-border cursor-pointer text-xs"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0] || null;
-                        setCvFile(file);
-                        if (file) validateFile(file, "cv");
-                      }}
-                    />
-                    {cvFile && <p className="text-xs text-primary mt-1">✓ {cvFile.name}</p>}
-                    {fileErrors.cv && <p className="text-xs text-destructive mt-1">{fileErrors.cv}</p>}
-                  </div>
-                  <div>
-                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5 mb-2">
-                      <IdCard className="h-3.5 w-3.5" /> National ID
-                    </label>
-                    <Input
-                      type="file"
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      className="bg-background border-border cursor-pointer text-xs"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0] || null;
-                        setIdFile(file);
-                        if (file) validateFile(file, "id");
-                      }}
-                    />
-                    {idFile && <p className="text-xs text-primary mt-1">✓ {idFile.name}</p>}
-                    {fileErrors.id && <p className="text-xs text-destructive mt-1">{fileErrors.id}</p>}
-                  </div>
-                </div>
-                <p className="text-xs text-muted-foreground">Accepted: PDF, DOC, DOCX, JPG, PNG · Max 5MB each</p>
-              </div>
-            )}
 
             {/* Honeypot */}
             <FormField
@@ -376,13 +259,17 @@ export const LeadCaptureForm = () => {
               ) : (
                 <>
                   <Send className="h-4 w-4" />
-                  {isPosition ? "Submit Application" : "Send Message"}
+                  Send Message
                 </>
               )}
             </Button>
 
+            {/* Careers nudge */}
             <p className="text-xs text-muted-foreground text-center">
-              Prefer chatting? Use the chat bubble at the bottom-right.
+              Looking to join our team?{" "}
+              <Link to="/careers" className="text-primary font-medium hover:underline inline-flex items-center gap-1">
+                <Briefcase className="h-3 w-3" /> View open positions
+              </Link>
             </p>
           </form>
         </Form>

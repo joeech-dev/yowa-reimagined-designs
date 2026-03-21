@@ -16,6 +16,7 @@ import {
   ShoppingBag,
   UserPlus,
   MessageSquare,
+  Briefcase,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,6 +40,7 @@ const allMenuItems = [
   { icon: MessageSquare, label: "Comments", path: "/admin/blog-comments", section: "blogs" },
   { icon: Building2, label: "Partner Brands", path: "/admin/partners", section: "partners" },
   { icon: Users, label: "Leads", path: "/admin/leads", section: "leads" },
+  { icon: Briefcase, label: "Job Postings", path: "/admin/job-postings", section: "hr" },
   { icon: ShoppingBag, label: "Products", path: "/admin/products", section: "partners" },
   { icon: BarChart3, label: "Analytics", path: "/admin/analytics", section: "analytics" },
   { icon: BarChart3, label: "Social Reports", path: "/admin/social-reports", section: "sales_marketing" },
