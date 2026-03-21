@@ -52,6 +52,7 @@ const App = () => (
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/get-started" element={<LeadGeneration />} />
+          <Route path="/careers" element={<Careers />} />
           <Route path="/admin/*" element={<Admin />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/cookie-policy" element={<CookiePolicy />} />
