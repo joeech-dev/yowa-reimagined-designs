@@ -316,6 +316,7 @@ const Admin = () => {
         <Route path="submit-lead" element={<LeadAcquisitionForm />} />
         <Route path="analytics" element={<AnalyticsDashboard />} />
         <Route path="products" element={<ProductsManagement />} />
+        <Route path="job-postings" element={<JobPostingsManagement />} />
         <Route path="social-reports" element={<SocialMediaManagement />} />
         <Route path="ai-assistant" element={<AIAssistantPanel />} />
         <Route path="users" element={<UserManagement />} />
