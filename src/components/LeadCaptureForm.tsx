@@ -264,13 +264,6 @@ export const LeadCaptureForm = () => {
               )}
             </Button>
 
-            {/* Careers nudge */}
-            <p className="text-xs text-muted-foreground text-center">
-              Looking to join our team?{" "}
-              <Link to="/careers" className="text-primary font-medium hover:underline inline-flex items-center gap-1">
-                <Briefcase className="h-3 w-3" /> View open positions
-              </Link>
-            </p>
           </form>
         </Form>
       </div>
