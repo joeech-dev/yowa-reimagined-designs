@@ -19,6 +19,7 @@ import AIAssistantPanel from "@/components/admin/AIAssistantPanel";
 import UserManagement from "@/components/admin/UserManagement";
 import HRManagement from "@/components/admin/HRManagement";
 import OnlineUsersWidget from "@/components/admin/OnlineUsersWidget";
+import JobPostingsManagement from "@/components/admin/JobPostingsManagement";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sparkles, ArrowRight, FolderKanban, DollarSign, Plus } from "lucide-react";
 import NewRequisitionButton from "@/components/admin/NewRequisitionButton";
