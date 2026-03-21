@@ -10,6 +10,7 @@ import BlogPost from "./pages/BlogPost";
 import Portfolio from "./pages/Portfolio";
 import Contact from "./pages/Contact";
 import LeadGeneration from "./pages/LeadGeneration";
+import Careers from "./pages/Careers";
 import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
