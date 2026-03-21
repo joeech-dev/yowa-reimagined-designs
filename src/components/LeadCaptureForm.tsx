@@ -36,9 +36,6 @@ export const LeadCaptureForm = () => {
   const [submitted, setSubmitted] = useState(false);
   const [searchParams] = useSearchParams();
   const preselectedService = searchParams.get("service") || "";
-  const [cvFile, setCvFile] = useState<File | null>(null);
-  const [idFile, setIdFile] = useState<File | null>(null);
-  const [fileErrors, setFileErrors] = useState<{ cv?: string; id?: string }>({});
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -51,9 +48,6 @@ export const LeadCaptureForm = () => {
       website: "",
     },
   });
-
-  const selectedService = form.watch("service");
-  const isPosition = POSITION_VALUES.includes(selectedService);
 
   const validateFile = (file: File | null, field: "cv" | "id"): boolean => {
     if (!file) {
