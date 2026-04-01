@@ -334,7 +334,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
                     <TableCell className="font-medium">{w.work_order_number}</TableCell>
                     <TableCell>{format(new Date(w.work_order_date), "MMM d, yyyy")}</TableCell>
                     <TableCell>{w.client_name}</TableCell>
-                    <TableCell className="text-right font-medium">{Number(w.total).toLocaleString()}/=</TableCell>
+                    <TableCell className="text-right font-medium">{formatCurrency(Number(w.total), w.currency)}</TableCell>
                     <TableCell>
                       <div className="flex gap-1">
                         <Button variant="ghost" size="sm" title="View" onClick={() => setPreviewWorkOrder(w)}><FileText className="h-4 w-4" /></Button>
