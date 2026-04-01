@@ -91,6 +91,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
         project_id: prefill.project_id || "",
         requested_by: prefill.requested_by || "",
         provided_by: prefill.provided_by || "Yowa Innovations Ltd",
+        currency: (prefill.currency || "UGX") as Currency,
       }));
       setIsCreateOpen(true);
       onPrefillConsumed?.();
