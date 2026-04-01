@@ -384,9 +384,9 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                   </div>
                   <div className="flex items-end">
                     <div className="text-sm space-y-1">
-                      <p>Subtotal: <strong>{calculateTotals(form.items, form.tax_rate).subtotal.toLocaleString()}/=</strong></p>
-                      <p>Tax: <strong>-{calculateTotals(form.items, form.tax_rate).taxAmount.toLocaleString()}/=</strong></p>
-                      <p className="text-base">Total: <strong className="text-primary">{calculateTotals(form.items, form.tax_rate).total.toLocaleString()}/=</strong></p>
+                      <p>Subtotal: <strong>{formatCurrency(calculateTotals(form.items, form.tax_rate).subtotal, form.currency)}</strong></p>
+                      <p>Tax: <strong>-{formatCurrency(calculateTotals(form.items, form.tax_rate).taxAmount, form.currency)}</strong></p>
+                      <p className="text-base">Total: <strong className="text-primary">{formatCurrency(calculateTotals(form.items, form.tax_rate).total, form.currency)}</strong></p>
                     </div>
                   </div>
                 </div>
