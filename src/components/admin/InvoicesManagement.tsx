@@ -208,6 +208,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
         total,
         notes: inv.notes || null,
         project_id: inv.project_id || null,
+        currency: inv.currency,
       }).eq("id", inv.id);
       if (error) throw error;
     },
