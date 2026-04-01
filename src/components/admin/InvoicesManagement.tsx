@@ -498,7 +498,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                     <Input className="col-span-5" placeholder="Service description" value={item.description} onChange={(e) => { const items = [...editInvoice.items]; items[i] = { ...items[i], description: e.target.value }; setEditInvoice({ ...editInvoice, items }); }} required />
                     <Input className="col-span-2" placeholder="Qty" value={item.quantity} onChange={(e) => { const items = [...editInvoice.items]; items[i] = { ...items[i], quantity: e.target.value, total: (parseFloat(e.target.value) || 1) * Number(items[i].unit_cost) }; setEditInvoice({ ...editInvoice, items }); }} required />
                     <Input className="col-span-2" type="number" placeholder="Unit Cost" value={item.unit_cost || ""} onChange={(e) => { const items = [...editInvoice.items]; items[i] = { ...items[i], unit_cost: parseFloat(e.target.value) || 0, total: (parseFloat(String(items[i].quantity)) || 1) * (parseFloat(e.target.value) || 0) }; setEditInvoice({ ...editInvoice, items }); }} required />
-                    <div className="col-span-2 flex items-center text-sm font-medium">{Number(item.total).toLocaleString()}/=</div>
+                    <div className="col-span-2 flex items-center text-sm font-medium">{formatCurrency(Number(item.total), editInvoice.currency)}</div>
                     <Button type="button" variant="ghost" size="sm" onClick={() => setEditInvoice({ ...editInvoice, items: editInvoice.items.filter((_, idx) => idx !== i) })} className="col-span-1" disabled={editInvoice.items.length <= 1}><Trash2 className="h-3 w-3" /></Button>
                   </div>
                 ))}
