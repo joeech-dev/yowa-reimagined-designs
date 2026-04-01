@@ -71,6 +71,7 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
     project_id: "",
     requested_by: "",
     provided_by: "Yowa Innovations Ltd",
+    currency: "UGX" as Currency,
   });
 
   const { data: quotations = [], isLoading } = useQuery({
