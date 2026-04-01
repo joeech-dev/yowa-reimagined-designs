@@ -428,7 +428,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                     <TableCell className="font-medium">{inv.invoice_number}</TableCell>
                     <TableCell>{format(new Date(inv.invoice_date), "MMM d, yyyy")}</TableCell>
                     <TableCell>{inv.client_name}</TableCell>
-                    <TableCell className="text-right font-medium">{Number(inv.total).toLocaleString()}/=</TableCell>
+                    <TableCell className="text-right font-medium">{formatCurrency(Number(inv.total), inv.currency)}</TableCell>
                     <TableCell>{statusBadge(inv.status)}</TableCell>
                     <TableCell>
                       <div className="flex gap-1">
