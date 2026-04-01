@@ -304,7 +304,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                 <DialogTitle>Create Invoice</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <div>
                     <Label>Invoice Number</Label>
                     <Input value={form.invoice_number} onChange={(e) => setForm({ ...form, invoice_number: e.target.value })} placeholder="e.g. 00107" required />
@@ -313,6 +313,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                     <Label>Date</Label>
                     <Input type="date" value={form.invoice_date} onChange={(e) => setForm({ ...form, invoice_date: e.target.value })} required />
                   </div>
+                  <CurrencySelect value={form.currency} onChange={(v) => setForm({ ...form, currency: v })} />
                 </div>
 
                 <div>
