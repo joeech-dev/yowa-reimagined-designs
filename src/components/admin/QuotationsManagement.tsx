@@ -228,9 +228,10 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader><DialogTitle>Create Quotation</DialogTitle></DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <div><Label>Quotation Number</Label><Input value={form.quotation_number} onChange={(e) => setForm({ ...form, quotation_number: e.target.value })} placeholder="e.g. QT-001" required /></div>
                   <div><Label>Date</Label><Input type="date" value={form.quotation_date} onChange={(e) => setForm({ ...form, quotation_date: e.target.value })} required /></div>
+                  <CurrencySelect value={form.currency} onChange={(v) => setForm({ ...form, currency: v })} />
                 </div>
                 <div><Label>Title</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Video Production Services" /></div>
                 <div className="grid grid-cols-2 gap-4">
