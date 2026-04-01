@@ -75,6 +75,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
     tax_rate: 6,
     notes: "",
     project_id: "",
+    currency: "UGX" as Currency,
   });
 
   useEffect(() => {
