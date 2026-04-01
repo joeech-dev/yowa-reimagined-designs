@@ -17,6 +17,8 @@ import WorkOrderTemplate from "./WorkOrderTemplate";
 import type { InvoiceItem } from "./InvoiceTemplate";
 import { printDocument } from "@/lib/printDocument";
 import type { BillingPrefill } from "./BillingManagement";
+import CurrencySelect from "./CurrencySelect";
+import { formatCurrency, type Currency } from "@/lib/currency";
 
 interface WorkOrderRow {
   id: string;
