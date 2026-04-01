@@ -326,6 +326,7 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
                             requested_by: q.requested_by || undefined,
                             provided_by: q.provided_by || undefined,
                             sourceRef: q.quotation_number,
+                            currency: q.currency,
                           })} className="text-xs gap-1">
                             <ClipboardList className="h-3 w-3" /> Make Order Form
                           </Button>
