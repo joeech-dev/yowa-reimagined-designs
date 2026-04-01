@@ -375,7 +375,7 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
                     <Input className="col-span-5" value={item.description} onChange={(e) => { const items = [...editQuotation.items]; items[i] = { ...items[i], description: e.target.value }; setEditQuotation({ ...editQuotation, items }); }} required />
                     <Input className="col-span-2" value={item.quantity} onChange={(e) => { const items = [...editQuotation.items]; items[i] = { ...items[i], quantity: e.target.value, total: (parseFloat(e.target.value) || 1) * Number(items[i].unit_cost) }; setEditQuotation({ ...editQuotation, items }); }} required />
                     <Input className="col-span-2" type="number" value={item.unit_cost || ""} onChange={(e) => { const items = [...editQuotation.items]; items[i] = { ...items[i], unit_cost: parseFloat(e.target.value) || 0, total: (parseFloat(String(items[i].quantity)) || 1) * (parseFloat(e.target.value) || 0) }; setEditQuotation({ ...editQuotation, items }); }} required />
-                    <div className="col-span-2 flex items-center text-sm font-medium">{Number(item.total).toLocaleString()}/=</div>
+                    <div className="col-span-2 flex items-center text-sm font-medium">{formatCurrency(Number(item.total), editQuotation.currency)}</div>
                     <Button type="button" variant="ghost" size="sm" onClick={() => setEditQuotation({ ...editQuotation, items: editQuotation.items.filter((_, idx) => idx !== i) })} className="col-span-1" disabled={editQuotation.items.length <= 1}><Trash2 className="h-3 w-3" /></Button>
                   </div>
                 ))}
