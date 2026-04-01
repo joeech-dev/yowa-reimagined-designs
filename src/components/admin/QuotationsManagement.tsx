@@ -184,6 +184,7 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
         project_id: q.project_id || null,
         requested_by: q.requested_by || null,
         provided_by: q.provided_by || null,
+        currency: q.currency,
       }).eq("id", q.id);
       if (error) throw error;
     },
