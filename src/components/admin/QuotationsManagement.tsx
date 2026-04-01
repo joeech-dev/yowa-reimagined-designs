@@ -17,6 +17,8 @@ import QuotationTemplate from "./QuotationTemplate";
 import type { InvoiceItem } from "./InvoiceTemplate";
 import { printDocument } from "@/lib/printDocument";
 import type { BillingPrefill } from "./BillingManagement";
+import CurrencySelect from "./CurrencySelect";
+import { formatCurrency, type Currency } from "@/lib/currency";
 
 interface QuotationRow {
   id: string;
@@ -37,6 +39,7 @@ interface QuotationRow {
   requested_by: string | null;
   provided_by: string | null;
   created_at: string;
+  currency: Currency;
 }
 
 const defaultItem: InvoiceItem = { description: "", quantity: "1", unit_cost: 0, total: 0 };
@@ -68,6 +71,7 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
     project_id: "",
     requested_by: "",
     provided_by: "Yowa Innovations Ltd",
+    currency: "UGX" as Currency,
   });
 
   const { data: quotations = [], isLoading } = useQuery({
@@ -139,6 +143,7 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
         requested_by: form.requested_by || null,
         provided_by: form.provided_by || null,
         created_by: user.id,
+        currency: form.currency,
       }]);
       if (error) throw error;
     },
@@ -179,6 +184,7 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
         project_id: q.project_id || null,
         requested_by: q.requested_by || null,
         provided_by: q.provided_by || null,
+        currency: q.currency,
       }).eq("id", q.id);
       if (error) throw error;
     },
@@ -200,7 +206,7 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
       quotation_number: generateQuotationNumber(), quotation_date: new Date().toISOString().split("T")[0],
       client_name: "", client_address: "", client_phone: "", client_email: "",
       title: "", items: [{ ...defaultItem }], tax_rate: 0, notes: "", project_id: "",
-      requested_by: "", provided_by: "Yowa Innovations Ltd",
+      requested_by: "", provided_by: "Yowa Innovations Ltd", currency: "UGX" as Currency,
     });
   };
 
@@ -222,9 +228,10 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader><DialogTitle>Create Quotation</DialogTitle></DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <div><Label>Quotation Number</Label><Input value={form.quotation_number} onChange={(e) => setForm({ ...form, quotation_number: e.target.value })} placeholder="e.g. QT-001" required /></div>
                   <div><Label>Date</Label><Input type="date" value={form.quotation_date} onChange={(e) => setForm({ ...form, quotation_date: e.target.value })} required /></div>
+                  <CurrencySelect value={form.currency} onChange={(v) => setForm({ ...form, currency: v })} />
                 </div>
                 <div><Label>Title</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Video Production Services" /></div>
                 <div className="grid grid-cols-2 gap-4">
@@ -256,7 +263,7 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
                       <Input className="col-span-5" placeholder="Description" value={item.description} onChange={(e) => updateItem(i, "description", e.target.value)} required />
                       <Input className="col-span-2" placeholder="Qty" value={item.quantity} onChange={(e) => updateItem(i, "quantity", e.target.value)} required />
                       <Input className="col-span-2" type="number" placeholder="Unit Cost" value={item.unit_cost || ""} onChange={(e) => updateItem(i, "unit_cost", parseFloat(e.target.value) || 0)} required />
-                      <div className="col-span-2 flex items-center text-sm font-medium">{Number(item.total).toLocaleString()}/=</div>
+                      <div className="col-span-2 flex items-center text-sm font-medium">{formatCurrency(Number(item.total), form.currency)}</div>
                       <Button type="button" variant="ghost" size="sm" onClick={() => removeItem(i)} className="col-span-1" disabled={form.items.length <= 1}><Trash2 className="h-3 w-3" /></Button>
                     </div>
                   ))}
@@ -265,9 +272,9 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
                   <div><Label>Tax Rate (%)</Label><Input type="number" step="0.01" value={form.tax_rate} onChange={(e) => setForm({ ...form, tax_rate: parseFloat(e.target.value) || 0 })} /></div>
                   <div className="flex items-end">
                     <div className="text-sm space-y-1">
-                      <p>Subtotal: <strong>{calculateTotals(form.items, form.tax_rate).subtotal.toLocaleString()}/=</strong></p>
-                      {form.tax_rate > 0 && <p>Tax: <strong>{calculateTotals(form.items, form.tax_rate).taxAmount.toLocaleString()}/=</strong></p>}
-                      <p className="text-base">Total: <strong className="text-primary">{calculateTotals(form.items, form.tax_rate).total.toLocaleString()}/=</strong></p>
+                      <p>Subtotal: <strong>{formatCurrency(calculateTotals(form.items, form.tax_rate).subtotal, form.currency)}</strong></p>
+                      {form.tax_rate > 0 && <p>Tax: <strong>{formatCurrency(calculateTotals(form.items, form.tax_rate).taxAmount, form.currency)}</strong></p>}
+                      <p className="text-base">Total: <strong className="text-primary">{formatCurrency(calculateTotals(form.items, form.tax_rate).total, form.currency)}</strong></p>
                     </div>
                   </div>
                 </div>
@@ -291,7 +298,7 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
                   <TableHead>Quotation #</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Client</TableHead>
-                  <TableHead className="text-right">Total (UGX)</TableHead>
+                  <TableHead className="text-right">Total</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -301,7 +308,7 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
                     <TableCell className="font-medium">{q.quotation_number}</TableCell>
                     <TableCell>{format(new Date(q.quotation_date), "MMM d, yyyy")}</TableCell>
                     <TableCell>{q.client_name}</TableCell>
-                    <TableCell className="text-right font-medium">{Number(q.total).toLocaleString()}/=</TableCell>
+                    <TableCell className="text-right font-medium">{formatCurrency(Number(q.total), q.currency)}</TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         <Button variant="ghost" size="sm" title="View" onClick={() => setPreviewQuotation(q)}><FileText className="h-4 w-4" /></Button>
@@ -319,6 +326,7 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
                             requested_by: q.requested_by || undefined,
                             provided_by: q.provided_by || undefined,
                             sourceRef: q.quotation_number,
+                            currency: q.currency,
                           })} className="text-xs gap-1">
                             <ClipboardList className="h-3 w-3" /> Make Order Form
                           </Button>
@@ -367,7 +375,7 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
                     <Input className="col-span-5" value={item.description} onChange={(e) => { const items = [...editQuotation.items]; items[i] = { ...items[i], description: e.target.value }; setEditQuotation({ ...editQuotation, items }); }} required />
                     <Input className="col-span-2" value={item.quantity} onChange={(e) => { const items = [...editQuotation.items]; items[i] = { ...items[i], quantity: e.target.value, total: (parseFloat(e.target.value) || 1) * Number(items[i].unit_cost) }; setEditQuotation({ ...editQuotation, items }); }} required />
                     <Input className="col-span-2" type="number" value={item.unit_cost || ""} onChange={(e) => { const items = [...editQuotation.items]; items[i] = { ...items[i], unit_cost: parseFloat(e.target.value) || 0, total: (parseFloat(String(items[i].quantity)) || 1) * (parseFloat(e.target.value) || 0) }; setEditQuotation({ ...editQuotation, items }); }} required />
-                    <div className="col-span-2 flex items-center text-sm font-medium">{Number(item.total).toLocaleString()}/=</div>
+                    <div className="col-span-2 flex items-center text-sm font-medium">{formatCurrency(Number(item.total), editQuotation.currency)}</div>
                     <Button type="button" variant="ghost" size="sm" onClick={() => setEditQuotation({ ...editQuotation, items: editQuotation.items.filter((_, idx) => idx !== i) })} className="col-span-1" disabled={editQuotation.items.length <= 1}><Trash2 className="h-3 w-3" /></Button>
                   </div>
                 ))}
@@ -405,6 +413,7 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
                 notes: previewQuotation.notes || undefined,
                 requested_by: previewQuotation.requested_by || undefined,
                 provided_by: previewQuotation.provided_by || undefined,
+                currency: previewQuotation.currency,
               }} />
             </div>
           )}

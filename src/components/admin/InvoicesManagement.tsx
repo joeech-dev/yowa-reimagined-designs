@@ -20,6 +20,8 @@ import ReceiptTemplate from "./ReceiptTemplate";
 import type { InvoiceItem } from "./InvoiceTemplate";
 import { printDocument } from "@/lib/printDocument";
 import type { BillingPrefill } from "./BillingManagement";
+import CurrencySelect from "./CurrencySelect";
+import { formatCurrency, type Currency } from "@/lib/currency";
 
 interface InvoiceRow {
   id: string;
@@ -41,6 +43,7 @@ interface InvoiceRow {
   payment_method: string | null;
   is_receipt_generated: boolean;
   created_at: string;
+  currency: Currency;
 }
 
 const defaultItem: InvoiceItem = { description: "", quantity: "1", unit_cost: 0, total: 0 };
@@ -74,6 +77,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
     tax_rate: 6,
     notes: "",
     project_id: "",
+    currency: "UGX" as Currency,
   });
 
   useEffect(() => {
@@ -88,6 +92,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
         tax_rate: prefill.tax_rate,
         notes: prefill.notes || "",
         project_id: prefill.project_id || "",
+        currency: (prefill.currency || "UGX") as Currency,
       }));
       setIsCreateOpen(true);
       onPrefillConsumed?.();
@@ -163,6 +168,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
         notes: form.title || null,
         project_id: form.project_id || null,
         created_by: user.id,
+        currency: form.currency,
       }]);
       if (error) throw error;
     },
@@ -204,6 +210,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
         total,
         notes: inv.notes || null,
         project_id: inv.project_id || null,
+        currency: inv.currency,
       }).eq("id", inv.id);
       if (error) throw error;
     },
@@ -260,6 +267,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
       tax_rate: 6,
       notes: "",
       project_id: "",
+      currency: "UGX" as Currency,
     });
   };
 
@@ -296,7 +304,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                 <DialogTitle>Create Invoice</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <div>
                     <Label>Invoice Number</Label>
                     <Input value={form.invoice_number} onChange={(e) => setForm({ ...form, invoice_number: e.target.value })} placeholder="e.g. 00107" required />
@@ -305,6 +313,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                     <Label>Date</Label>
                     <Input type="date" value={form.invoice_date} onChange={(e) => setForm({ ...form, invoice_date: e.target.value })} required />
                   </div>
+                  <CurrencySelect value={form.currency} onChange={(v) => setForm({ ...form, currency: v })} />
                 </div>
 
                 <div>
@@ -359,7 +368,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                       <Input className="col-span-2" placeholder="Qty" value={item.quantity} onChange={(e) => updateItem(i, "quantity", e.target.value)} required />
                       <Input className="col-span-2" type="number" placeholder="Unit Cost" value={item.unit_cost || ""} onChange={(e) => updateItem(i, "unit_cost", parseFloat(e.target.value) || 0)} required />
                       <div className="col-span-2 flex items-center text-sm font-medium">
-                        {Number(item.total).toLocaleString()}/=
+                        {formatCurrency(Number(item.total), form.currency)}
                       </div>
                       <Button type="button" variant="ghost" size="sm" onClick={() => removeItem(i)} className="col-span-1" disabled={form.items.length <= 1}>
                         <Trash2 className="h-3 w-3" />
@@ -375,9 +384,9 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                   </div>
                   <div className="flex items-end">
                     <div className="text-sm space-y-1">
-                      <p>Subtotal: <strong>{calculateTotals(form.items, form.tax_rate).subtotal.toLocaleString()}/=</strong></p>
-                      <p>Tax: <strong>-{calculateTotals(form.items, form.tax_rate).taxAmount.toLocaleString()}/=</strong></p>
-                      <p className="text-base">Total: <strong className="text-primary">{calculateTotals(form.items, form.tax_rate).total.toLocaleString()}/=</strong></p>
+                      <p>Subtotal: <strong>{formatCurrency(calculateTotals(form.items, form.tax_rate).subtotal, form.currency)}</strong></p>
+                      <p>Tax: <strong>-{formatCurrency(calculateTotals(form.items, form.tax_rate).taxAmount, form.currency)}</strong></p>
+                      <p className="text-base">Total: <strong className="text-primary">{formatCurrency(calculateTotals(form.items, form.tax_rate).total, form.currency)}</strong></p>
                     </div>
                   </div>
                 </div>
@@ -408,7 +417,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                   <TableHead>Invoice #</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Client</TableHead>
-                  <TableHead className="text-right">Total (UGX)</TableHead>
+                  <TableHead className="text-right">Total</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
@@ -419,7 +428,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                     <TableCell className="font-medium">{inv.invoice_number}</TableCell>
                     <TableCell>{format(new Date(inv.invoice_date), "MMM d, yyyy")}</TableCell>
                     <TableCell>{inv.client_name}</TableCell>
-                    <TableCell className="text-right font-medium">{Number(inv.total).toLocaleString()}/=</TableCell>
+                    <TableCell className="text-right font-medium">{formatCurrency(Number(inv.total), inv.currency)}</TableCell>
                     <TableCell>{statusBadge(inv.status)}</TableCell>
                     <TableCell>
                       <div className="flex gap-1">
@@ -489,7 +498,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                     <Input className="col-span-5" placeholder="Service description" value={item.description} onChange={(e) => { const items = [...editInvoice.items]; items[i] = { ...items[i], description: e.target.value }; setEditInvoice({ ...editInvoice, items }); }} required />
                     <Input className="col-span-2" placeholder="Qty" value={item.quantity} onChange={(e) => { const items = [...editInvoice.items]; items[i] = { ...items[i], quantity: e.target.value, total: (parseFloat(e.target.value) || 1) * Number(items[i].unit_cost) }; setEditInvoice({ ...editInvoice, items }); }} required />
                     <Input className="col-span-2" type="number" placeholder="Unit Cost" value={item.unit_cost || ""} onChange={(e) => { const items = [...editInvoice.items]; items[i] = { ...items[i], unit_cost: parseFloat(e.target.value) || 0, total: (parseFloat(String(items[i].quantity)) || 1) * (parseFloat(e.target.value) || 0) }; setEditInvoice({ ...editInvoice, items }); }} required />
-                    <div className="col-span-2 flex items-center text-sm font-medium">{Number(item.total).toLocaleString()}/=</div>
+                    <div className="col-span-2 flex items-center text-sm font-medium">{formatCurrency(Number(item.total), editInvoice.currency)}</div>
                     <Button type="button" variant="ghost" size="sm" onClick={() => setEditInvoice({ ...editInvoice, items: editInvoice.items.filter((_, idx) => idx !== i) })} className="col-span-1" disabled={editInvoice.items.length <= 1}><Trash2 className="h-3 w-3" /></Button>
                   </div>
                 ))}
@@ -498,9 +507,9 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                 <div><Label>Tax Rate (%)</Label><Input type="number" step="0.01" value={editInvoice.tax_rate} onChange={(e) => setEditInvoice({ ...editInvoice, tax_rate: parseFloat(e.target.value) || 0 })} /></div>
                 <div className="flex items-end">
                   <div className="text-sm space-y-1">
-                    <p>Subtotal: <strong>{calculateTotals(editInvoice.items, editInvoice.tax_rate).subtotal.toLocaleString()}/=</strong></p>
-                    <p>Tax: <strong>-{calculateTotals(editInvoice.items, editInvoice.tax_rate).taxAmount.toLocaleString()}/=</strong></p>
-                    <p className="text-base">Total: <strong className="text-primary">{calculateTotals(editInvoice.items, editInvoice.tax_rate).total.toLocaleString()}/=</strong></p>
+                     <p>Subtotal: <strong>{formatCurrency(calculateTotals(editInvoice.items, editInvoice.tax_rate).subtotal, editInvoice.currency)}</strong></p>
+                     <p>Tax: <strong>-{formatCurrency(calculateTotals(editInvoice.items, editInvoice.tax_rate).taxAmount, editInvoice.currency)}</strong></p>
+                     <p className="text-base">Total: <strong className="text-primary">{formatCurrency(calculateTotals(editInvoice.items, editInvoice.tax_rate).total, editInvoice.currency)}</strong></p>
                   </div>
                 </div>
               </div>
@@ -537,6 +546,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                   tax_amount: previewInvoice.tax_amount,
                   total: previewInvoice.total,
                   title: previewInvoice.notes || undefined,
+                  currency: previewInvoice.currency,
                 }} />
               ) : (
                 <ReceiptTemplate data={{
@@ -555,6 +565,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                   payment_date: previewInvoice.payment_date || undefined,
                   payment_method: previewInvoice.payment_method || undefined,
                   receipt_number: `RCT-${previewInvoice.invoice_number}`,
+                  currency: previewInvoice.currency,
                 }} />
               )}
             </div>

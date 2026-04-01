@@ -17,6 +17,8 @@ import WorkOrderTemplate from "./WorkOrderTemplate";
 import type { InvoiceItem } from "./InvoiceTemplate";
 import { printDocument } from "@/lib/printDocument";
 import type { BillingPrefill } from "./BillingManagement";
+import CurrencySelect from "./CurrencySelect";
+import { formatCurrency, type Currency } from "@/lib/currency";
 
 interface WorkOrderRow {
   id: string;
@@ -37,6 +39,7 @@ interface WorkOrderRow {
   requested_by: string | null;
   provided_by: string | null;
   created_at: string;
+  currency: Currency;
 }
 
 const defaultItem: InvoiceItem = { description: "", quantity: "1", unit_cost: 0, total: 0 };
@@ -71,6 +74,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
     project_id: "",
     requested_by: "",
     provided_by: "Yowa Innovations Ltd",
+    currency: "UGX" as Currency,
   });
 
   useEffect(() => {
@@ -87,6 +91,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
         project_id: prefill.project_id || "",
         requested_by: prefill.requested_by || "",
         provided_by: prefill.provided_by || "Yowa Innovations Ltd",
+        currency: (prefill.currency || "UGX") as Currency,
       }));
       setIsCreateOpen(true);
       onPrefillConsumed?.();
@@ -164,6 +169,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
         requested_by: form.requested_by || null,
         provided_by: form.provided_by || null,
         created_by: user.id,
+        currency: form.currency,
       }]);
       if (error) throw error;
     },
@@ -204,6 +210,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
         project_id: w.project_id || null,
         requested_by: w.requested_by || null,
         provided_by: w.provided_by || null,
+        currency: w.currency,
       }).eq("id", w.id);
       if (error) throw error;
     },
@@ -225,7 +232,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
       work_order_number: generateWorkOrderNumber(), work_order_date: new Date().toISOString().split("T")[0],
       client_name: "", client_address: "", client_phone: "", client_email: "",
       title: "", items: [{ ...defaultItem }], tax_rate: 0, notes: "", project_id: "",
-      requested_by: "", provided_by: "Yowa Innovations Ltd",
+      requested_by: "", provided_by: "Yowa Innovations Ltd", currency: "UGX" as Currency,
     });
   };
 
@@ -247,9 +254,10 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader><DialogTitle>Create Work Order</DialogTitle></DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <div><Label>Work Order Number</Label><Input value={form.work_order_number} onChange={(e) => setForm({ ...form, work_order_number: e.target.value })} placeholder="e.g. WO-001" required /></div>
                   <div><Label>Date</Label><Input type="date" value={form.work_order_date} onChange={(e) => setForm({ ...form, work_order_date: e.target.value })} required /></div>
+                  <CurrencySelect value={form.currency} onChange={(v) => setForm({ ...form, currency: v })} />
                 </div>
                 <div><Label>Title / Scope</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Documentary Production" /></div>
                 <div className="grid grid-cols-2 gap-4">
@@ -281,7 +289,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
                       <Input className="col-span-5" placeholder="Task / Deliverable" value={item.description} onChange={(e) => updateItem(i, "description", e.target.value)} required />
                       <Input className="col-span-2" placeholder="Qty" value={item.quantity} onChange={(e) => updateItem(i, "quantity", e.target.value)} required />
                       <Input className="col-span-2" type="number" placeholder="Unit Cost" value={item.unit_cost || ""} onChange={(e) => updateItem(i, "unit_cost", parseFloat(e.target.value) || 0)} required />
-                      <div className="col-span-2 flex items-center text-sm font-medium">{Number(item.total).toLocaleString()}/=</div>
+                      <div className="col-span-2 flex items-center text-sm font-medium">{formatCurrency(Number(item.total), form.currency)}</div>
                       <Button type="button" variant="ghost" size="sm" onClick={() => removeItem(i)} className="col-span-1" disabled={form.items.length <= 1}><Trash2 className="h-3 w-3" /></Button>
                     </div>
                   ))}
@@ -290,9 +298,9 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
                   <div><Label>Tax Rate (%)</Label><Input type="number" step="0.01" value={form.tax_rate} onChange={(e) => setForm({ ...form, tax_rate: parseFloat(e.target.value) || 0 })} /></div>
                   <div className="flex items-end">
                     <div className="text-sm space-y-1">
-                      <p>Subtotal: <strong>{calculateTotals(form.items, form.tax_rate).subtotal.toLocaleString()}/=</strong></p>
-                      {form.tax_rate > 0 && <p>Tax: <strong>{calculateTotals(form.items, form.tax_rate).taxAmount.toLocaleString()}/=</strong></p>}
-                      <p className="text-base">Total: <strong className="text-primary">{calculateTotals(form.items, form.tax_rate).total.toLocaleString()}/=</strong></p>
+                      <p>Subtotal: <strong>{formatCurrency(calculateTotals(form.items, form.tax_rate).subtotal, form.currency)}</strong></p>
+                      {form.tax_rate > 0 && <p>Tax: <strong>{formatCurrency(calculateTotals(form.items, form.tax_rate).taxAmount, form.currency)}</strong></p>}
+                      <p className="text-base">Total: <strong className="text-primary">{formatCurrency(calculateTotals(form.items, form.tax_rate).total, form.currency)}</strong></p>
                     </div>
                   </div>
                 </div>
@@ -316,7 +324,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
                   <TableHead>Work Order #</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Client</TableHead>
-                  <TableHead className="text-right">Total (UGX)</TableHead>
+                  <TableHead className="text-right">Total</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -326,7 +334,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
                     <TableCell className="font-medium">{w.work_order_number}</TableCell>
                     <TableCell>{format(new Date(w.work_order_date), "MMM d, yyyy")}</TableCell>
                     <TableCell>{w.client_name}</TableCell>
-                    <TableCell className="text-right font-medium">{Number(w.total).toLocaleString()}/=</TableCell>
+                    <TableCell className="text-right font-medium">{formatCurrency(Number(w.total), w.currency)}</TableCell>
                     <TableCell>
                       <div className="flex gap-1">
                         <Button variant="ghost" size="sm" title="View" onClick={() => setPreviewWorkOrder(w)}><FileText className="h-4 w-4" /></Button>
@@ -342,6 +350,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
                             notes: w.notes || undefined,
                             project_id: w.project_id || undefined,
                             sourceRef: w.work_order_number,
+                            currency: w.currency,
                           })} className="text-xs gap-1">
                             <FileText className="h-3 w-3" /> Make Invoice
                           </Button>
@@ -390,7 +399,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
                     <Input className="col-span-5" value={item.description} onChange={(e) => { const items = [...editWorkOrder.items]; items[i] = { ...items[i], description: e.target.value }; setEditWorkOrder({ ...editWorkOrder, items }); }} required />
                     <Input className="col-span-2" value={item.quantity} onChange={(e) => { const items = [...editWorkOrder.items]; items[i] = { ...items[i], quantity: e.target.value, total: (parseFloat(e.target.value) || 1) * Number(items[i].unit_cost) }; setEditWorkOrder({ ...editWorkOrder, items }); }} required />
                     <Input className="col-span-2" type="number" value={item.unit_cost || ""} onChange={(e) => { const items = [...editWorkOrder.items]; items[i] = { ...items[i], unit_cost: parseFloat(e.target.value) || 0, total: (parseFloat(String(items[i].quantity)) || 1) * (parseFloat(e.target.value) || 0) }; setEditWorkOrder({ ...editWorkOrder, items }); }} required />
-                    <div className="col-span-2 flex items-center text-sm font-medium">{Number(item.total).toLocaleString()}/=</div>
+                    <div className="col-span-2 flex items-center text-sm font-medium">{formatCurrency(Number(item.total), editWorkOrder.currency)}</div>
                     <Button type="button" variant="ghost" size="sm" onClick={() => setEditWorkOrder({ ...editWorkOrder, items: editWorkOrder.items.filter((_, idx) => idx !== i) })} className="col-span-1" disabled={editWorkOrder.items.length <= 1}><Trash2 className="h-3 w-3" /></Button>
                   </div>
                 ))}
@@ -428,6 +437,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
                 notes: previewWorkOrder.notes || undefined,
                 requested_by: previewWorkOrder.requested_by || undefined,
                 provided_by: previewWorkOrder.provided_by || undefined,
+                currency: previewWorkOrder.currency,
               }} />
             </div>
           )}

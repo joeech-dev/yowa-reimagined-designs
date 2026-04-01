@@ -4,6 +4,7 @@ import logo from "@/assets/Yowa_Logo_1.png";
 import signature from "@/assets/joel-signature.png";
 import stamp from "@/assets/yowa-stamp-new.png";
 import type { InvoiceItem } from "./InvoiceTemplate";
+import { formatCurrency, type Currency } from "@/lib/currency";
 
 export interface WorkOrderData {
   work_order_number: string;
@@ -21,6 +22,7 @@ export interface WorkOrderData {
   title?: string;
   requested_by?: string;
   provided_by?: string;
+  currency?: Currency;
 }
 
 interface WorkOrderTemplateProps {
@@ -29,6 +31,7 @@ interface WorkOrderTemplateProps {
 
 const WorkOrderTemplate = forwardRef<HTMLDivElement, WorkOrderTemplateProps>(
   ({ data }, ref) => {
+    const cur = data.currency || "UGX";
     return (
       <div ref={ref} className="bg-white text-black px-8 pt-6 pb-4 max-w-[210mm] mx-auto font-sans text-sm print:p-6 print:shadow-none" style={{ minHeight: "297mm" }}>
         {/* Header */}
@@ -60,6 +63,7 @@ const WorkOrderTemplate = forwardRef<HTMLDivElement, WorkOrderTemplateProps>(
           <div className="text-right">
             <p className="text-xs text-gray-500">Work Order No: <span className="font-bold text-black">{data.work_order_number}</span></p>
             <p className="text-xs text-gray-500">Date: <span className="font-bold text-black">{format(new Date(data.work_order_date), "dd / MM / yyyy")}</span></p>
+            <p className="text-xs text-gray-500">Currency: <span className="font-bold text-black">{cur}</span></p>
           </div>
         </div>
 
@@ -85,8 +89,8 @@ const WorkOrderTemplate = forwardRef<HTMLDivElement, WorkOrderTemplateProps>(
                 <td className="p-2 text-xs">{index + 1}</td>
                 <td className="p-2 text-xs">{item.description}</td>
                 <td className="p-2 text-xs">{item.quantity}</td>
-                <td className="p-2 text-xs text-right">{Number(item.unit_cost).toLocaleString()}/=</td>
-                <td className="p-2 text-xs text-right">{Number(item.total).toLocaleString()}/=</td>
+                <td className="p-2 text-xs text-right">{formatCurrency(item.unit_cost, cur)}</td>
+                <td className="p-2 text-xs text-right">{formatCurrency(item.total, cur)}</td>
               </tr>
             ))}
           </tbody>
@@ -97,17 +101,17 @@ const WorkOrderTemplate = forwardRef<HTMLDivElement, WorkOrderTemplateProps>(
           <div className="w-56">
             <div className="flex justify-between py-1.5 border-b border-gray-200">
               <span className="text-xs font-medium">Subtotal:</span>
-              <span className="text-xs font-bold">{Number(data.subtotal).toLocaleString()}/=</span>
+              <span className="text-xs font-bold">{formatCurrency(data.subtotal, cur)}</span>
             </div>
             {data.tax_rate > 0 && (
               <div className="flex justify-between py-1.5 border-b border-gray-200">
                 <span className="text-xs font-medium">Tax ({data.tax_rate}%):</span>
-                <span className="text-xs font-bold">{Number(data.tax_amount).toLocaleString()}/=</span>
+                <span className="text-xs font-bold">{formatCurrency(data.tax_amount, cur)}</span>
               </div>
             )}
             <div className="flex justify-between py-2 text-white px-3 rounded-b" style={{ backgroundColor: "hsl(25,90%,48%)" }}>
               <span className="text-sm font-bold">Total:</span>
-              <span className="text-sm font-bold">{Number(data.total).toLocaleString()}/=</span>
+              <span className="text-sm font-bold">{formatCurrency(data.total, cur)}</span>
             </div>
           </div>
         </div>

@@ -213,7 +213,7 @@ const FinanceManagement = () => {
                         </Select>
                       </div>
                       <div>
-                        <Label>Amount (UGX)</Label>
+                        <Label>Amount</Label>
                         <Input type="number" step="0.01" value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: e.target.value })} required />
                       </div>
                       <div>

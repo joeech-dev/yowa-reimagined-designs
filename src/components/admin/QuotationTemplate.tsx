@@ -4,6 +4,7 @@ import logo from "@/assets/Yowa_Logo_1.png";
 import signature from "@/assets/joel-signature.png";
 import stamp from "@/assets/yowa-stamp-new.png";
 import type { InvoiceItem } from "./InvoiceTemplate";
+import { formatCurrency, type Currency } from "@/lib/currency";
 
 export interface QuotationData {
   quotation_number: string;
@@ -21,6 +22,7 @@ export interface QuotationData {
   title?: string;
   requested_by?: string;
   provided_by?: string;
+  currency?: Currency;
 }
 
 interface QuotationTemplateProps {
@@ -29,6 +31,7 @@ interface QuotationTemplateProps {
 
 const QuotationTemplate = forwardRef<HTMLDivElement, QuotationTemplateProps>(
   ({ data }, ref) => {
+    const cur = data.currency || "UGX";
     return (
       <div ref={ref} className="bg-white text-black px-8 pt-6 pb-4 max-w-[210mm] mx-auto font-sans text-sm print:p-6 print:shadow-none" style={{ minHeight: "297mm" }}>
         {/* Header */}
@@ -49,17 +52,18 @@ const QuotationTemplate = forwardRef<HTMLDivElement, QuotationTemplateProps>(
         </div>
 
         {/* Client & Quotation Info */}
-        <div className="flex flex-wrap justify-between gap-3 mb-4 border-t border-b border-gray-200 py-3">
-          <div className="min-w-0 flex-1">
-            <p className="text-xs text-gray-500 uppercase mb-1">Quotation for:</p>
+        <div className="flex justify-between mb-4 border-t border-b border-gray-200 py-3">
+          <div>
+            <p className="text-xs text-gray-500 uppercase mb-1">Prepared for:</p>
             <p className="font-bold text-sm">{data.client_name}</p>
             {data.client_address && <p className="text-xs text-gray-600 leading-relaxed whitespace-pre-line">{data.client_address}</p>}
             {data.client_phone && <p className="text-xs text-gray-600">{data.client_phone}</p>}
             {data.client_email && <p className="text-xs text-gray-600">{data.client_email}</p>}
           </div>
-          <div className="text-right flex-shrink-0">
-            <p className="text-xs text-gray-500 whitespace-nowrap">Quotation No: <span className="font-bold text-black">{data.quotation_number}</span></p>
-            <p className="text-xs text-gray-500 whitespace-nowrap">Date: <span className="font-bold text-black">{format(new Date(data.quotation_date), "dd / MM / yyyy")}</span></p>
+          <div className="text-right">
+            <p className="text-xs text-gray-500">Quotation No: <span className="font-bold text-black">{data.quotation_number}</span></p>
+            <p className="text-xs text-gray-500">Date: <span className="font-bold text-black">{format(new Date(data.quotation_date), "dd / MM / yyyy")}</span></p>
+            <p className="text-xs text-gray-500">Currency: <span className="font-bold text-black">{cur}</span></p>
           </div>
         </div>
 
@@ -73,7 +77,7 @@ const QuotationTemplate = forwardRef<HTMLDivElement, QuotationTemplateProps>(
           <thead>
             <tr style={{ backgroundColor: "hsl(220,80%,45%)" }} className="text-white">
               <th className="text-left p-2 text-xs font-semibold w-10">No</th>
-              <th className="text-left p-2 text-xs font-semibold">Service / Item</th>
+              <th className="text-left p-2 text-xs font-semibold">Description</th>
               <th className="text-left p-2 text-xs font-semibold w-20">Qty</th>
               <th className="text-right p-2 text-xs font-semibold w-24">Unit Cost</th>
               <th className="text-right p-2 text-xs font-semibold w-24">Total</th>
@@ -85,8 +89,8 @@ const QuotationTemplate = forwardRef<HTMLDivElement, QuotationTemplateProps>(
                 <td className="p-2 text-xs">{index + 1}</td>
                 <td className="p-2 text-xs">{item.description}</td>
                 <td className="p-2 text-xs">{item.quantity}</td>
-                <td className="p-2 text-xs text-right">{Number(item.unit_cost).toLocaleString()}/=</td>
-                <td className="p-2 text-xs text-right">{Number(item.total).toLocaleString()}/=</td>
+                <td className="p-2 text-xs text-right">{formatCurrency(item.unit_cost, cur)}</td>
+                <td className="p-2 text-xs text-right">{formatCurrency(item.total, cur)}</td>
               </tr>
             ))}
           </tbody>
@@ -97,17 +101,17 @@ const QuotationTemplate = forwardRef<HTMLDivElement, QuotationTemplateProps>(
           <div className="w-56">
             <div className="flex justify-between py-1.5 border-b border-gray-200">
               <span className="text-xs font-medium">Subtotal:</span>
-              <span className="text-xs font-bold">{Number(data.subtotal).toLocaleString()}/=</span>
+              <span className="text-xs font-bold">{formatCurrency(data.subtotal, cur)}</span>
             </div>
             {data.tax_rate > 0 && (
               <div className="flex justify-between py-1.5 border-b border-gray-200">
                 <span className="text-xs font-medium">Tax ({data.tax_rate}%):</span>
-                <span className="text-xs font-bold">{Number(data.tax_amount).toLocaleString()}/=</span>
+                <span className="text-xs font-bold">{formatCurrency(data.tax_amount, cur)}</span>
               </div>
             )}
             <div className="flex justify-between py-2 text-white px-3 rounded-b" style={{ backgroundColor: "hsl(220,80%,45%)" }}>
               <span className="text-sm font-bold">Total:</span>
-              <span className="text-sm font-bold">{Number(data.total).toLocaleString()}/=</span>
+              <span className="text-sm font-bold">{formatCurrency(data.total, cur)}</span>
             </div>
           </div>
         </div>
