@@ -546,6 +546,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                   tax_amount: previewInvoice.tax_amount,
                   total: previewInvoice.total,
                   title: previewInvoice.notes || undefined,
+                  currency: previewInvoice.currency,
                 }} />
               ) : (
                 <ReceiptTemplate data={{
