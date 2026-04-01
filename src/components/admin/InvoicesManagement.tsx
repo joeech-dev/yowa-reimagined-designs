@@ -507,9 +507,9 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                 <div><Label>Tax Rate (%)</Label><Input type="number" step="0.01" value={editInvoice.tax_rate} onChange={(e) => setEditInvoice({ ...editInvoice, tax_rate: parseFloat(e.target.value) || 0 })} /></div>
                 <div className="flex items-end">
                   <div className="text-sm space-y-1">
-                    <p>Subtotal: <strong>{calculateTotals(editInvoice.items, editInvoice.tax_rate).subtotal.toLocaleString()}/=</strong></p>
-                    <p>Tax: <strong>-{calculateTotals(editInvoice.items, editInvoice.tax_rate).taxAmount.toLocaleString()}/=</strong></p>
-                    <p className="text-base">Total: <strong className="text-primary">{calculateTotals(editInvoice.items, editInvoice.tax_rate).total.toLocaleString()}/=</strong></p>
+                     <p>Subtotal: <strong>{formatCurrency(calculateTotals(editInvoice.items, editInvoice.tax_rate).subtotal, editInvoice.currency)}</strong></p>
+                     <p>Tax: <strong>-{formatCurrency(calculateTotals(editInvoice.items, editInvoice.tax_rate).taxAmount, editInvoice.currency)}</strong></p>
+                     <p className="text-base">Total: <strong className="text-primary">{formatCurrency(calculateTotals(editInvoice.items, editInvoice.tax_rate).total, editInvoice.currency)}</strong></p>
                   </div>
                 </div>
               </div>
