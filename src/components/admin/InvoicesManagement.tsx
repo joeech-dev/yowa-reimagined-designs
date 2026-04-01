@@ -41,6 +41,7 @@ interface InvoiceRow {
   payment_method: string | null;
   is_receipt_generated: boolean;
   created_at: string;
+  currency: Currency;
 }
 
 const defaultItem: InvoiceItem = { description: "", quantity: "1", unit_cost: 0, total: 0 };
