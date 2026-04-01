@@ -90,6 +90,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
         tax_rate: prefill.tax_rate,
         notes: prefill.notes || "",
         project_id: prefill.project_id || "",
+        currency: (prefill.currency || "UGX") as Currency,
       }));
       setIsCreateOpen(true);
       onPrefillConsumed?.();
