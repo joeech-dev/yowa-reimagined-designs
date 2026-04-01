@@ -166,6 +166,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
         notes: form.title || null,
         project_id: form.project_id || null,
         created_by: user.id,
+        currency: form.currency,
       }]);
       if (error) throw error;
     },
