@@ -368,7 +368,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                       <Input className="col-span-2" placeholder="Qty" value={item.quantity} onChange={(e) => updateItem(i, "quantity", e.target.value)} required />
                       <Input className="col-span-2" type="number" placeholder="Unit Cost" value={item.unit_cost || ""} onChange={(e) => updateItem(i, "unit_cost", parseFloat(e.target.value) || 0)} required />
                       <div className="col-span-2 flex items-center text-sm font-medium">
-                        {Number(item.total).toLocaleString()}/=
+                        {formatCurrency(Number(item.total), form.currency)}
                       </div>
                       <Button type="button" variant="ghost" size="sm" onClick={() => removeItem(i)} className="col-span-1" disabled={form.items.length <= 1}>
                         <Trash2 className="h-3 w-3" />
