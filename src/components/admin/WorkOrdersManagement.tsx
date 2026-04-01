@@ -254,9 +254,10 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader><DialogTitle>Create Work Order</DialogTitle></DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <div><Label>Work Order Number</Label><Input value={form.work_order_number} onChange={(e) => setForm({ ...form, work_order_number: e.target.value })} placeholder="e.g. WO-001" required /></div>
                   <div><Label>Date</Label><Input type="date" value={form.work_order_date} onChange={(e) => setForm({ ...form, work_order_date: e.target.value })} required /></div>
+                  <CurrencySelect value={form.currency} onChange={(v) => setForm({ ...form, currency: v })} />
                 </div>
                 <div><Label>Title / Scope</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Documentary Production" /></div>
                 <div className="grid grid-cols-2 gap-4">
