@@ -5,6 +5,7 @@ import QuotationsManagement from "./QuotationsManagement";
 import WorkOrdersManagement from "./WorkOrdersManagement";
 import InvoicesManagement from "./InvoicesManagement";
 import type { InvoiceItem } from "./InvoiceTemplate";
+import type { Currency } from "@/lib/currency";
 
 export interface BillingPrefill {
   client_name: string;
