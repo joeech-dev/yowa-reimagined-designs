@@ -74,6 +74,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
     project_id: "",
     requested_by: "",
     provided_by: "Yowa Innovations Ltd",
+    currency: "UGX" as Currency,
   });
 
   useEffect(() => {
