@@ -210,6 +210,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
         project_id: w.project_id || null,
         requested_by: w.requested_by || null,
         provided_by: w.provided_by || null,
+        currency: w.currency,
       }).eq("id", w.id);
       if (error) throw error;
     },
