@@ -350,6 +350,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
                             notes: w.notes || undefined,
                             project_id: w.project_id || undefined,
                             sourceRef: w.work_order_number,
+                            currency: w.currency,
                           })} className="text-xs gap-1">
                             <FileText className="h-3 w-3" /> Make Invoice
                           </Button>
