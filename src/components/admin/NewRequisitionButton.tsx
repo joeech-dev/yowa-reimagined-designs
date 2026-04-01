@@ -147,7 +147,7 @@ const NewRequisitionButton = ({ variant = "outline", size = "default", className
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Amount (UGX) *</Label>
+                <Label>Amount *</Label>
                 <Input type="number" step="1" value={formData.amount} onChange={e => field("amount", e.target.value)} required />
                 {parseFloat(formData.amount) >= 100000 && (
                   <p className="text-xs text-secondary mt-1 flex items-center gap-1">

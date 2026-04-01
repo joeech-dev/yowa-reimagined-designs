@@ -565,6 +565,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                   payment_date: previewInvoice.payment_date || undefined,
                   payment_method: previewInvoice.payment_method || undefined,
                   receipt_number: `RCT-${previewInvoice.invoice_number}`,
+                  currency: previewInvoice.currency,
                 }} />
               )}
             </div>
