@@ -308,7 +308,7 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
                     <TableCell className="font-medium">{q.quotation_number}</TableCell>
                     <TableCell>{format(new Date(q.quotation_date), "MMM d, yyyy")}</TableCell>
                     <TableCell>{q.client_name}</TableCell>
-                    <TableCell className="text-right font-medium">{Number(q.total).toLocaleString()}/=</TableCell>
+                    <TableCell className="text-right font-medium">{formatCurrency(Number(q.total), q.currency)}</TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         <Button variant="ghost" size="sm" title="View" onClick={() => setPreviewQuotation(q)}><FileText className="h-4 w-4" /></Button>
