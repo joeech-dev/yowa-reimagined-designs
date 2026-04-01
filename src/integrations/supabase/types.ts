@@ -240,6 +240,7 @@ export type Database = {
           budget_line: string | null
           category: string
           created_at: string
+          currency: string
           department: string | null
           description: string
           expected_date: string | null
@@ -271,6 +272,7 @@ export type Database = {
           budget_line?: string | null
           category: string
           created_at?: string
+          currency?: string
           department?: string | null
           description: string
           expected_date?: string | null
@@ -302,6 +304,7 @@ export type Database = {
           budget_line?: string | null
           category?: string
           created_at?: string
+          currency?: string
           department?: string | null
           description?: string
           expected_date?: string | null
@@ -343,6 +346,7 @@ export type Database = {
           amount: number
           category: string
           created_at: string
+          currency: string
           description: string
           id: string
           project_id: string | null
@@ -354,6 +358,7 @@ export type Database = {
           amount: number
           category: string
           created_at?: string
+          currency?: string
           description: string
           id?: string
           project_id?: string | null
@@ -365,6 +370,7 @@ export type Database = {
           amount?: number
           category?: string
           created_at?: string
+          currency?: string
           description?: string
           id?: string
           project_id?: string | null
@@ -420,6 +426,7 @@ export type Database = {
           client_phone: string | null
           created_at: string
           created_by: string
+          currency: string
           due_date: string | null
           id: string
           invoice_date: string
@@ -444,6 +451,7 @@ export type Database = {
           client_phone?: string | null
           created_at?: string
           created_by: string
+          currency?: string
           due_date?: string | null
           id?: string
           invoice_date?: string
@@ -468,6 +476,7 @@ export type Database = {
           client_phone?: string | null
           created_at?: string
           created_by?: string
+          currency?: string
           due_date?: string | null
           id?: string
           invoice_date?: string
@@ -1116,6 +1125,7 @@ export type Database = {
           client_phone: string | null
           created_at: string
           created_by: string
+          currency: string
           id: string
           items: Json
           notes: string | null
@@ -1138,6 +1148,7 @@ export type Database = {
           client_phone?: string | null
           created_at?: string
           created_by: string
+          currency?: string
           id?: string
           items?: Json
           notes?: string | null
@@ -1160,6 +1171,7 @@ export type Database = {
           client_phone?: string | null
           created_at?: string
           created_by?: string
+          currency?: string
           id?: string
           items?: Json
           notes?: string | null
@@ -1779,6 +1791,7 @@ export type Database = {
           client_phone: string | null
           created_at: string
           created_by: string
+          currency: string
           id: string
           items: Json
           notes: string | null
@@ -1801,6 +1814,7 @@ export type Database = {
           client_phone?: string | null
           created_at?: string
           created_by: string
+          currency?: string
           id?: string
           items?: Json
           notes?: string | null
@@ -1823,6 +1837,7 @@ export type Database = {
           client_phone?: string | null
           created_at?: string
           created_by?: string
+          currency?: string
           id?: string
           items?: Json
           notes?: string | null
