@@ -39,6 +39,7 @@ interface QuotationRow {
   requested_by: string | null;
   provided_by: string | null;
   created_at: string;
+  currency: Currency;
 }
 
 const defaultItem: InvoiceItem = { description: "", quantity: "1", unit_cost: 0, total: 0 };
