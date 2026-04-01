@@ -298,7 +298,7 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
                   <TableHead>Quotation #</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Client</TableHead>
-                  <TableHead className="text-right">Total (UGX)</TableHead>
+                  <TableHead className="text-right">Total</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
