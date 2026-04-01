@@ -413,6 +413,7 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
                 notes: previewQuotation.notes || undefined,
                 requested_by: previewQuotation.requested_by || undefined,
                 provided_by: previewQuotation.provided_by || undefined,
+                currency: previewQuotation.currency,
               }} />
             </div>
           )}
