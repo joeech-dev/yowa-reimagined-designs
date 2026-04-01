@@ -417,7 +417,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                   <TableHead>Invoice #</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Client</TableHead>
-                  <TableHead className="text-right">Total (UGX)</TableHead>
+                  <TableHead className="text-right">Total</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
