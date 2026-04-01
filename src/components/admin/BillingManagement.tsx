@@ -19,6 +19,7 @@ export interface BillingPrefill {
   requested_by?: string;
   provided_by?: string;
   sourceRef?: string; // e.g. "QT-001" or "WO-001"
+  currency?: Currency;
 }
 
 const BillingManagement = () => {
