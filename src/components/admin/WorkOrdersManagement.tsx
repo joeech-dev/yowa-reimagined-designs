@@ -169,6 +169,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
         requested_by: form.requested_by || null,
         provided_by: form.provided_by || null,
         created_by: user.id,
+        currency: form.currency,
       }]);
       if (error) throw error;
     },
