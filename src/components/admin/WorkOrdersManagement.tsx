@@ -399,7 +399,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
                     <Input className="col-span-5" value={item.description} onChange={(e) => { const items = [...editWorkOrder.items]; items[i] = { ...items[i], description: e.target.value }; setEditWorkOrder({ ...editWorkOrder, items }); }} required />
                     <Input className="col-span-2" value={item.quantity} onChange={(e) => { const items = [...editWorkOrder.items]; items[i] = { ...items[i], quantity: e.target.value, total: (parseFloat(e.target.value) || 1) * Number(items[i].unit_cost) }; setEditWorkOrder({ ...editWorkOrder, items }); }} required />
                     <Input className="col-span-2" type="number" value={item.unit_cost || ""} onChange={(e) => { const items = [...editWorkOrder.items]; items[i] = { ...items[i], unit_cost: parseFloat(e.target.value) || 0, total: (parseFloat(String(items[i].quantity)) || 1) * (parseFloat(e.target.value) || 0) }; setEditWorkOrder({ ...editWorkOrder, items }); }} required />
-                    <div className="col-span-2 flex items-center text-sm font-medium">{Number(item.total).toLocaleString()}/=</div>
+                    <div className="col-span-2 flex items-center text-sm font-medium">{formatCurrency(Number(item.total), editWorkOrder.currency)}</div>
                     <Button type="button" variant="ghost" size="sm" onClick={() => setEditWorkOrder({ ...editWorkOrder, items: editWorkOrder.items.filter((_, idx) => idx !== i) })} className="col-span-1" disabled={editWorkOrder.items.length <= 1}><Trash2 className="h-3 w-3" /></Button>
                   </div>
                 ))}
