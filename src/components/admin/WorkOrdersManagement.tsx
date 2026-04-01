@@ -437,6 +437,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
                 notes: previewWorkOrder.notes || undefined,
                 requested_by: previewWorkOrder.requested_by || undefined,
                 provided_by: previewWorkOrder.provided_by || undefined,
+                currency: previewWorkOrder.currency,
               }} />
             </div>
           )}
