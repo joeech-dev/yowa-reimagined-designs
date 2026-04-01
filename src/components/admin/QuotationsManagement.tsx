@@ -206,7 +206,7 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
       quotation_number: generateQuotationNumber(), quotation_date: new Date().toISOString().split("T")[0],
       client_name: "", client_address: "", client_phone: "", client_email: "",
       title: "", items: [{ ...defaultItem }], tax_rate: 0, notes: "", project_id: "",
-      requested_by: "", provided_by: "Yowa Innovations Ltd",
+      requested_by: "", provided_by: "Yowa Innovations Ltd", currency: "UGX" as Currency,
     });
   };
 
