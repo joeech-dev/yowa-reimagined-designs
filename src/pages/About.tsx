@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
@@ -5,39 +6,37 @@ import { Card } from "@/components/ui/card";
 import { Target, Heart, Users, Sparkles, Linkedin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import joelImg from "@/assets/team/joel-ongwech.jpg";
-import kenethImg from "@/assets/team/lubangakene-keneth.jpg";
-import derickImg from "@/assets/team/muwanguzi-derick.jpg";
-import claireImg from "@/assets/team/akajunua-claire.jpg";
+import { supabase } from "@/integrations/supabase/client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const teamMembers = [
-  { 
-    name: "Joel Ongwech", 
-    role: "Co-Founder/CEO",
-    linkedin: "https://www.linkedin.com/in/joel-ongwech-75873323/",
-    image: joelImg,
-  },
-  { 
-    name: "Lubangakene Keneth", 
-    role: "CFO",
-    linkedin: "https://www.linkedin.com/in/lubangakene-keneth-a6140b19a/",
-    image: kenethImg,
-  },
-  { 
-    name: "Derick Muwanguzi", 
-    role: "Creative Editor",
-    linkedin: null,
-    image: derickImg,
-  },
-  { 
-    name: "Clair Akajunua", 
-    role: "PR/Voice Over Artist",
-    linkedin: "https://www.linkedin.com/in/claire-akajunwa-450157188/",
-    image: claireImg,
-  },
-];
+interface BoardMember {
+  full_name: string | null;
+  position: string | null;
+  avatar_url: string | null;
+  linkedin_url: string | null;
+  team_board_order: number;
+}
+
+const getInitials = (name: string) =>
+  name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 
 const About = () => {
+  const [boardMembers, setBoardMembers] = useState<BoardMember[]>([]);
+  const [loadingTeam, setLoadingTeam] = useState(true);
+
+  useEffect(() => {
+    const fetchBoardMembers = async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name, position, avatar_url, linkedin_url, team_board_order")
+        .eq("show_on_team_board", true)
+        .order("team_board_order", { ascending: true });
+      setBoardMembers((data as BoardMember[]) || []);
+      setLoadingTeam(false);
+    };
+    fetchBoardMembers();
+  }, []);
+
   const values = [
     {
       icon: Target,
@@ -174,40 +173,47 @@ const About = () => {
             <h2 className="font-display font-bold text-3xl md:text-4xl mb-12 text-center">
               Meet Our Team
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {teamMembers.map((member, index) => (
-                <Card key={index} className="overflow-hidden hover:shadow-warm transition-smooth group">
-                  <div className="aspect-square bg-gradient-to-br from-primary/20 to-accent/20 overflow-hidden">
-                    <img 
-                      src={member.image} 
-                      alt={member.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-smooth"
-                    />
-                  </div>
-                  <div className="p-6 text-center">
-                    <h3 className="font-display font-semibold text-lg mb-1">{member.name}</h3>
-                    <p className="text-sm text-muted-foreground mb-3">{member.role}</p>
-                    {member.linkedin && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        asChild
-                        className="gap-2"
-                      >
-                        <a 
-                          href={member.linkedin} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                        >
-                          <Linkedin className="h-4 w-4" />
-                          LinkedIn
-                        </a>
-                      </Button>
-                    )}
-                  </div>
-                </Card>
-              ))}
-            </div>
+            {loadingTeam ? (
+              <div className="flex justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+              </div>
+            ) : boardMembers.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {boardMembers.map((member, index) => (
+                  <Card key={index} className="overflow-hidden hover:shadow-warm transition-smooth group">
+                    <div className="aspect-square bg-gradient-to-br from-primary/20 to-accent/20 overflow-hidden flex items-center justify-center">
+                      {member.avatar_url ? (
+                        <img
+                          src={member.avatar_url}
+                          alt={member.full_name || "Team member"}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-smooth"
+                        />
+                      ) : (
+                        <Avatar className="h-32 w-32">
+                          <AvatarFallback className="text-3xl">
+                            {getInitials(member.full_name || "?")}
+                          </AvatarFallback>
+                        </Avatar>
+                      )}
+                    </div>
+                    <div className="p-6 text-center">
+                      <h3 className="font-display font-semibold text-lg mb-1">{member.full_name}</h3>
+                      <p className="text-sm text-muted-foreground mb-3">{member.position}</p>
+                      {member.linkedin_url && (
+                        <Button variant="outline" size="sm" asChild className="gap-2">
+                          <a href={member.linkedin_url} target="_blank" rel="noopener noreferrer">
+                            <Linkedin className="h-4 w-4" />
+                            LinkedIn
+                          </a>
+                        </Button>
+                      )}
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <p className="text-center text-muted-foreground">Team information coming soon.</p>
+            )}
           </div>
 
           <div className="text-center mt-12">
