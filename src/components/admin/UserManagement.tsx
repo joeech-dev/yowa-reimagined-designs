@@ -20,6 +20,7 @@ interface UserWithRole {
   role: string | null;
   show_on_team_board: boolean;
   linkedin_url: string | null;
+  position: string | null;
   team_board_order: number;
 }
 
