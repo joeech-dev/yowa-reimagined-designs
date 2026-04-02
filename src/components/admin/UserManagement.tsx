@@ -54,8 +54,9 @@ const UserManagement = () => {
   const [newTeamRole, setNewTeamRole] = useState("");
   const [creating, setCreating] = useState(false);
   const [deletingUser, setDeletingUser] = useState<string | null>(null);
-  const [editingLinkedin, setEditingLinkedin] = useState<string | null>(null);
+  const [editingTeamInfo, setEditingTeamInfo] = useState<string | null>(null);
   const [linkedinValue, setLinkedinValue] = useState("");
+  const [positionValue, setPositionValue] = useState("");
 
   useEffect(() => {
     fetchUsers();
