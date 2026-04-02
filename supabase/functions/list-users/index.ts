@@ -55,17 +55,21 @@ serve(async (req) => {
     if (listError) throw listError;
 
     const { data: roles } = await adminClient.from("user_roles").select("*");
-    const { data: profiles } = await adminClient.from("profiles").select("show_on_team_board, linkedin_url, team_board_order, user_id");
+    const { data: profiles } = await adminClient.from("profiles").select("show_on_team_board, linkedin_url, position, team_board_order, user_id");
 
-    const usersWithRoles = users.map((u) => ({
-      id: u.id,
-      email: u.email,
-      created_at: u.created_at,
-      role: roles?.find((r) => r.user_id === u.id)?.role || null,
-      show_on_team_board: profiles?.find((p) => p.user_id === u.id)?.show_on_team_board || false,
-      linkedin_url: profiles?.find((p) => p.user_id === u.id)?.linkedin_url || null,
-      team_board_order: profiles?.find((p) => p.user_id === u.id)?.team_board_order || 0,
-    }));
+    const usersWithRoles = users.map((u) => {
+      const profile = profiles?.find((p) => p.user_id === u.id);
+      return {
+        id: u.id,
+        email: u.email,
+        created_at: u.created_at,
+        role: roles?.find((r) => r.user_id === u.id)?.role || null,
+        show_on_team_board: profile?.show_on_team_board || false,
+        linkedin_url: profile?.linkedin_url || null,
+        position: profile?.position || null,
+        team_board_order: profile?.team_board_order || 0,
+      };
+    });
 
     return new Response(JSON.stringify({ users: usersWithRoles }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
