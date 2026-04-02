@@ -20,6 +20,7 @@ interface UserWithRole {
   role: string | null;
   show_on_team_board: boolean;
   linkedin_url: string | null;
+  position: string | null;
   team_board_order: number;
 }
 
@@ -53,8 +54,9 @@ const UserManagement = () => {
   const [newTeamRole, setNewTeamRole] = useState("");
   const [creating, setCreating] = useState(false);
   const [deletingUser, setDeletingUser] = useState<string | null>(null);
-  const [editingLinkedin, setEditingLinkedin] = useState<string | null>(null);
+  const [editingTeamInfo, setEditingTeamInfo] = useState<string | null>(null);
   const [linkedinValue, setLinkedinValue] = useState("");
+  const [positionValue, setPositionValue] = useState("");
 
   useEffect(() => {
     fetchUsers();
@@ -120,20 +122,20 @@ const UserManagement = () => {
     }
   };
 
-  const handleSaveLinkedin = async (userId: string) => {
+  const handleSaveTeamInfo = async (userId: string) => {
     try {
       const { error } = await supabase
         .from("profiles")
-        .update({ linkedin_url: linkedinValue || null })
+        .update({ linkedin_url: linkedinValue || null, position: positionValue || null })
         .eq("user_id", userId);
 
       if (error) throw error;
 
       setUsers((prev) =>
-        prev.map((u) => (u.id === userId ? { ...u, linkedin_url: linkedinValue || null } : u))
+        prev.map((u) => (u.id === userId ? { ...u, linkedin_url: linkedinValue || null, position: positionValue || null } : u))
       );
-      setEditingLinkedin(null);
-      toast.success("LinkedIn URL updated");
+      setEditingTeamInfo(null);
+      toast.success("Team info updated");
     } catch (error: any) {
       toast.error("Failed to update: " + error.message);
     }
@@ -361,21 +363,29 @@ const UserManagement = () => {
                         }
                       />
                       {user.show_on_team_board && (
-                        <div className="flex items-center gap-1">
-                          {editingLinkedin === user.id ? (
-                            <div className="flex items-center gap-1">
+                        <div className="flex flex-col gap-1">
+                          {editingTeamInfo === user.id ? (
+                            <div className="flex flex-col gap-1.5">
+                              <Input
+                                className="h-7 w-48 text-xs"
+                                placeholder="Position / Title"
+                                value={positionValue}
+                                onChange={(e) => setPositionValue(e.target.value)}
+                              />
                               <Input
                                 className="h-7 w-48 text-xs"
                                 placeholder="LinkedIn URL"
                                 value={linkedinValue}
                                 onChange={(e) => setLinkedinValue(e.target.value)}
                               />
-                              <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => handleSaveLinkedin(user.id)}>
-                                Save
-                              </Button>
-                              <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setEditingLinkedin(null)}>
-                                ✕
-                              </Button>
+                              <div className="flex gap-1">
+                                <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => handleSaveTeamInfo(user.id)}>
+                                  Save
+                                </Button>
+                                <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setEditingTeamInfo(null)}>
+                                  ✕
+                                </Button>
+                              </div>
                             </div>
                           ) : (
                             <Button
@@ -383,12 +393,13 @@ const UserManagement = () => {
                               variant="ghost"
                               className="h-7 px-2 text-xs gap-1"
                               onClick={() => {
-                                setEditingLinkedin(user.id);
+                                setEditingTeamInfo(user.id);
                                 setLinkedinValue(user.linkedin_url || "");
+                                setPositionValue(user.position || "");
                               }}
                             >
                               <Linkedin className="h-3 w-3" />
-                              {user.linkedin_url ? "Edit" : "Add LinkedIn"}
+                              {user.position || user.linkedin_url ? "Edit Info" : "Add Info"}
                             </Button>
                           )}
                         </div>
