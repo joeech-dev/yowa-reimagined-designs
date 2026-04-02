@@ -122,20 +122,20 @@ const UserManagement = () => {
     }
   };
 
-  const handleSaveLinkedin = async (userId: string) => {
+  const handleSaveTeamInfo = async (userId: string) => {
     try {
       const { error } = await supabase
         .from("profiles")
-        .update({ linkedin_url: linkedinValue || null })
+        .update({ linkedin_url: linkedinValue || null, position: positionValue || null })
         .eq("user_id", userId);
 
       if (error) throw error;
 
       setUsers((prev) =>
-        prev.map((u) => (u.id === userId ? { ...u, linkedin_url: linkedinValue || null } : u))
+        prev.map((u) => (u.id === userId ? { ...u, linkedin_url: linkedinValue || null, position: positionValue || null } : u))
       );
-      setEditingLinkedin(null);
-      toast.success("LinkedIn URL updated");
+      setEditingTeamInfo(null);
+      toast.success("Team info updated");
     } catch (error: any) {
       toast.error("Failed to update: " + error.message);
     }
