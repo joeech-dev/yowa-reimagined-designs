@@ -7,16 +7,20 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Users, Shield, UserPlus, Trash2 } from "lucide-react";
+import { Users, Shield, UserPlus, Trash2, Linkedin } from "lucide-react";
 
 interface UserWithRole {
   id: string;
   email: string;
   created_at: string;
   role: string | null;
+  show_on_team_board: boolean;
+  linkedin_url: string | null;
+  team_board_order: number;
 }
 
 const ROLE_OPTIONS = [
@@ -49,6 +53,8 @@ const UserManagement = () => {
   const [newTeamRole, setNewTeamRole] = useState("");
   const [creating, setCreating] = useState(false);
   const [deletingUser, setDeletingUser] = useState<string | null>(null);
+  const [editingLinkedin, setEditingLinkedin] = useState<string | null>(null);
+  const [linkedinValue, setLinkedinValue] = useState("");
 
   useEffect(() => {
     fetchUsers();
@@ -93,6 +99,43 @@ const UserManagement = () => {
       toast.error("Failed to update role: " + error.message);
     } finally {
       setUpdatingUser(null);
+    }
+  };
+
+  const handleToggleTeamBoard = async (userId: string, checked: boolean) => {
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ show_on_team_board: checked })
+        .eq("user_id", userId);
+
+      if (error) throw error;
+
+      setUsers((prev) =>
+        prev.map((u) => (u.id === userId ? { ...u, show_on_team_board: checked } : u))
+      );
+      toast.success(checked ? "Added to team board" : "Removed from team board");
+    } catch (error: any) {
+      toast.error("Failed to update: " + error.message);
+    }
+  };
+
+  const handleSaveLinkedin = async (userId: string) => {
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ linkedin_url: linkedinValue || null })
+        .eq("user_id", userId);
+
+      if (error) throw error;
+
+      setUsers((prev) =>
+        prev.map((u) => (u.id === userId ? { ...u, linkedin_url: linkedinValue || null } : u))
+      );
+      setEditingLinkedin(null);
+      toast.success("LinkedIn URL updated");
+    } catch (error: any) {
+      toast.error("Failed to update: " + error.message);
     }
   };
 
@@ -281,7 +324,7 @@ const UserManagement = () => {
             <Shield className="h-5 w-5" /> Registered Users
           </CardTitle>
           <CardDescription>
-            Assign roles to determine what each user can access in the dashboard.
+            Assign roles and manage who appears on the About page team board.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -290,6 +333,7 @@ const UserManagement = () => {
               <TableRow>
                 <TableHead>Email</TableHead>
                 <TableHead>Current Role</TableHead>
+                <TableHead>Team Board</TableHead>
                 <TableHead>Joined</TableHead>
                 <TableHead>Assign Role</TableHead>
                 <TableHead className="w-[80px]">Actions</TableHead>
@@ -307,6 +351,49 @@ const UserManagement = () => {
                     ) : (
                       <span className="text-muted-foreground text-sm">No role</span>
                     )}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        checked={user.show_on_team_board}
+                        onCheckedChange={(checked) =>
+                          handleToggleTeamBoard(user.id, checked as boolean)
+                        }
+                      />
+                      {user.show_on_team_board && (
+                        <div className="flex items-center gap-1">
+                          {editingLinkedin === user.id ? (
+                            <div className="flex items-center gap-1">
+                              <Input
+                                className="h-7 w-48 text-xs"
+                                placeholder="LinkedIn URL"
+                                value={linkedinValue}
+                                onChange={(e) => setLinkedinValue(e.target.value)}
+                              />
+                              <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => handleSaveLinkedin(user.id)}>
+                                Save
+                              </Button>
+                              <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setEditingLinkedin(null)}>
+                                ✕
+                              </Button>
+                            </div>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-7 px-2 text-xs gap-1"
+                              onClick={() => {
+                                setEditingLinkedin(user.id);
+                                setLinkedinValue(user.linkedin_url || "");
+                              }}
+                            >
+                              <Linkedin className="h-3 w-3" />
+                              {user.linkedin_url ? "Edit" : "Add LinkedIn"}
+                            </Button>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell className="text-muted-foreground text-sm">
                     {new Date(user.created_at).toLocaleDateString()}
@@ -356,7 +443,7 @@ const UserManagement = () => {
                 ))}
                 {users.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
                       No users found.
                     </TableCell>
                   </TableRow>

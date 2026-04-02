@@ -20,7 +20,6 @@ serve(async (req) => {
       });
     }
 
-    // Verify the caller is admin/super_admin
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -37,7 +36,6 @@ serve(async (req) => {
       });
     }
 
-    // Check if user is admin or super_admin
     const { data: roleData } = await userClient
       .from("user_roles")
       .select("role")
@@ -52,20 +50,21 @@ serve(async (req) => {
       });
     }
 
-    // Use service role to list all users
     const adminClient = createClient(supabaseUrl, supabaseServiceKey);
     const { data: { users }, error: listError } = await adminClient.auth.admin.listUsers();
-
     if (listError) throw listError;
 
-    // Get all roles
     const { data: roles } = await adminClient.from("user_roles").select("*");
+    const { data: profiles } = await adminClient.from("profiles").select("show_on_team_board, linkedin_url, team_board_order, user_id");
 
     const usersWithRoles = users.map((u) => ({
       id: u.id,
       email: u.email,
       created_at: u.created_at,
       role: roles?.find((r) => r.user_id === u.id)?.role || null,
+      show_on_team_board: profiles?.find((p) => p.user_id === u.id)?.show_on_team_board || false,
+      linkedin_url: profiles?.find((p) => p.user_id === u.id)?.linkedin_url || null,
+      team_board_order: profiles?.find((p) => p.user_id === u.id)?.team_board_order || 0,
     }));
 
     return new Response(JSON.stringify({ users: usersWithRoles }), {
