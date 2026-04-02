@@ -988,7 +988,10 @@ export type Database = {
           full_name: string | null
           id: string
           is_profile_complete: boolean
+          linkedin_url: string | null
           position: string | null
+          show_on_team_board: boolean
+          team_board_order: number
           updated_at: string
           user_id: string
         }
@@ -998,7 +1001,10 @@ export type Database = {
           full_name?: string | null
           id?: string
           is_profile_complete?: boolean
+          linkedin_url?: string | null
           position?: string | null
+          show_on_team_board?: boolean
+          team_board_order?: number
           updated_at?: string
           user_id: string
         }
@@ -1008,7 +1014,10 @@ export type Database = {
           full_name?: string | null
           id?: string
           is_profile_complete?: boolean
+          linkedin_url?: string | null
           position?: string | null
+          show_on_team_board?: boolean
+          team_board_order?: number
           updated_at?: string
           user_id?: string
         }
