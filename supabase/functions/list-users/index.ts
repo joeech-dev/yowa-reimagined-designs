@@ -55,7 +55,7 @@ serve(async (req) => {
     if (listError) throw listError;
 
     const { data: roles } = await adminClient.from("user_roles").select("*");
-    const { data: profiles } = await adminClient.from("profiles").select("show_on_team_board, linkedin_url, position, team_board_order, user_id");
+    const { data: profiles } = await adminClient.from("profiles").select("show_on_team_board, linkedin_url, position, team_board_order, user_id, avatar_url");
 
     const usersWithRoles = users.map((u) => {
       const profile = profiles?.find((p) => p.user_id === u.id);
@@ -67,6 +67,7 @@ serve(async (req) => {
         show_on_team_board: profile?.show_on_team_board || false,
         linkedin_url: profile?.linkedin_url || null,
         position: profile?.position || null,
+        avatar_url: profile?.avatar_url || null,
         team_board_order: profile?.team_board_order || 0,
       };
     });

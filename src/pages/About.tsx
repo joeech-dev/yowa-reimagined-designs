@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
@@ -20,22 +20,21 @@ interface BoardMember {
 const getInitials = (name: string) =>
   name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 
-const About = () => {
-  const [boardMembers, setBoardMembers] = useState<BoardMember[]>([]);
-  const [loadingTeam, setLoadingTeam] = useState(true);
+const fetchBoardMembers = async (): Promise<BoardMember[]> => {
+  const { data } = await supabase
+    .from("profiles")
+    .select("full_name, position, avatar_url, linkedin_url, team_board_order")
+    .eq("show_on_team_board", true)
+    .order("team_board_order", { ascending: true });
+  return (data as BoardMember[]) || [];
+};
 
-  useEffect(() => {
-    const fetchBoardMembers = async () => {
-      const { data } = await supabase
-        .from("profiles")
-        .select("full_name, position, avatar_url, linkedin_url, team_board_order")
-        .eq("show_on_team_board", true)
-        .order("team_board_order", { ascending: true });
-      setBoardMembers((data as BoardMember[]) || []);
-      setLoadingTeam(false);
-    };
-    fetchBoardMembers();
-  }, []);
+const About = () => {
+  const { data: boardMembers = [], isLoading: loadingTeam } = useQuery({
+    queryKey: ["team-board-members"],
+    queryFn: fetchBoardMembers,
+    staleTime: 5 * 60 * 1000,
+  });
 
   const values = [
     {
