@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -10,8 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
-import { Users, Shield, UserPlus, Trash2, Linkedin } from "lucide-react";
+import { Users, Shield, UserPlus, Trash2, Linkedin, Camera, Pencil } from "lucide-react";
 
 interface UserWithRole {
   id: string;
@@ -21,6 +22,7 @@ interface UserWithRole {
   show_on_team_board: boolean;
   linkedin_url: string | null;
   position: string | null;
+  avatar_url: string | null;
   team_board_order: number;
 }
 
@@ -41,6 +43,11 @@ const roleBadgeVariant = (role: string | null) => {
   }
 };
 
+const getInitials = (email: string, name?: string | null) => {
+  if (name) return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
+  return email.substring(0, 2).toUpperCase();
+};
+
 const UserManagement = () => {
   const [users, setUsers] = useState<UserWithRole[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,12 +64,15 @@ const UserManagement = () => {
   const [editingTeamInfo, setEditingTeamInfo] = useState<string | null>(null);
   const [linkedinValue, setLinkedinValue] = useState("");
   const [positionValue, setPositionValue] = useState("");
+  const [uploadingAvatar, setUploadingAvatar] = useState<string | null>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const avatarTargetUser = useRef<string | null>(null);
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
@@ -78,7 +88,7 @@ const UserManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     setUpdatingUser(userId);
@@ -139,6 +149,58 @@ const UserManagement = () => {
     } catch (error: any) {
       toast.error("Failed to update: " + error.message);
     }
+  };
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    const userId = avatarTargetUser.current;
+    if (!file || !userId) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Image must be under 2MB");
+      return;
+    }
+
+    setUploadingAvatar(userId);
+    try {
+      const ext = file.name.split(".").pop();
+      const filePath = `${userId}/avatar.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(filePath);
+
+      // Add cache-busting param
+      const freshUrl = `${publicUrl}?t=${Date.now()}`;
+
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ avatar_url: freshUrl })
+        .eq("user_id", userId);
+
+      if (updateError) throw updateError;
+
+      setUsers((prev) =>
+        prev.map((u) => (u.id === userId ? { ...u, avatar_url: freshUrl } : u))
+      );
+      toast.success("Profile photo updated!");
+    } catch (error: any) {
+      toast.error("Upload failed: " + error.message);
+    } finally {
+      setUploadingAvatar(null);
+      if (avatarInputRef.current) avatarInputRef.current.value = "";
+    }
+  };
+
+  const triggerAvatarUpload = (userId: string) => {
+    avatarTargetUser.current = userId;
+    avatarInputRef.current?.click();
   };
 
   const handleCreateUser = async () => {
@@ -220,6 +282,15 @@ const UserManagement = () => {
 
   return (
     <div className="space-y-6">
+      {/* Hidden file input for avatar uploads */}
+      <input
+        ref={avatarInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleAvatarUpload}
+      />
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
@@ -355,7 +426,7 @@ const UserManagement = () => {
                     )}
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                       <Checkbox
                         checked={user.show_on_team_board}
                         onCheckedChange={(checked) =>
@@ -363,45 +434,67 @@ const UserManagement = () => {
                         }
                       />
                       {user.show_on_team_board && (
-                        <div className="flex flex-col gap-1">
-                          {editingTeamInfo === user.id ? (
-                            <div className="flex flex-col gap-1.5">
-                              <Input
-                                className="h-7 w-48 text-xs"
-                                placeholder="Position / Title"
-                                value={positionValue}
-                                onChange={(e) => setPositionValue(e.target.value)}
-                              />
-                              <Input
-                                className="h-7 w-48 text-xs"
-                                placeholder="LinkedIn URL"
-                                value={linkedinValue}
-                                onChange={(e) => setLinkedinValue(e.target.value)}
-                              />
-                              <div className="flex gap-1">
-                                <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => handleSaveTeamInfo(user.id)}>
-                                  Save
-                                </Button>
-                                <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setEditingTeamInfo(null)}>
-                                  ✕
-                                </Button>
-                              </div>
+                        <div className="flex items-start gap-3">
+                          {/* Avatar with edit overlay */}
+                          <div
+                            className="relative cursor-pointer group shrink-0"
+                            onClick={() => triggerAvatarUpload(user.id)}
+                          >
+                            <Avatar className="h-10 w-10 border border-border">
+                              <AvatarImage src={user.avatar_url || undefined} />
+                              <AvatarFallback className="text-xs bg-primary/10">
+                                {getInitials(user.email, user.position)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                              {uploadingAvatar === user.id ? (
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                              ) : (
+                                <Camera className="h-4 w-4 text-white" />
+                              )}
                             </div>
-                          ) : (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-7 px-2 text-xs gap-1"
-                              onClick={() => {
-                                setEditingTeamInfo(user.id);
-                                setLinkedinValue(user.linkedin_url || "");
-                                setPositionValue(user.position || "");
-                              }}
-                            >
-                              <Linkedin className="h-3 w-3" />
-                              {user.position || user.linkedin_url ? "Edit Info" : "Add Info"}
-                            </Button>
-                          )}
+                          </div>
+
+                          <div className="flex flex-col gap-1">
+                            {editingTeamInfo === user.id ? (
+                              <div className="flex flex-col gap-1.5">
+                                <Input
+                                  className="h-7 w-48 text-xs"
+                                  placeholder="Position / Title"
+                                  value={positionValue}
+                                  onChange={(e) => setPositionValue(e.target.value)}
+                                />
+                                <Input
+                                  className="h-7 w-48 text-xs"
+                                  placeholder="LinkedIn URL"
+                                  value={linkedinValue}
+                                  onChange={(e) => setLinkedinValue(e.target.value)}
+                                />
+                                <div className="flex gap-1">
+                                  <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => handleSaveTeamInfo(user.id)}>
+                                    Save
+                                  </Button>
+                                  <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setEditingTeamInfo(null)}>
+                                    ✕
+                                  </Button>
+                                </div>
+                              </div>
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-7 px-2 text-xs gap-1"
+                                onClick={() => {
+                                  setEditingTeamInfo(user.id);
+                                  setLinkedinValue(user.linkedin_url || "");
+                                  setPositionValue(user.position || "");
+                                }}
+                              >
+                                <Pencil className="h-3 w-3" />
+                                {user.position || user.linkedin_url ? "Edit Info" : "Add Info"}
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>
