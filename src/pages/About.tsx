@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
