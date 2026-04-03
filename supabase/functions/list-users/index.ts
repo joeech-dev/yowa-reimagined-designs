@@ -67,6 +67,7 @@ serve(async (req) => {
         show_on_team_board: profile?.show_on_team_board || false,
         linkedin_url: profile?.linkedin_url || null,
         position: profile?.position || null,
+        avatar_url: profile?.avatar_url || null,
         team_board_order: profile?.team_board_order || 0,
       };
     });
