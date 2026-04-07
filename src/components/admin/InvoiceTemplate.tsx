@@ -64,7 +64,7 @@ const InvoiceTemplate = forwardRef<HTMLDivElement, InvoiceTemplateProps>(
             {data.client_phone && <p className="text-xs text-gray-600">{data.client_phone}</p>}
             {data.client_email && <p className="text-xs text-gray-600">{data.client_email}</p>}
           </div>
-          <div className="text-right">
+          <div className="text-right shrink-0 whitespace-nowrap">
             <p className="text-xs text-gray-500">Invoice No: <span className="font-bold text-black">{data.invoice_number}</span></p>
             <p className="text-xs text-gray-500">Date: <span className="font-bold text-black">{format(new Date(data.invoice_date), "dd / MM / yyyy")}</span></p>
             <p className="text-xs text-gray-500">Currency: <span className="font-bold text-black">{cur}</span></p>
