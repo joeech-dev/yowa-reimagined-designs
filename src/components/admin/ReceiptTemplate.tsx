@@ -51,7 +51,7 @@ const ReceiptTemplate = forwardRef<HTMLDivElement, ReceiptTemplateProps>(
             {data.client_phone && <p className="text-xs text-gray-600">{data.client_phone}</p>}
             {data.client_email && <p className="text-xs text-gray-600">{data.client_email}</p>}
           </div>
-          <div className="text-right space-y-0.5">
+          <div className="text-right shrink-0 whitespace-nowrap space-y-0.5">
             <p className="text-xs text-gray-500">Receipt No: <span className="font-bold text-black">{(data as any).receipt_number || `RCT-${data.invoice_number}`}</span></p>
             <p className="text-xs text-gray-500">Invoice No: <span className="font-bold text-black">{data.invoice_number}</span></p>
             <p className="text-xs text-gray-500">Payment Date: <span className="font-bold text-black">{(data as any).payment_date ? format(new Date((data as any).payment_date), "dd / MM / yyyy") : format(new Date(), "dd / MM / yyyy")}</span></p>

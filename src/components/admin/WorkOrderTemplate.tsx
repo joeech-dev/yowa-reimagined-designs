@@ -60,7 +60,7 @@ const WorkOrderTemplate = forwardRef<HTMLDivElement, WorkOrderTemplateProps>(
             {data.client_phone && <p className="text-xs text-gray-600">{data.client_phone}</p>}
             {data.client_email && <p className="text-xs text-gray-600">{data.client_email}</p>}
           </div>
-          <div className="text-right">
+          <div className="text-right shrink-0 whitespace-nowrap">
             <p className="text-xs text-gray-500">Work Order No: <span className="font-bold text-black">{data.work_order_number}</span></p>
             <p className="text-xs text-gray-500">Date: <span className="font-bold text-black">{format(new Date(data.work_order_date), "dd / MM / yyyy")}</span></p>
             <p className="text-xs text-gray-500">Currency: <span className="font-bold text-black">{cur}</span></p>
