@@ -10,6 +10,7 @@ import EbookPromo from "@/components/EbookPromo";
 import { useBlogBySlug } from "@/hooks/useBlogs";
 import BlogPostsList from "@/components/BlogPostsList";
 import BlogComments from "@/components/BlogComments";
+import BlogStickyCTA from "@/components/BlogStickyCTA";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -169,6 +170,7 @@ const BlogPost = () => {
       </article>
 
       <Footer />
+      <BlogStickyCTA />
     </div>
   );
 };
