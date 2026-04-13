@@ -13,6 +13,7 @@ import LeadGeneration from "./pages/LeadGeneration";
 import Careers from "./pages/Careers";
 import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import CookieConsent from "@/components/CookieConsent";
@@ -56,6 +57,7 @@ const App = () => (
           <Route path="/careers" element={<Careers />} />
           <Route path="/admin/*" element={<Admin />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/cookie-policy" element={<CookiePolicy />} />
           <Route path="/content-policy" element={<ContentPolicy />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
