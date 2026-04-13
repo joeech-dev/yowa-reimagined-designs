@@ -227,9 +227,11 @@ export const useTasks = () => {
   };
 
   const updateTask = async (taskId: string, updates: Partial<Task>) => {
+    // Strip joined/virtual fields before sending to DB
+    const { collaborators, creator_profile, owner_profile, project, ...dbUpdates } = updates as any;
     const { error } = await supabase
       .from("tasks")
-      .update(updates)
+      .update(dbUpdates)
       .eq("id", taskId);
 
     if (error) {
