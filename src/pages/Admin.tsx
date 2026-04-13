@@ -30,6 +30,7 @@ import MobileBottomNav from "@/components/admin/MobileBottomNav";
 import { SocialMediaManagement } from "@/components/admin/social/SocialMediaManagement";
 import SettingsPage from "@/components/admin/SettingsPage";
 import { Badge } from "@/components/ui/badge";
+import RoleGuard from "@/components/admin/RoleGuard";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -304,23 +305,23 @@ const Admin = () => {
     <AdminLayout>
       <Routes>
         <Route index element={<AdminDashboardHome />} />
-        <Route path="projects" element={<ProjectsManagement />} />
-        <Route path="tasks" element={<TasksManagement />} />
-        <Route path="hr" element={<HRManagement />} />
-        <Route path="finance" element={<FinanceManagement />} />
-        <Route path="billing" element={<BillingManagement />} />
-        <Route path="blogs" element={<BlogsManagement />} />
-        <Route path="blog-comments" element={<BlogCommentsModeration />} />
-        <Route path="partners" element={<PartnersManagement />} />
-        <Route path="leads" element={<LeadsManagement />} />
-        <Route path="submit-lead" element={<LeadAcquisitionForm />} />
-        <Route path="analytics" element={<AnalyticsDashboard />} />
-        <Route path="products" element={<ProductsManagement />} />
-        <Route path="job-postings" element={<JobPostingsManagement />} />
-        <Route path="social-reports" element={<SocialMediaManagement />} />
-        <Route path="ai-assistant" element={<AIAssistantPanel />} />
-        <Route path="users" element={<UserManagement />} />
-        <Route path="settings" element={<SettingsPage />} />
+        <Route path="projects" element={<RoleGuard section="projects"><ProjectsManagement /></RoleGuard>} />
+        <Route path="tasks" element={<RoleGuard section="dashboard"><TasksManagement /></RoleGuard>} />
+        <Route path="hr" element={<RoleGuard section="hr"><HRManagement /></RoleGuard>} />
+        <Route path="finance" element={<RoleGuard section="finance"><FinanceManagement /></RoleGuard>} />
+        <Route path="billing" element={<RoleGuard section="finance"><BillingManagement /></RoleGuard>} />
+        <Route path="blogs" element={<RoleGuard section="blogs"><BlogsManagement /></RoleGuard>} />
+        <Route path="blog-comments" element={<RoleGuard section="blogs"><BlogCommentsModeration /></RoleGuard>} />
+        <Route path="partners" element={<RoleGuard section="partners"><PartnersManagement /></RoleGuard>} />
+        <Route path="leads" element={<RoleGuard section="leads"><LeadsManagement /></RoleGuard>} />
+        <Route path="submit-lead" element={<RoleGuard section="submit-lead"><LeadAcquisitionForm /></RoleGuard>} />
+        <Route path="analytics" element={<RoleGuard section="analytics"><AnalyticsDashboard /></RoleGuard>} />
+        <Route path="products" element={<RoleGuard section="partners"><ProductsManagement /></RoleGuard>} />
+        <Route path="job-postings" element={<RoleGuard section="hr"><JobPostingsManagement /></RoleGuard>} />
+        <Route path="social-reports" element={<RoleGuard section="sales_marketing"><SocialMediaManagement /></RoleGuard>} />
+        <Route path="ai-assistant" element={<RoleGuard section="ai-assistant"><AIAssistantPanel /></RoleGuard>} />
+        <Route path="users" element={<RoleGuard section="users"><UserManagement /></RoleGuard>} />
+        <Route path="settings" element={<RoleGuard section="settings"><SettingsPage /></RoleGuard>} />
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Routes>
     </AdminLayout>
