@@ -339,6 +339,13 @@ export type Database = {
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "expense_requisitions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "public_featured_projects"
+            referencedColumns: ["id"]
+          },
         ]
       }
       finance_transactions: {
@@ -384,6 +391,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_transactions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "public_featured_projects"
             referencedColumns: ["id"]
           },
         ]
@@ -500,6 +514,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "public_featured_projects"
             referencedColumns: ["id"]
           },
         ]
@@ -1059,6 +1080,13 @@ export type Database = {
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "project_team_members_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "public_featured_projects"
+            referencedColumns: ["id"]
+          },
         ]
       }
       projects: {
@@ -1202,6 +1230,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quotations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "public_featured_projects"
             referencedColumns: ["id"]
           },
         ]
@@ -1664,6 +1699,13 @@ export type Database = {
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "public_featured_projects"
+            referencedColumns: ["id"]
+          },
         ]
       }
       team_members: {
@@ -1870,11 +1912,91 @@ export type Database = {
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "work_orders_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "public_featured_projects"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      blog_comments_public: {
+        Row: {
+          author_name: string | null
+          blog_post_id: string | null
+          content: string | null
+          created_at: string | null
+          id: string | null
+        }
+        Insert: {
+          author_name?: string | null
+          blog_post_id?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string | null
+        }
+        Update: {
+          author_name?: string | null
+          blog_post_id?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_comments_blog_post_id_fkey"
+            columns: ["blog_post_id"]
+            isOneToOne: false
+            referencedRelation: "blog_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      public_featured_projects: {
+        Row: {
+          client_name: string | null
+          completed_at: string | null
+          created_at: string | null
+          deadline: string | null
+          description: string | null
+          id: string | null
+          show_on_website: boolean | null
+          start_date: string | null
+          status: Database["public"]["Enums"]["project_status"] | null
+          title: string | null
+          video_url: string | null
+        }
+        Insert: {
+          client_name?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          deadline?: string | null
+          description?: string | null
+          id?: string | null
+          show_on_website?: boolean | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["project_status"] | null
+          title?: string | null
+          video_url?: string | null
+        }
+        Update: {
+          client_name?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          deadline?: string | null
+          description?: string | null
+          id?: string | null
+          show_on_website?: boolean | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["project_status"] | null
+          title?: string | null
+          video_url?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {
