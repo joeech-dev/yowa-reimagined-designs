@@ -181,12 +181,15 @@ const SettingsPage = () => {
       </div>
 
       <Tabs defaultValue="notifications" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 max-w-sm">
+        <TabsList className="grid w-full grid-cols-3 max-w-lg">
           <TabsTrigger value="notifications" className="gap-2">
             <Bell className="h-4 w-4" /> Notifications
           </TabsTrigger>
           <TabsTrigger value="integrations" className="gap-2">
             <Key className="h-4 w-4" /> Integrations
+          </TabsTrigger>
+          <TabsTrigger value="domain" className="gap-2">
+            <Globe className="h-4 w-4" /> Domain
           </TabsTrigger>
         </TabsList>
 
