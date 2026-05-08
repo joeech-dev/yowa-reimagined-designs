@@ -390,6 +390,11 @@ const SettingsPage = () => {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* ─── DOMAIN TAB ────────────────────────────────────────────────────── */}
+        <TabsContent value="domain" className="space-y-4">
+          <DomainReconnectWizard />
+        </TabsContent>
       </Tabs>
     </div>
   );
