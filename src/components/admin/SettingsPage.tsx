@@ -20,9 +20,11 @@ import {
   RefreshCw,
   Webhook,
   Zap,
+  Globe,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import DomainReconnectWizard from "./DomainReconnectWizard";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface NotifPrefs {
