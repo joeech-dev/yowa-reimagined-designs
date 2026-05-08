@@ -29,10 +29,9 @@ export const useBlogComments = (blogPostId: string | undefined) => {
     queryFn: async () => {
       if (!blogPostId) return [];
       const { data, error } = await (supabase as any)
-        .from("blog_comments")
-        .select("id, author_name, content, created_at, status")
+        .from("blog_comments_public")
+        .select("id, author_name, content, created_at")
         .eq("blog_post_id", blogPostId)
-        .eq("status", "approved")
         .order("created_at", { ascending: true });
       if (error) throw error;
       return (data || []) as BlogComment[];
