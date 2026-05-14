@@ -1,0 +1,22 @@
+# Yowa Innovations
+
+> Yowa Innovations is a creative agency in Kampala, Uganda, delivering content creation, video production, photography and digital marketing for NGOs, corporates and startups across East Africa.
+
+## Pages
+
+- [Home](/): Overview of services, work and impact stories.
+- [About](/about): Mission, values and the team behind Yowa Innovations.
+- [Projects](/projects): Portfolio of completed videos, documentaries and campaigns.
+- [Blog](/blogs): Insights on innovation, sustainability and impact in East Africa.
+- [Shop](/shop): eBooks, video packs, photo collections and film scripts.
+- [Careers](/careers): Open roles and how to join the team.
+- [Contact](/contact): Get in touch about a project or partnership.
+- [Get Started](/get-started): Brief us on your project and request a quote.
+- [Team](/team): Meet our supporting team of employees, freelancers and trainees.
+
+## Optional
+
+- [Privacy Policy](/privacy-policy)
+- [Terms of Service](/terms-of-service)
+- [Cookie Policy](/cookie-policy)
+- [Content Policy](/content-policy)
