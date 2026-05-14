@@ -13,11 +13,11 @@ interface SEOProps {
 }
 
 const SEO = ({
-  title = "Yowa Innovations Ltd | Content Creation & Advertising Agency in Uganda",
-  description = "Yowa Innovations Ltd is an award-winning content creation and advertising agency in Kampala, Uganda. We specialise in video production, photography, documentary filmmaking and digital marketing for NGOs, corporates and startups across East Africa.",
-  keywords = "Yowa Innovations, Yowa Innovations Ltd, content creation agency Uganda, advertising agency Kampala, video production East Africa, documentary production, digital marketing Uganda, creative agency Africa, visual storytelling, photography services, NGO communications Uganda, corporate video production",
+  title = "Yowa Innovations | Creative Agency in Kampala, Uganda",
+  description = "Award-winning content creation, video production & digital marketing agency in Kampala. We help NGOs, corporates & startups across East Africa.",
+  keywords = "Yowa Innovations, content creation agency Uganda, advertising agency Kampala, video production East Africa, documentary production, digital marketing Uganda, creative agency Africa",
   ogImage = "https://yowa.us/og-image.png",
-  url = "https://yowa.us",
+  url = "https://yowa.us/",
   type = "website",
   publishedTime,
   modifiedTime,
@@ -70,7 +70,7 @@ const SEO = ({
     "@type": "LocalBusiness",
     "@id": "https://yowa.us/#business",
     name: "Yowa Innovations",
-    image: "https://yowa.us/logo.png",
+    image: "https://yowa.us/favicon.png",
     description: "Content creation and advertising agency specializing in video production, photography, digital marketing, and creative strategy.",
     url: "https://yowa.us",
     telephone: "+256786155557",
