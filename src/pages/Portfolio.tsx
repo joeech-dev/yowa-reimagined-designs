@@ -50,8 +50,17 @@ const ProjectCard = ({
   return (
     <Card
       ref={cardRef}
-      className="group overflow-hidden border-border hover:shadow-warm transition-smooth cursor-pointer"
+      role="button"
+      tabIndex={0}
+      aria-label={`View project: ${project.title}`}
+      className="group overflow-hidden border-border hover:shadow-warm transition-smooth cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       onClick={() => onClick(project)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick(project);
+        }
+      }}
     >
       <div className="relative aspect-video overflow-hidden bg-muted">
         {thumb ? (
@@ -213,7 +222,7 @@ const Portfolio = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="font-display font-bold text-4xl md:text-6xl mb-6">
-              Our Projects
+              Portfolio of Impact Stories
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed">
               Explore our collection of impactful projects—from powerful documentaries to engaging

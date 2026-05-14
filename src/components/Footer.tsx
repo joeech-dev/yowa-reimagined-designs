@@ -90,6 +90,7 @@ const Footer = () => {
             <div className="flex flex-col space-y-2">
               <Input
                 type="email"
+                aria-label="Email address for newsletter subscription"
                 placeholder="Your email"
                 className="bg-background/10 border-secondary-foreground/20"
               />
