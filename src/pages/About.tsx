@@ -73,7 +73,7 @@ const About = () => {
       <section className="pt-32 pb-16 gradient-subtle">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="font-display font-bold text-5xl md:text-6xl mb-6">About Us</h1>
+            <h1 className="font-display font-bold text-5xl md:text-6xl mb-6">About Yowa Innovations</h1>
             <p className="text-xl text-muted-foreground">
               Discover the story behind Yowa Innovations and our mission to inspire change through
               creativity.

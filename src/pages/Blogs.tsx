@@ -53,7 +53,7 @@ const Blogs = () => {
       <section className="pt-32 pb-12 gradient-subtle">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="font-display font-bold text-4xl md:text-6xl mb-4">Our Blog</h1>
+            <h1 className="font-display font-bold text-4xl md:text-6xl mb-4">Impact & Innovation Blog</h1>
             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
               Insights, stories, and perspectives on innovation, sustainability, and impact across East Africa.
             </p>
@@ -61,6 +61,8 @@ const Blogs = () => {
             <div className="relative max-w-md mx-auto">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
+                type="search"
+                aria-label="Search blog articles"
                 placeholder="Search articles..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -121,6 +123,7 @@ const Blogs = () => {
                       href={featuredBlog.source_url}
                       target="_blank"
                       rel="noopener noreferrer"
+                      aria-label={featuredBlog.source_name ? `Read original article on ${featuredBlog.source_name}` : "Read original article"}
                       className="absolute top-4 right-4 bg-primary text-primary-foreground p-2 rounded-full shadow-lg hover:scale-110 transition-smooth"
                       title={featuredBlog.source_name ? `Read on ${featuredBlog.source_name}` : "Read original"}
                     >
@@ -148,6 +151,7 @@ const Blogs = () => {
                           href={blog.source_url}
                           target="_blank"
                           rel="noopener noreferrer"
+                          aria-label={blog.source_name ? `Read original article on ${blog.source_name}` : "Read original article"}
                           className="absolute top-4 right-4 bg-primary text-primary-foreground p-2 rounded-full shadow-lg hover:scale-110 transition-smooth z-10"
                           title={blog.source_name ? `Read on ${blog.source_name}` : "Read original"}
                         >
