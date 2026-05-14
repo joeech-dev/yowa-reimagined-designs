@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { ArrowRight, BookOpen, Video, Camera, FileText, Package, ShoppingBag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -58,6 +59,40 @@ const Shop = ({ filter }: { filter?: string }) => {
         description={categoryLabel ? `Browse our ${categoryLabel} collection. Tools to help you grow as a creative professional.` : "Browse our collection of creative resources including eBooks, videos, photos, and film scripts."}
         url={`https://yowa.us/${filter ? `shop/${filter}s` : "shop"}`}
       />
+      {products.length > 0 && (
+        <Helmet>
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "CollectionPage",
+              name: categoryLabel ? `${categoryLabel} – Yowa Innovations Shop` : "Yowa Innovations Shop",
+              url: `https://yowa.us/${filter ? `shop/${filter}s` : "shop"}`,
+              mainEntity: {
+                "@type": "ItemList",
+                itemListElement: products.slice(0, 30).map((p, i) => ({
+                  "@type": "ListItem",
+                  position: i + 1,
+                  item: {
+                    "@type": "Product",
+                    name: p.title,
+                    description: p.description || undefined,
+                    image: p.image_url || undefined,
+                    url: p.purchase_url || `https://yowa.us/shop`,
+                    offers: p.price
+                      ? {
+                          "@type": "Offer",
+                          price: p.price,
+                          priceCurrency: p.currency || "USD",
+                          availability: "https://schema.org/InStock",
+                        }
+                      : undefined,
+                  },
+                })),
+              },
+            })}
+          </script>
+        </Helmet>
+      )}
       <Navbar />
 
       <main className="pt-28 pb-24">

@@ -58,10 +58,34 @@ const BlogPost = () => {
     <div className="min-h-screen">
       <SEO
         title={`${blog.title} | Yowa Innovations Blog`}
-        description={blog.excerpt || "Read this insightful article from Yowa Innovations."}
+        description={(blog.excerpt || "Read this insightful article from Yowa Innovations.").slice(0, 160)}
         url={`https://yowa.us/blog/${blog.slug}`}
+        ogImage={blog.image || undefined}
         type="article"
+        publishedTime={blog.published_at || undefined}
       />
+      <Helmet>
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: blog.title,
+            description: blog.excerpt || undefined,
+            image: blog.image || undefined,
+            datePublished: blog.published_at || undefined,
+            author: { "@type": "Organization", name: "Yowa Innovations" },
+            publisher: {
+              "@type": "Organization",
+              name: "Yowa Innovations",
+              logo: { "@type": "ImageObject", url: "https://yowa.us/favicon.png" },
+            },
+            mainEntityOfPage: {
+              "@type": "WebPage",
+              "@id": `https://yowa.us/blog/${blog.slug}`,
+            },
+          })}
+        </script>
+      </Helmet>
       <Navbar />
 
       <article className="pt-32 pb-16">
