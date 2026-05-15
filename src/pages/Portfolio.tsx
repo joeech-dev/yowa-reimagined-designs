@@ -104,7 +104,7 @@ const ProjectCard = ({
           {project.year && <span>{project.year}</span>}
         </div>
         <div className="mt-3 pt-3 border-t border-border">
-          <p className="text-xs text-muted-foreground/60 font-mono truncate">
+          <p className="text-xs text-muted-foreground font-mono truncate">
             /projects/{projectSlug}
           </p>
         </div>
