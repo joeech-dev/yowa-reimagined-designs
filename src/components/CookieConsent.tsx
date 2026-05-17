@@ -29,9 +29,10 @@ declare global {
 }
 
 const applyConsent = (prefs: Prefs) => {
+  const w = window as any;
   // Google Consent Mode v2
-  if (typeof window.gtag === "function") {
-    window.gtag("consent", "update", {
+  if (typeof w.gtag === "function") {
+    w.gtag("consent", "update", {
       ad_storage: prefs.marketing ? "granted" : "denied",
       ad_user_data: prefs.marketing ? "granted" : "denied",
       ad_personalization: prefs.marketing ? "granted" : "denied",
@@ -41,12 +42,12 @@ const applyConsent = (prefs: Prefs) => {
     });
   }
   // Meta Pixel consent
-  if (typeof window.fbq === "function") {
-    window.fbq("consent", prefs.marketing ? "grant" : "revoke");
+  if (typeof w.fbq === "function") {
+    w.fbq("consent", prefs.marketing ? "grant" : "revoke");
   }
   // GTM event hook for custom triggers
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({ event: "cookie_consent_update", consent: prefs });
+  w.dataLayer = w.dataLayer || [];
+  w.dataLayer.push({ event: "cookie_consent_update", consent: prefs });
 };
 
 const persist = (prefs: Prefs) => {
