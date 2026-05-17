@@ -23,9 +23,7 @@ const DEFAULT_PREFS: Prefs = {
 
 declare global {
   interface Window {
-    gtag?: (...args: any[]) => void;
     fbq?: (...args: any[]) => void;
-    dataLayer?: any[];
     openCookieSettings?: () => void;
   }
 }
