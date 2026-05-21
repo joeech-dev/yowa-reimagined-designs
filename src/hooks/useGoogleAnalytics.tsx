@@ -2,13 +2,28 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 const GA_MEASUREMENT_ID = "G-9H1PRWJ0YM";
+const STORAGE_KEY = "cookie-consent-v2";
+
+const hasAnalyticsConsent = (): boolean => {
+  try {
+    // New consent banner (v2) — JSON with granular prefs
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return parsed?.prefs?.analytics === true;
+    }
+    // Backwards compatibility with old banner
+    return localStorage.getItem("cookie-consent") === "accepted";
+  } catch {
+    return false;
+  }
+};
 
 const useGoogleAnalytics = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const consent = localStorage.getItem("cookie-consent");
-    if (consent !== "accepted") return;
+    if (!hasAnalyticsConsent()) return;
 
     // Load gtag script if not already loaded
     if (!document.getElementById("ga-script")) {
@@ -32,8 +47,7 @@ const useGoogleAnalytics = () => {
 
   // Track page views on route change
   useEffect(() => {
-    const consent = localStorage.getItem("cookie-consent");
-    if (consent !== "accepted") return;
+    if (!hasAnalyticsConsent()) return;
 
     if (typeof window.gtag === "function") {
       window.gtag("config", GA_MEASUREMENT_ID, {
