@@ -177,10 +177,10 @@ const CookieConsent = () => {
                   <Settings2 className="h-4 w-4 mr-2" aria-hidden="true" />
                   Customise
                 </Button>
-                <Button variant="outline" onClick={rejectAll}>
-                  Reject non-essential
+                <Button variant="outline" onClick={acceptEssentialOnly}>
+                  Accept essential cookies only
                 </Button>
-                <Button onClick={acceptAll}>Accept all</Button>
+                <Button onClick={acceptAll}>Accept cookies</Button>
               </div>
             </div>
           ) : (
