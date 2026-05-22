@@ -222,15 +222,15 @@ const CookieConsent = () => {
               </div>
 
               <div className="mt-6 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-3">
-                <Button variant="ghost" onClick={rejectAll} className="sm:mr-auto">
-                  Reject non-essential
+                <Button variant="ghost" onClick={acceptEssentialOnly} className="sm:mr-auto">
+                  Accept essential cookies only
                 </Button>
                 <Button variant="outline" onClick={() => setShowSettings(false)}>
                   Back
                 </Button>
                 <Button onClick={saveChoices}>Save choices</Button>
                 <Button variant="secondary" onClick={acceptAll}>
-                  Accept all
+                  Accept cookies
                 </Button>
               </div>
             </div>
