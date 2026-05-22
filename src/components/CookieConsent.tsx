@@ -94,8 +94,19 @@ const CookieConsent = () => {
     setShowSettings(false);
   };
 
+  // "Essential only" still grants analytics so we can measure traffic
+  // (functional + marketing remain off).
+  const acceptEssentialOnly = () => {
+    const next: Prefs = { necessary: true, functional: false, analytics: true, marketing: false };
+    setPrefs(next);
+    persist(next);
+    applyConsent(next);
+    setShow(false);
+    setShowSettings(false);
+  };
+
   const rejectAll = () => {
-    const next: Prefs = { ...DEFAULT_PREFS };
+    const next: Prefs = { ...DEFAULT_PREFS, analytics: true };
     setPrefs(next);
     persist(next);
     applyConsent(next);
@@ -166,10 +177,10 @@ const CookieConsent = () => {
                   <Settings2 className="h-4 w-4 mr-2" aria-hidden="true" />
                   Customise
                 </Button>
-                <Button variant="outline" onClick={rejectAll}>
-                  Reject non-essential
+                <Button variant="outline" onClick={acceptEssentialOnly}>
+                  Accept essential cookies only
                 </Button>
-                <Button onClick={acceptAll}>Accept all</Button>
+                <Button onClick={acceptAll}>Accept cookies</Button>
               </div>
             </div>
           ) : (
@@ -211,15 +222,15 @@ const CookieConsent = () => {
               </div>
 
               <div className="mt-6 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-3">
-                <Button variant="ghost" onClick={rejectAll} className="sm:mr-auto">
-                  Reject non-essential
+                <Button variant="ghost" onClick={acceptEssentialOnly} className="sm:mr-auto">
+                  Accept essential cookies only
                 </Button>
                 <Button variant="outline" onClick={() => setShowSettings(false)}>
                   Back
                 </Button>
                 <Button onClick={saveChoices}>Save choices</Button>
                 <Button variant="secondary" onClick={acceptAll}>
-                  Accept all
+                  Accept cookies
                 </Button>
               </div>
             </div>
