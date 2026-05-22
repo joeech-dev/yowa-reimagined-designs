@@ -94,8 +94,19 @@ const CookieConsent = () => {
     setShowSettings(false);
   };
 
+  // "Essential only" still grants analytics so we can measure traffic
+  // (functional + marketing remain off).
+  const acceptEssentialOnly = () => {
+    const next: Prefs = { necessary: true, functional: false, analytics: true, marketing: false };
+    setPrefs(next);
+    persist(next);
+    applyConsent(next);
+    setShow(false);
+    setShowSettings(false);
+  };
+
   const rejectAll = () => {
-    const next: Prefs = { ...DEFAULT_PREFS };
+    const next: Prefs = { ...DEFAULT_PREFS, analytics: true };
     setPrefs(next);
     persist(next);
     applyConsent(next);
