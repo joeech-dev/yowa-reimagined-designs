@@ -63,6 +63,24 @@ const DomainReconnectWizard = () => {
   const [checking, setChecking] = useState(false);
   const [dns, setDns] = useState<DnsCheck | null>(null);
 
+  // Pre-fill from query params: ?domain=yowa.us&txt=lovable_verify=...&step=3
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const p = new URLSearchParams(window.location.search);
+    const d = p.get("domain");
+    const t = p.get("txt");
+    const s = p.get("step");
+    if (d) setDomain(d);
+    if (t) setTxtValue(t);
+    if (s) {
+      const n = parseInt(s, 10);
+      if (!Number.isNaN(n)) setStep(Math.min(Math.max(n, 0), STEPS.length - 1));
+    } else if (t) {
+      setStep(3); // jump to TXT step if a token was passed
+    }
+  }, []);
+
+
   const next = () => setStep((s) => Math.min(s + 1, STEPS.length - 1));
   const prev = () => setStep((s) => Math.max(s - 1, 0));
 
