@@ -212,7 +212,8 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         from: "Yowa Innovations <notifications@yowa.us>",
-        to: email.to,
+        to,
+
         subject: email.subject,
         html: email.html,
       }),
