@@ -18,4 +18,8 @@ verify_jwt = false
 [functions.gsc-analytics]
 verify_jwt = false
 
+[functions.sales-chat]
+verify_jwt = false
+
+
 
