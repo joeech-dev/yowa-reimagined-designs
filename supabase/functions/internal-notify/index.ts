@@ -173,6 +173,24 @@ serve(async (req) => {
     }
 
     const payload: NotifyPayload = await req.json();
+
+    // Resolve assignee_ids -> emails for task_assigned when not provided directly
+    if (payload.event === "task_assigned" && !payload.data.assignee_email && payload.data.assignee_ids) {
+      try {
+        const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+        const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+        const admin = createClient(supabaseUrl, serviceKey);
+        const ids = String(payload.data.assignee_ids).split(",").map(s => s.trim()).filter(Boolean);
+        const { data: authUsers } = await admin.auth.admin.listUsers();
+        const emails = ids
+          .map(id => authUsers?.users?.find(u => u.id === id)?.email)
+          .filter((e): e is string => !!e);
+        if (emails.length > 0) payload.data.assignee_email = emails.join(",");
+      } catch (e) {
+        console.warn("assignee resolve failed:", e);
+      }
+    }
+
     const email = buildEmail(payload.event, payload.data);
 
     if (!email) {
@@ -182,6 +200,10 @@ serve(async (req) => {
       });
     }
 
+    // Support comma-separated recipient lists
+    const to = email.to.flatMap(t => String(t).split(",").map(s => s.trim())).filter(Boolean);
+
+
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -190,7 +212,8 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         from: "Yowa Innovations <notifications@yowa.us>",
-        to: email.to,
+        to,
+
         subject: email.subject,
         html: email.html,
       }),

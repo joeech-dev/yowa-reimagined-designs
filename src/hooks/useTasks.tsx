@@ -192,7 +192,23 @@ export const useTasks = () => {
           reference_id: task.id,
         }))
       );
+
+      // Fire Resend email notification via internal-notify
+      supabase.functions.invoke("internal-notify", {
+        body: {
+          event: "task_assigned",
+          data: {
+            task_title: taskData.title,
+            description: taskData.description,
+            priority: taskData.priority,
+            due_date: taskData.due_date,
+            assigned_by_name: user.email ?? "A teammate",
+            assignee_ids: Array.from(notifyUsers).join(","),
+          },
+        },
+      }).catch(() => {});
     }
+
 
     toast.success("Task created successfully");
     fetchTasks();

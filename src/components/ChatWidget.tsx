@@ -68,6 +68,20 @@ export const ChatWidget = () => {
       // Don't throw on lead error (might be duplicate email), just log
       if (leadError) console.warn("Lead creation note:", leadError.message);
 
+      // Fire-and-forget Resend notification to the team
+      supabase.functions.invoke("notify-new-lead", {
+        body: {
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          phone: formData.phone.trim() || "Not provided",
+          industry_type: formData.service || "Chat widget enquiry",
+          geographic_location: null,
+        },
+      }).catch(() => {});
+
+      // Don't throw on lead error (might be duplicate email), just log
+      if (leadError) console.warn("Lead creation note:", leadError.message);
+
       toast.success("Message sent! Our team will reach out to you soon.");
       setFormData({ name: "", email: "", phone: "", message: "", service: "" });
       setShowForm(false);
