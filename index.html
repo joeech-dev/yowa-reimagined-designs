@@ -58,6 +58,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
+    <!-- Security Headers (meta fallbacks; enforced further at hosting layer) -->
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests; frame-ancestors 'self';" />
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
+    <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=(), interest-cohort=()" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
     <!-- PRIMARY SEO — Critical for Google brand search -->
     <title>Yowa Innovations | Creative Agency in Kampala, Uganda</title>
     <meta name="description" content="Award-winning content creation, video production & digital marketing agency in Kampala. We help NGOs, corporates & startups across East Africa tell their stories." />
