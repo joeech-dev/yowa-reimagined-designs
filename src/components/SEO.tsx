@@ -1,4 +1,27 @@
+import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
+
+/**
+ * Static fallback tags live in index.html so non-JS social crawlers always see
+ * something. Once React mounts, they would duplicate the per-route tags Helmet
+ * injects, so we drop the static copies (anything without data-rh="true").
+ */
+const STATIC_TAG_SELECTORS = [
+  'meta[name="description"]',
+  'meta[name="title"]',
+  'meta[name="keywords"]',
+  'meta[property^="og:"]',
+  'meta[name^="twitter:"]',
+];
+
+const useDropStaticHeadTags = () => {
+  useEffect(() => {
+    STATIC_TAG_SELECTORS.forEach((selector) => {
+      document.head.querySelectorAll(`${selector}:not([data-rh])`).forEach((el) => el.remove());
+    });
+  });
+};
+
 
 interface SEOProps {
   title?: string;
