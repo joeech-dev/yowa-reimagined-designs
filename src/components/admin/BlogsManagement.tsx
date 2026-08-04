@@ -16,6 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { slugify, sanitizeSlug } from "@/lib/slug";
 import {
   Select,
   SelectContent,
