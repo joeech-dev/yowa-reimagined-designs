@@ -46,6 +46,8 @@ const SEO = ({
   modifiedTime,
   author = "Yowa Innovations",
 }: SEOProps) => {
+  useDropStaticHeadTags();
+
   // Organization Schema for AEO
   const organizationSchema = {
     "@context": "https://schema.org",
