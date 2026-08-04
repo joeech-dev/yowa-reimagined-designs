@@ -113,6 +113,7 @@ export type Database = {
           source_url: string
           status: string
           title: string
+          updated_at: string
         }
         Insert: {
           auto_posted_to_social?: boolean | null
@@ -129,6 +130,7 @@ export type Database = {
           source_url: string
           status?: string
           title: string
+          updated_at?: string
         }
         Update: {
           auto_posted_to_social?: boolean | null
@@ -145,6 +147,7 @@ export type Database = {
           source_url?: string
           status?: string
           title?: string
+          updated_at?: string
         }
         Relationships: []
       }
