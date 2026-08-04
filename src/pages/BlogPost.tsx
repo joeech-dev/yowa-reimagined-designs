@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
@@ -13,6 +13,24 @@ import BlogComments from "@/components/BlogComments";
 import BlogStickyCTA from "@/components/BlogStickyCTA";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+
+const stripHtml = (html: string) =>
+  html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/\s+/g, " ")
+    .trim();
+
+/** Prefer the excerpt; fall back to a truncated, tag-free version of the body. */
+const buildMetaDescription = (excerpt?: string | null, content?: string | null) => {
+  const source = (excerpt && excerpt.trim()) || (content ? stripHtml(content) : "");
+  const text = source || "Insights on innovation, urbanism and social impact in East Africa from Yowa Innovations.";
+  if (text.length <= 158) return text;
+  const cut = text.slice(0, 158);
+  const lastSpace = cut.lastIndexOf(" ");
+  return `${(lastSpace > 100 ? cut.slice(0, lastSpace) : cut).trim()}…`;
+};
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -54,15 +72,20 @@ const BlogPost = () => {
     );
   }
 
+  const postUrl = `https://yowa.us/blog/${blog.slug}`;
+  const metaDescription = buildMetaDescription(blog.excerpt, blog.content);
+
   return (
     <div className="min-h-screen">
       <SEO
-        title={`${blog.title} | Yowa Innovations Blog`}
-        description={(blog.excerpt || "Read this insightful article from Yowa Innovations.").slice(0, 160)}
-        url={`https://yowa.us/blog/${blog.slug}`}
+        title={`${blog.title} | Yowa Innovations`}
+        description={metaDescription}
+        keywords={`${blog.category}, ${blog.title}, Yowa Innovations blog, Uganda, East Africa`}
+        url={postUrl}
         ogImage={blog.image || undefined}
         type="article"
         publishedTime={blog.published_at || undefined}
+        modifiedTime={blog.updated_at || blog.published_at || undefined}
       />
       <Helmet>
         <script type="application/ld+json">
@@ -70,10 +93,17 @@ const BlogPost = () => {
             "@context": "https://schema.org",
             "@type": "Article",
             headline: blog.title,
-            description: blog.excerpt || undefined,
-            image: blog.image || undefined,
+            description: metaDescription,
+            image: blog.image ? [blog.image] : undefined,
             datePublished: blog.published_at || undefined,
-            author: { "@type": "Organization", name: "Yowa Innovations" },
+            dateModified: blog.updated_at || blog.published_at || undefined,
+            articleSection: blog.category,
+            inLanguage: "en",
+            author: {
+              "@type": "Organization",
+              name: "Yowa Innovations",
+              url: "https://yowa.us",
+            },
             publisher: {
               "@type": "Organization",
               name: "Yowa Innovations",
@@ -81,8 +111,19 @@ const BlogPost = () => {
             },
             mainEntityOfPage: {
               "@type": "WebPage",
-              "@id": `https://yowa.us/blog/${blog.slug}`,
+              "@id": postUrl,
             },
+          })}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: "https://yowa.us/" },
+              { "@type": "ListItem", position: 2, name: "Blog", item: "https://yowa.us/blogs" },
+              { "@type": "ListItem", position: 3, name: blog.title, item: postUrl },
+            ],
           })}
         </script>
       </Helmet>

@@ -16,6 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { slugify, sanitizeSlug } from "@/lib/slug";
 import {
   Select,
   SelectContent,
@@ -233,12 +234,7 @@ const BlogsManagement = () => {
     }
   };
 
-  const generateSlug = (title: string) => {
-    return title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
-  };
+  const generateSlug = (title: string) => slugify(title);
 
   const filteredBlogs = blogs.filter(blog => {
     const matchesSearch = blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -393,7 +389,9 @@ const BlogsManagement = () => {
                     setFormData({ 
                       ...formData, 
                       title: e.target.value,
-                      slug: generateSlug(e.target.value)
+                      // Keep the slug in sync while creating; never overwrite
+                      // the slug of an already-published/edited post.
+                      slug: editingBlog ? formData.slug : generateSlug(e.target.value)
                     });
                   }}
                   placeholder="Enter blog title"
@@ -406,9 +404,23 @@ const BlogsManagement = () => {
                   <Input
                     id="slug"
                     value={formData.slug}
-                    onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                    onChange={(e) => setFormData({ ...formData, slug: sanitizeSlug(e.target.value) })}
                     placeholder="blog-post-slug"
                   />
+                  <p className="text-xs text-muted-foreground break-all">
+                    URL: https://yowa.us/blog/{formData.slug || "your-post-slug"}
+                  </p>
+                  {!editingBlog && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 justify-start px-2 text-xs"
+                      onClick={() => setFormData({ ...formData, slug: generateSlug(formData.title) })}
+                    >
+                      Regenerate from title
+                    </Button>
+                  )}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="category">Category</Label>
