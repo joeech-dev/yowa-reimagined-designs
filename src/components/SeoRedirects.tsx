@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { BLOG_SLUG_ALIASES } from "@/lib/slug";
 
 /**
  * Handles redirects for old/broken URLs that Google Search Console reports.
@@ -11,6 +12,16 @@ const SeoRedirects = () => {
 
   useEffect(() => {
     const path = location.pathname.toLowerCase();
+
+    // Old un-hyphenated blog slugs → their new hyphenated URLs
+    const blogMatch = path.match(/^\/blog\/([^/]+)\/?$/);
+    if (blogMatch) {
+      const alias = BLOG_SLUG_ALIASES[blogMatch[1]];
+      if (alias) {
+        navigate(`/blog/${alias}`, { replace: true });
+        return;
+      }
+    }
 
     // /index.html → /
     if (path === "/index.html") {

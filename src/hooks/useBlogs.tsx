@@ -11,6 +11,7 @@ export interface BlogPost {
   source_url: string;
   source_name: string;
   published_at: string;
+  updated_at?: string | null;
   content: string | null;
   status?: string;
 }
@@ -21,7 +22,7 @@ export const useBlogs = (category?: string) => {
     queryFn: async () => {
       let query = supabase
         .from("blog_posts")
-        .select("id, title, excerpt, category, image, slug, source_url, source_name, published_at, content, status")
+        .select("id, title, excerpt, category, image, slug, source_url, source_name, published_at, updated_at, content, status")
         .eq("status", "published")
         .order("published_at", { ascending: false });
 
