@@ -108,6 +108,10 @@ const BlogCard = ({ title, excerpt, category, image, slug, published_at, views, 
                 <Clock className="w-3 h-3" />
                 {estimateReadTime(excerpt)}
               </span>
+              <span className="flex items-center gap-1" title={`${views ?? 0} views`}>
+                <Eye className="w-3 h-3" />
+                {formatViews(views ?? 0)}
+              </span>
             </div>
             <span className="flex items-center text-primary text-sm font-medium">
               Read
