@@ -5,12 +5,13 @@ import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
+import { useContentViewCounts, useTrackContentView, formatViews } from "@/hooks/useContentViews";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import ProjectDetailModal from "@/components/ProjectDetailModal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GraduationCap, Film } from "lucide-react";
+import { GraduationCap, Film, Eye } from "lucide-react";
 
 interface PortfolioProject {
   id: string;
@@ -40,10 +41,12 @@ const ProjectCard = ({
   project,
   onClick,
   cardRef,
+  views,
 }: {
   project: PortfolioProject;
   onClick: (p: PortfolioProject) => void;
   cardRef: (el: HTMLDivElement | null) => void;
+  views?: number;
 }) => {
   const thumb = getThumbUrl(project.video_url);
   const projectSlug = slugify(project.title, project.id);
@@ -101,7 +104,13 @@ const ProjectCard = ({
         )}
         <div className="flex items-center justify-between text-sm text-muted-foreground">
           <span>{project.client || ""}</span>
-          {project.year && <span>{project.year}</span>}
+          <span className="flex items-center gap-3">
+            <span className="flex items-center gap-1" title={`${views ?? 0} views`}>
+              <Eye className="w-3.5 h-3.5" />
+              {formatViews(views ?? 0)}
+            </span>
+            {project.year && <span>{project.year}</span>}
+          </span>
         </div>
         <div className="mt-3 pt-3 border-t border-border">
           <p className="text-xs text-muted-foreground font-mono truncate">
@@ -173,6 +182,9 @@ const Portfolio = () => {
     }
   }, [projectId, projects]);
 
+  const { data: viewCounts = {} } = useContentViewCounts("project", projects.map((p) => p.id));
+  useTrackContentView("project", selectedProject?.id);
+
   const handleOpenProject = (project: PortfolioProject) => {
     const el = cardRefs.current[project.id];
     setTriggerRect(el ? el.getBoundingClientRect() : null);
@@ -201,6 +213,7 @@ const Portfolio = () => {
             project={project}
             onClick={handleOpenProject}
             cardRef={(el) => { cardRefs.current[project.id] = el; }}
+            views={viewCounts[project.id] ?? 0}
           />
         ))}
       </div>

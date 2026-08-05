@@ -5,9 +5,10 @@ import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, ExternalLink, Calendar } from "lucide-react";
+import { ArrowLeft, ExternalLink, Calendar, Eye } from "lucide-react";
 import EbookPromo from "@/components/EbookPromo";
 import { useBlogBySlug } from "@/hooks/useBlogs";
+import { useTrackContentView, formatViews } from "@/hooks/useContentViews";
 import BlogPostsList from "@/components/BlogPostsList";
 import BlogComments from "@/components/BlogComments";
 import BlogStickyCTA from "@/components/BlogStickyCTA";
@@ -35,6 +36,7 @@ const buildMetaDescription = (excerpt?: string | null, content?: string | null) 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
   const { data: blog, isLoading } = useBlogBySlug(slug);
+  const viewCount = useTrackContentView("blog", blog?.slug);
 
   if (isLoading) {
     return (
@@ -148,16 +150,22 @@ const BlogPost = () => {
               <h1 className="font-display font-bold text-3xl md:text-5xl mb-4 leading-tight">
                 {blog.title}
               </h1>
-              {blog.published_at && (
-                <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                  <Calendar className="h-4 w-4" />
-                  <span>{new Date(blog.published_at).toLocaleDateString("en-US", { 
-                    year: "numeric", 
-                    month: "long", 
-                    day: "numeric" 
-                  })}</span>
-                </div>
-              )}
+              <div className="flex items-center gap-4 text-muted-foreground text-sm">
+                {blog.published_at && (
+                  <span className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    {new Date(blog.published_at).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </span>
+                )}
+                <span className="flex items-center gap-1.5" title={`${viewCount ?? 0} views`}>
+                  <Eye className="h-4 w-4" />
+                  {formatViews(viewCount ?? 0)} views
+                </span>
+              </div>
             </header>
 
             {/* Featured Image */}

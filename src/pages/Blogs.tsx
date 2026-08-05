@@ -6,6 +6,7 @@ import SEO from "@/components/SEO";
 import BlogCard from "@/components/BlogCard";
 import { Button } from "@/components/ui/button";
 import { useBlogs } from "@/hooks/useBlogs";
+import { useContentViewCounts } from "@/hooks/useContentViews";
 import { ExternalLink, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
@@ -25,6 +26,8 @@ const Blogs = () => {
           (b.excerpt && b.excerpt.toLowerCase().includes(searchQuery.toLowerCase()))
       )
     : allBlogs;
+
+  const { data: viewCounts = {} } = useContentViewCounts("blog", filteredBlogs.map((b) => b.slug));
 
   const featuredBlog = filteredBlogs[0];
   const remainingBlogs = filteredBlogs.slice(1);
@@ -116,6 +119,7 @@ const Blogs = () => {
                     image={featuredBlog.image}
                     slug={featuredBlog.slug}
                     published_at={featuredBlog.published_at}
+                    views={viewCounts[featuredBlog.slug] ?? 0}
                     featured
                   />
                   {featuredBlog.source_url && !featuredBlog.source_url.includes("yowa") && (
@@ -145,6 +149,7 @@ const Blogs = () => {
                         image={blog.image}
                         slug={blog.slug}
                         published_at={blog.published_at}
+                        views={viewCounts[blog.slug] ?? 0}
                       />
                       {blog.source_url && !blog.source_url.includes("yowa") && (
                         <a
