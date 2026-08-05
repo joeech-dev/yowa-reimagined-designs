@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Clock } from "lucide-react";
+import { ArrowRight, Clock, Eye } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { formatViews } from "@/hooks/useContentViews";
 
 interface BlogCardProps {
   title: string;
@@ -12,6 +13,7 @@ interface BlogCardProps {
   source_url?: string;
   source_name?: string;
   published_at?: string;
+  views?: number;
   featured?: boolean;
 }
 
@@ -22,7 +24,7 @@ const estimateReadTime = (excerpt: string | null) => {
   return `${mins} min read`;
 };
 
-const BlogCard = ({ title, excerpt, category, image, slug, published_at, featured }: BlogCardProps) => {
+const BlogCard = ({ title, excerpt, category, image, slug, published_at, views, featured }: BlogCardProps) => {
   if (featured) {
     return (
       <Card className="group overflow-hidden border-border hover:shadow-warm transition-smooth">
