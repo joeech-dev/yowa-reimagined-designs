@@ -225,6 +225,33 @@ export type Database = {
           },
         ]
       }
+      content_views: {
+        Row: {
+          content_id: string
+          content_type: string
+          created_at: string
+          id: string
+          updated_at: string
+          view_count: number
+        }
+        Insert: {
+          content_id: string
+          content_type: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          view_count?: number
+        }
+        Update: {
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          view_count?: number
+        }
+        Relationships: []
+      }
       conversation_participants: {
         Row: {
           conversation_id: string
@@ -2082,6 +2109,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_content_view: {
+        Args: { _content_id: string; _content_type: string }
+        Returns: number
       }
       is_conversation_participant: {
         Args: { _conversation_id: string; _user_id: string }
