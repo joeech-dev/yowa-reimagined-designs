@@ -41,3 +41,44 @@ export const BLOG_SLUG_ALIASES: Record<string, string> = {
   urbanisminkampala: "urbanism-in-kampala-post-covid-transformation",
   heroesofkampala: "unsung-heroes-of-kampala-informal-social-service-providers",
 };
+
+/**
+ * Legacy root-level URLs Google still has indexed (from the old site). They used
+ * to hit the SPA catch-all, which renders NotFound with `noindex` — that is why
+ * Search Console reported pages like /heroesofkampala or /photography as
+ * "excluded by noindex". They now redirect to the real, indexable page.
+ */
+export const LEGACY_PATH_REDIRECTS: Record<string, string> = {
+  // Old un-hyphenated legal / static pages
+  "/privacypolicy": "/privacy-policy",
+  "/termsofservice": "/terms-of-service",
+  "/termsandconditions": "/terms-of-service",
+  "/cookiepolicy": "/cookie-policy",
+  "/contentpolicy": "/content-policy",
+  "/aboutus": "/about",
+  "/about-us": "/about",
+  "/contactus": "/contact",
+  "/contact-us": "/contact",
+  "/getstarted": "/get-started",
+  "/ourteam": "/team",
+  "/our-team": "/team",
+  "/ourprojects": "/projects",
+  "/our-projects": "/projects",
+  "/ourwork": "/projects",
+  "/blog": "/blogs",
+  "/news": "/blogs",
+  "/articles": "/blogs",
+  // Old service pages → the work that showcases them
+  "/photography": "/projects",
+  "/videography": "/projects",
+  "/videoproduction": "/projects",
+  "/video-production": "/projects",
+  "/documentary": "/projects",
+  "/documentaryproduction": "/projects",
+  "/contentcreation": "/projects",
+  "/digitalmarketing": "/projects",
+  "/socialmedia": "/projects",
+  "/services": "/projects",
+  "/jobs": "/careers",
+  "/vacancies": "/careers",
+};

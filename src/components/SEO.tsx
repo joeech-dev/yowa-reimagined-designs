@@ -10,9 +10,12 @@ const STATIC_TAG_SELECTORS = [
   'meta[name="description"]',
   'meta[name="title"]',
   'meta[name="keywords"]',
+  'meta[name="robots"]',
+  'meta[name="googlebot"]',
   'meta[property^="og:"]',
   'meta[name^="twitter:"]',
 ];
+
 
 const useDropStaticHeadTags = () => {
   useEffect(() => {
