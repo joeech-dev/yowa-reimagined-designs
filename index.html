@@ -1,7 +1,21 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- Canonical host: send www.yowa.us → yowa.us (same path, query and hash) -->
+    <script>
+      (function () {
+        try {
+          var h = window.location.hostname;
+          if (h === 'www.yowa.us') {
+            window.location.replace(
+              'https://yowa.us' + window.location.pathname + window.location.search + window.location.hash
+            );
+          }
+        } catch (e) {}
+      })();
+    </script>
     <!-- Google Consent Mode v2 defaults (GDPR/ePrivacy) — must run BEFORE GTM/Pixel -->
+
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
