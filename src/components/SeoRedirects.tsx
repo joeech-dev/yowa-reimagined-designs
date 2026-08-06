@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { BLOG_SLUG_ALIASES } from "@/lib/slug";
+import { BLOG_SLUG_ALIASES, LEGACY_PATH_REDIRECTS } from "@/lib/slug";
 
 /**
  * Handles redirects for old/broken URLs that Google Search Console reports.
@@ -11,10 +11,11 @@ const SeoRedirects = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const path = location.pathname.toLowerCase();
+    const rawPath = location.pathname.toLowerCase();
+    const path = rawPath.length > 1 ? rawPath.replace(/\/+$/, "") : rawPath;
 
     // Old un-hyphenated blog slugs → their new hyphenated URLs
-    const blogMatch = path.match(/^\/blog\/([^/]+)\/?$/);
+    const blogMatch = path.match(/^\/blog\/([^/]+)$/);
     if (blogMatch) {
       const alias = BLOG_SLUG_ALIASES[blogMatch[1]];
       if (alias) {
@@ -23,11 +24,26 @@ const SeoRedirects = () => {
       }
     }
 
+    // Legacy root-level blog URLs (e.g. /heroesofkampala) → /blog/<new-slug>
+    const rootMatch = path.match(/^\/([a-z0-9]+)$/);
+    if (rootMatch && BLOG_SLUG_ALIASES[rootMatch[1]]) {
+      navigate(`/blog/${BLOG_SLUG_ALIASES[rootMatch[1]]}`, { replace: true });
+      return;
+    }
+
+    // Other legacy root-level pages (old service/legal URLs)
+    const legacy = LEGACY_PATH_REDIRECTS[path];
+    if (legacy) {
+      navigate(legacy, { replace: true });
+      return;
+    }
+
     // /index.html → /
     if (path === "/index.html") {
       navigate("/", { replace: true });
       return;
     }
+
 
     // /portfolio → /projects (canonical redirect)
     if (path === "/portfolio") {
