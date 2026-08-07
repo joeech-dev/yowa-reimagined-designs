@@ -80,6 +80,18 @@ const blogPages: PageMeta[] = blogs.filter((row) => row.slug).map((row) => ({
   type: "article",
 }));
 
+const heroesPost = blogs.find((row) => row.slug === "unsung-heroes-of-kampala-informal-social-service-providers");
+if (!heroesPost) {
+  throw new Error("static SEO: the /heroesofkampala source post was not found");
+}
+blogPages.push({
+  path: "/heroesofkampala",
+  title: `${heroesPost.title} | Yowa Innovations`,
+  description: descriptionFor(heroesPost),
+  image: heroesPost.image,
+  type: "article",
+});
+
 const templatePath = resolve("dist/index.html");
 const template = readFileSync(templatePath, "utf8");
 

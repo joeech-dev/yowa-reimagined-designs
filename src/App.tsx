@@ -49,6 +49,15 @@ const App = () => (
           <Route path="/about" element={<About />} />
           <Route path="/blogs" element={<Blogs />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
+          <Route
+            path="/heroesofkampala"
+            element={(
+              <BlogPost
+                slugOverride="unsung-heroes-of-kampala-informal-social-service-providers"
+                canonicalPath="/heroesofkampala"
+              />
+            )}
+          />
           <Route path="/projects" element={<Portfolio />} />
           <Route path="/projects/:projectId" element={<Portfolio />} />
           <Route path="/portfolio" element={<Portfolio />} />

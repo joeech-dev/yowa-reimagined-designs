@@ -33,8 +33,14 @@ const buildMetaDescription = (excerpt?: string | null, content?: string | null) 
   return `${(lastSpace > 100 ? cut.slice(0, lastSpace) : cut).trim()}…`;
 };
 
-const BlogPost = () => {
-  const { slug } = useParams<{ slug: string }>();
+interface BlogPostProps {
+  slugOverride?: string;
+  canonicalPath?: string;
+}
+
+const BlogPost = ({ slugOverride, canonicalPath }: BlogPostProps) => {
+  const { slug: routeSlug } = useParams<{ slug: string }>();
+  const slug = slugOverride || routeSlug;
   const { data: blog, isLoading } = useBlogBySlug(slug);
   const viewCount = useTrackContentView("blog", blog?.slug);
 
@@ -74,7 +80,7 @@ const BlogPost = () => {
     );
   }
 
-  const postUrl = `https://yowa.us/blog/${blog.slug}`;
+  const postUrl = `https://yowa.us${canonicalPath || `/blog/${blog.slug}`}`;
   const metaDescription = buildMetaDescription(blog.excerpt, blog.content);
 
   return (
