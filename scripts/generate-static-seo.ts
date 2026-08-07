@@ -62,40 +62,7 @@ const descriptionFor = (row: BlogRow) => {
   return `${(boundary > 100 ? cut.slice(0, boundary) : cut).trim()}…`;
 };
 
-const response = await fetch(
-  `${SUPABASE_URL}/rest/v1/blog_posts?select=slug,title,excerpt,content,image&status=eq.published&order=published_at.desc`,
-  { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } },
-);
-
-if (!response.ok) {
-  throw new Error(`static SEO: published blog query failed (${response.status}) — refusing to publish generic blog HTML`);
-}
-
-const blogs = (await response.json()) as BlogRow[];
-const blogPages: PageMeta[] = blogs.filter((row) => row.slug).map((row) => ({
-  path: `/blog/${row.slug}`,
-  title: `${row.title} | Yowa Innovations`,
-  description: descriptionFor(row),
-  image: row.image,
-  type: "article",
-}));
-
-const heroesPost = blogs.find((row) => row.slug === "unsung-heroes-of-kampala-informal-social-service-providers");
-if (!heroesPost) {
-  throw new Error("static SEO: the /heroesofkampala source post was not found");
-}
-blogPages.push({
-  path: "/heroesofkampala",
-  title: `${heroesPost.title} | Yowa Innovations`,
-  description: descriptionFor(heroesPost),
-  image: heroesPost.image,
-  type: "article",
-});
-
-const templatePath = resolve("dist/index.html");
-const template = readFileSync(templatePath, "utf8");
-
-function renderPage(meta: PageMeta) {
+function renderPage(template: string, meta: PageMeta) {
   const canonical = meta.canonical || `${BASE_URL}${meta.path}`;
   const title = escapeAttribute(meta.title);
   const description = escapeAttribute(meta.description);
@@ -124,5 +91,43 @@ function renderPage(meta: PageMeta) {
   writeFileSync(resolve(outputDirectory, "index.html"), html);
 }
 
-[...staticPages, ...blogPages].forEach(renderPage);
-console.log(`static SEO HTML written (${staticPages.length} static pages, ${blogPages.length} blog posts)`);
+async function main() {
+  const response = await fetch(
+    `${SUPABASE_URL}/rest/v1/blog_posts?select=slug,title,excerpt,content,image&status=eq.published&order=published_at.desc`,
+    { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } },
+  );
+
+  if (!response.ok) {
+    throw new Error(`static SEO: published blog query failed (${response.status}) — refusing to publish generic blog HTML`);
+  }
+
+  const blogs = (await response.json()) as BlogRow[];
+  const blogPages: PageMeta[] = blogs.filter((row) => row.slug).map((row) => ({
+    path: `/blog/${row.slug}`,
+    title: `${row.title} | Yowa Innovations`,
+    description: descriptionFor(row),
+    image: row.image,
+    type: "article",
+  }));
+
+  const heroesPost = blogs.find((row) => row.slug === "unsung-heroes-of-kampala-informal-social-service-providers");
+  if (!heroesPost) {
+    throw new Error("static SEO: the /heroesofkampala source post was not found");
+  }
+  blogPages.push({
+    path: "/heroesofkampala",
+    title: `${heroesPost.title} | Yowa Innovations`,
+    description: descriptionFor(heroesPost),
+    image: heroesPost.image,
+    type: "article",
+  });
+
+  const template = readFileSync(resolve("dist/index.html"), "utf8");
+  [...staticPages, ...blogPages].forEach((meta) => renderPage(template, meta));
+  console.log(`static SEO HTML written (${staticPages.length} static pages, ${blogPages.length} blog routes)`);
+}
+
+main().catch((error: unknown) => {
+  console.error(error);
+  process.exitCode = 1;
+});
