@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Routes, Route, Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import SEO from "@/components/SEO";
 import CompleteProfile from "@/components/admin/CompleteProfile";
 import { useProfile } from "@/hooks/useProfile";
 import { User } from "@supabase/supabase-js";
@@ -303,6 +304,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
 const Admin = () => {
   return (
     <AdminLayout>
+      <SEO title="Admin | Yowa Innovations" noindex={true} />
       <Routes>
         <Route index element={<AdminDashboardHome />} />
         <Route path="projects" element={<RoleGuard section="projects"><ProjectsManagement /></RoleGuard>} />

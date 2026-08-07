@@ -39,7 +39,7 @@ export const BLOG_SLUG_ALIASES: Record<string, string> = {
   youthinnovationamidstneglect: "youth-innovation-amidst-neglect-banda-waste-economy",
   globalcorridor: "globalcorridor-rethinking-corridors-urban-life-sheffield",
   urbanisminkampala: "urbanism-in-kampala-post-covid-transformation",
-  heroesofkampala: "unsung-heroes-of-kampala-informal-social-service-providers",
+  whytheentebbekampalaexpresswaybecameafricasmostcontroversialroad: "why-the-entebbe-kampala-expressway-became-africas-most-controversial-road",
 };
 
 /**

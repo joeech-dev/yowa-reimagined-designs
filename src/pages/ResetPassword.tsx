@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import SEO from "@/components/SEO";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -56,6 +57,7 @@ const ResetPassword = () => {
   if (!isRecovery) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <SEO title="Reset Password | Yowa Innovations" noindex={true} />
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle>Invalid Link</CardTitle>
@@ -75,6 +77,7 @@ const ResetPassword = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <SEO title="Set New Password | Yowa Innovations" noindex={true} />
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Set New Password</CardTitle>

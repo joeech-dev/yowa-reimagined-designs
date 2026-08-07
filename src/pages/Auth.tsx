@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -125,6 +126,7 @@ const Auth = () => {
   if (isForgotPassword) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <SEO title="Reset Password | Yowa Innovations" noindex={true} />
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle>Reset Password</CardTitle>
@@ -165,6 +167,7 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <SEO title="Admin Login | Yowa Innovations" noindex={true} />
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>{isSignUp ? "Create Admin Account" : "Admin Login"}</CardTitle>
