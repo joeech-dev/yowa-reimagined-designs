@@ -24,7 +24,7 @@ export const blogs: Blog[] = [
     excerpt: "Kampala, Uganda's vibrant capital, is a city on the move. Behind its bustling streets and rapid urbanization lies an intricate network of informal social service providers who ensure daily life functions smoothly.",
     category: "Urbanism",
     image: "https://d1yei2z3i6k35z.cloudfront.net/3756555/68752a21e3101_DER_3856_1.43_1.png",
-    slug: "heroesofkampala"
+    slug: "unsung-heroes-of-kampala-informal-social-service-providers"
   },
   {
     id: "3",
@@ -32,7 +32,7 @@ export const blogs: Blog[] = [
     excerpt: "On a bright, blue-skied morning, as the sun casts long shadows over the swaying papyrus in central Uganda, a sleek ribbon of concrete rises from the earth and slices through the landscape. Supported by massive columns, it looks like a modern marvel.",
     category: "Infrastructure",
     image: "https://d1yei2z3i6k35z.cloudfront.net/3756555/6877ba50aea77_P1044119_1.43_1.png",
-    slug: "whytheentebbekampalaexpresswaybecameafricasmostcontroversialroad"
+    slug: "why-the-entebbe-kampala-expressway-became-africas-most-controversial-road"
   },
   {
     id: "4",
@@ -40,7 +40,7 @@ export const blogs: Blog[] = [
     excerpt: "In the heart of Sheffield's Department of Urban Studies and Planning, the GlobalCORRIDOR project is emerging as a transformative force in urban scholarship.",
     category: "Infrastructure",
     image: "https://d1yei2z3i6k35z.cloudfront.net/3756555/687529c1076ab_P1077016_1.43_1.png",
-    slug: "globalcorridor"
+    slug: "globalcorridor-rethinking-corridors-urban-life-sheffield"
   },
   {
     id: "5",
@@ -48,7 +48,7 @@ export const blogs: Blog[] = [
     excerpt: "Kampala, Uganda's bustling capital city, stands as a dynamic intersection of heritage, commerce, and modernity.",
     category: "Urbanism",
     image: "https://d1yei2z3i6k35z.cloudfront.net/3756555/6874debf1e2d1_20210619-IMG_0034_1.43_1.png",
-    slug: "urbanisminkampala"
+    slug: "urbanism-in-kampala-post-covid-transformation"
   },
   {
     id: "6",
@@ -56,7 +56,7 @@ export const blogs: Blog[] = [
     excerpt: "In Uganda's oil-rich Albertine Graben, two cornerstone projects—Kingfisher and Tilenga—are redefining the livelihoods of thousands of Ugandans.",
     category: "Livelihood",
     image: "https://d1yei2z3i6k35z.cloudfront.net/3756555/6875258ed2b2c_P1164248_1.43_1.png",
-    slug: "buildingugandasoilfuture"
+    slug: "building-uganda-oil-future-cosl-kingfisher-tilenga"
   },
   {
     id: "7",
@@ -64,6 +64,6 @@ export const blogs: Blog[] = [
     excerpt: "In the heart of Kampala's Banda neighborhood, a young man lifts a tattered sack high above his head, shaking out its contents onto a growing mountain of waste.",
     category: "Livelihood",
     image: "https://d1yei2z3i6k35z.cloudfront.net/3756555/6874ddd6eb20f_DER_4177_1.43_1.png",
-    slug: "youthinnovationamidstneglect"
+    slug: "youth-innovation-amidst-neglect-banda-waste-economy"
   }
 ];

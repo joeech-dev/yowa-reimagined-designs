@@ -11,8 +11,9 @@ import { resolve } from "path";
 
 const BASE_URL = "https://yowa.us";
 
-const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
-const SUPABASE_KEY = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY;
+const strict = process.argv.includes("--strict");
 
 interface SitemapEntry {
   path: string;
@@ -39,7 +40,9 @@ const staticEntries: SitemapEntry[] = [
 
 async function fetchBlogEntries(): Promise<SitemapEntry[]> {
   if (!SUPABASE_URL || !SUPABASE_KEY) {
-    console.warn("sitemap: Supabase env vars missing — writing static entries only");
+    const message = "sitemap: database environment variables are missing";
+    if (strict) throw new Error(`${message} — refusing to publish an incomplete sitemap`);
+    console.warn(`${message} — writing static entries only for local development`);
     return [];
   }
 
@@ -52,7 +55,9 @@ async function fetchBlogEntries(): Promise<SitemapEntry[]> {
   });
 
   if (!res.ok) {
-    console.warn(`sitemap: blog fetch failed (${res.status}) — writing static entries only`);
+    const message = `sitemap: published blog query failed (${res.status})`;
+    if (strict) throw new Error(`${message} — refusing to publish an incomplete sitemap`);
+    console.warn(`${message} — writing static entries only for local development`);
     return [];
   }
 

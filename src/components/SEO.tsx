@@ -11,6 +11,7 @@ const STATIC_TAG_SELECTORS = [
   'meta[name="title"]',
   'meta[name="keywords"]',
   'meta[name="robots"]',
+  'link[rel="canonical"]',
   'meta[name="googlebot"]',
   'meta[property^="og:"]',
   'meta[name^="twitter:"]',
