@@ -156,6 +156,7 @@ const OrderNow = () => {
         title="Order Now | Yowa Innovations"
         description="Complete your order for Yowa's creative resources — eBooks, videos, and more."
         url="https://yowa.us/ordernow"
+        noindex={true}
       />
       <Navbar />
 

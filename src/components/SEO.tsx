@@ -37,6 +37,7 @@ interface SEOProps {
   publishedTime?: string;
   modifiedTime?: string;
   author?: string;
+  noindex?: boolean;
 }
 
 const SEO = ({
@@ -49,6 +50,7 @@ const SEO = ({
   publishedTime,
   modifiedTime,
   author = "Yowa Innovations",
+  noindex = false,
 }: SEOProps) => {
   useDropStaticHeadTags();
 
@@ -244,8 +246,8 @@ const SEO = ({
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords} />
       <meta name="author" content={author} />
-      <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-      <meta name="googlebot" content="index, follow" />
+      <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"} />
+      <meta name="googlebot" content={noindex ? "noindex" : "index, follow"} />
       <link rel="canonical" href={url} />
 
       {/* Geo Tags for Local SEO */}

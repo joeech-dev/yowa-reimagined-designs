@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,6 +40,8 @@ const Auth = () => {
     });
 
     return () => subscription.unsubscribe();
+    <>
+      <SEO title="Admin Login | Yowa Innovations" noindex={true} />
   }, [navigate]);
 
   const handleGoogleSignIn = async () => {
@@ -124,6 +127,8 @@ const Auth = () => {
 
   if (isForgotPassword) {
     return (
+    <>
+      <SEO title="Admin Login | Yowa Innovations" noindex={true} />
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <Card className="w-full max-w-md">
           <CardHeader>
@@ -159,11 +164,14 @@ const Auth = () => {
             </form>
           </CardContent>
         </Card>
+    </>
       </div>
     );
   }
 
   return (
+    <>
+      <SEO title="Admin Login | Yowa Innovations" noindex={true} />
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
@@ -250,6 +258,7 @@ const Auth = () => {
           </form>
         </CardContent>
       </Card>
+    </>
     </div>
   );
 };
