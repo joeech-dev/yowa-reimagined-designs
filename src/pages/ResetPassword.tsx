@@ -55,9 +55,9 @@ const ResetPassword = () => {
   };
 
   if (!isRecovery) {
-      <SEO title="Reset Password | Yowa Innovations" noindex={true} />
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <SEO title="Reset Password | Yowa Innovations" noindex={true} />
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle>Invalid Link</CardTitle>
@@ -76,8 +76,8 @@ const ResetPassword = () => {
   }
 
   return (
-      <SEO title="Set New Password | Yowa Innovations" noindex={true} />
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <SEO title="Set New Password | Yowa Innovations" noindex={true} />
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Set New Password</CardTitle>

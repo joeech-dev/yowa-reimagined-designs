@@ -40,8 +40,6 @@ const Auth = () => {
     });
 
     return () => subscription.unsubscribe();
-    <>
-      <SEO title="Admin Login | Yowa Innovations" noindex={true} />
   }, [navigate]);
 
   const handleGoogleSignIn = async () => {
@@ -127,9 +125,8 @@ const Auth = () => {
 
   if (isForgotPassword) {
     return (
-    <>
-      <SEO title="Admin Login | Yowa Innovations" noindex={true} />
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <SEO title="Reset Password | Yowa Innovations" noindex={true} />
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle>Reset Password</CardTitle>
@@ -164,15 +161,13 @@ const Auth = () => {
             </form>
           </CardContent>
         </Card>
-    </>
       </div>
     );
   }
 
   return (
-    <>
-      <SEO title="Admin Login | Yowa Innovations" noindex={true} />
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <SEO title="Admin Login | Yowa Innovations" noindex={true} />
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>{isSignUp ? "Create Admin Account" : "Admin Login"}</CardTitle>
@@ -258,7 +253,6 @@ const Auth = () => {
           </form>
         </CardContent>
       </Card>
-    </>
     </div>
   );
 };
