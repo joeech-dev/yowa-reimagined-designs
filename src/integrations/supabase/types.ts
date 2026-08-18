@@ -2103,6 +2103,23 @@ export type Database = {
       }
     }
     Functions: {
+      get_blog_comments_admin: {
+        Args: never
+        Returns: {
+          author_email: string
+          author_name: string
+          blog_post_id: string
+          content: string
+          created_at: string
+          id: string
+          moderated_at: string
+          moderated_by: string
+          rejection_reason: string
+          status: string
+          updated_at: string
+        }[]
+      }
+      has_any_role: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

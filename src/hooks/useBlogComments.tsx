@@ -45,14 +45,7 @@ export const useAllBlogComments = () => {
   return useQuery<BlogComment[]>({
     queryKey: ["blog-comments-all"],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from("blog_comments")
-        .select(`
-          id, blog_post_id, author_name, author_email, content,
-          status, rejection_reason, moderated_by, moderated_at,
-          created_at, updated_at
-        `)
-        .order("created_at", { ascending: false });
+      const { data, error } = await (supabase as any).rpc("get_blog_comments_admin");
       if (error) throw error;
       return (data || []) as BlogComment[];
     },
