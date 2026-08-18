@@ -4,16 +4,18 @@ import { cloudflare } from "@cloudflare/vite-plugin";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
+const isDev = process.env.NODE_ENV !== "production";
+
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig({
   server: {
     host: "::",
     port: 8080,
   },
-  plugins: [react(), cloudflare(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [react(), cloudflare(), isDev && componentTagger()].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
-}));
+});
