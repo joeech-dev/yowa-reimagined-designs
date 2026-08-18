@@ -9,12 +9,8 @@ import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
 
 const BASE_URL = "https://yowa.us";
-const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY;
+import { SUPABASE_URL, SUPABASE_KEY } from "./env";
 
-if (!SUPABASE_URL || !SUPABASE_KEY) {
-  throw new Error("static SEO: database environment variables are missing — refusing to publish generic blog HTML");
-}
 
 interface PageMeta {
   path: string;
