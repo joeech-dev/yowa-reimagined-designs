@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
+import { Checkbox } from "@/components/ui/checkbox";
 import { FileText, IdCard, Send, User, Mail, Phone, MapPin } from "lucide-react";
 
 const formSchema = z.object({
@@ -16,6 +17,7 @@ const formSchema = z.object({
   phone: z.string().min(10, "Phone must be at least 10 characters").max(20),
   position_type: z.string().min(1, "Please select a position type"),
   geographic_location: z.string().min(2, "Location is required").max(100),
+  marketing_opt_in: z.boolean().default(false),
   website: z.string().max(0, "").optional(),
 });
 
@@ -57,6 +59,7 @@ export const CareerApplicationForm = ({ jobTitle, jobCategory, onSuccess }: Prop
       phone: "",
       position_type: jobCategory || "",
       geographic_location: "",
+      marketing_opt_in: false,
       website: "",
     },
   });
@@ -120,8 +123,19 @@ export const CareerApplicationForm = ({ jobTitle, jobCategory, onSuccess }: Prop
         cv_url: cvResult,
         national_id_url: idResult,
         is_recruitment: true,
+        marketing_opt_in: data.marketing_opt_in,
+        marketing_opt_in_at: data.marketing_opt_in ? new Date().toISOString() : null,
       }]);
       if (error) throw error;
+
+      supabase.functions.invoke("resend-sync-contact", {
+        body: {
+          email: data.email,
+          name: data.name,
+          marketing_opt_in: data.marketing_opt_in,
+          is_recruitment: true,
+        },
+      }).catch(console.error);
 
       supabase.functions.invoke("notify-new-lead", {
         body: {
@@ -310,6 +324,22 @@ export const CareerApplicationForm = ({ jobTitle, jobCategory, onSuccess }: Prop
             <FormField control={form.control} name="website" render={({ field }) => (
               <FormItem className="hidden" aria-hidden="true">
                 <FormControl><Input tabIndex={-1} autoComplete="off" {...field} /></FormControl>
+              </FormItem>
+            )} />
+
+            <FormField control={form.control} name="marketing_opt_in" render={({ field }) => (
+              <FormItem className="flex flex-row items-start gap-3 rounded-xl border border-border bg-muted/30 p-4">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    aria-label="Receive occasional updates about future opportunities"
+                  />
+                </FormControl>
+                <FormLabel className="text-sm font-normal leading-relaxed text-muted-foreground cursor-pointer">
+                  Keep me informed about future openings and opportunities at Yowa Innovations.
+                  You can unsubscribe at any time.
+                </FormLabel>
               </FormItem>
             )} />
 
