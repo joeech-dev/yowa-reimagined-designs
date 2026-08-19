@@ -11,6 +11,7 @@ import { Mail, Phone, MapPin, Calendar, Sparkles, Send, Eye, FileText, IdCard } 
 import NewRequisitionButton from "./NewRequisitionButton";
 import WebsiteMessagesInbox from "./WebsiteMessagesInbox";
 import FollowupSequencesManager from "./FollowupSequencesManager";
+import EmailEngagementPanel from "./EmailEngagementPanel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
@@ -129,7 +130,11 @@ const LeadsManagement = () => {
       <TabsList>
         <TabsTrigger value="leads">Leads</TabsTrigger>
         <TabsTrigger value="sequences">Follow-up Sequences</TabsTrigger>
+        <TabsTrigger value="engagement">Email Engagement</TabsTrigger>
       </TabsList>
+      <TabsContent value="engagement">
+        <EmailEngagementPanel />
+      </TabsContent>
       <TabsContent value="sequences">
         <FollowupSequencesManager />
       </TabsContent>
