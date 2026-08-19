@@ -75,8 +75,10 @@ export const usePresence = () => {
       fetchOnlineUsers();
     }, 30000);
 
+    // Unique topic per mount — a fixed topic reuses an already-subscribed channel
+    // and calling .on() on it throws.
     const channel = supabase
-      .channel("user-presence")
+      .channel(`user-presence-${Math.random().toString(36).slice(2)}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "user_presence" }, () => {
         fetchOnlineUsers();
       })
