@@ -245,6 +245,26 @@ export const LeadCaptureForm = () => {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="marketing_opt_in"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start gap-3 rounded-xl border border-border bg-muted/30 p-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      aria-label="Receive occasional updates by email"
+                    />
+                  </FormControl>
+                  <FormLabel className="text-sm font-normal leading-relaxed text-muted-foreground cursor-pointer">
+                    Keep me updated with occasional emails about Yowa Innovations' work, insights and offers.
+                    You can unsubscribe at any time.
+                  </FormLabel>
+                </FormItem>
+              )}
+            />
+
 
             <Button
               type="submit"
