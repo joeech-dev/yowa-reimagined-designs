@@ -1,0 +1,1 @@
+DELETE FROM public.email_events WHERE provider_message_id = 'test-msg-verify-001';
