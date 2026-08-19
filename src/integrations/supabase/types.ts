@@ -812,6 +812,7 @@ export type Database = {
           national_id_url: string | null
           next_followup_date: string | null
           phone: string
+          repermission_sent_at: string | null
           resend_contact_id: string | null
           status: string | null
           submitted_by_id: string | null
@@ -836,6 +837,7 @@ export type Database = {
           national_id_url?: string | null
           next_followup_date?: string | null
           phone: string
+          repermission_sent_at?: string | null
           resend_contact_id?: string | null
           status?: string | null
           submitted_by_id?: string | null
@@ -860,6 +862,7 @@ export type Database = {
           national_id_url?: string | null
           next_followup_date?: string | null
           phone?: string
+          repermission_sent_at?: string | null
           resend_contact_id?: string | null
           status?: string | null
           submitted_by_id?: string | null
