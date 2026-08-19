@@ -67,6 +67,44 @@ const EmailEngagementPanel = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [range]);
 
+  const [consentStats, setConsentStats] = useState({ total: 0, opted: 0, pending: 0 });
+  const [sending, setSending] = useState(false);
+
+  const loadConsent = async () => {
+    const { count: total } = await supabase.from("leads").select("id", { count: "exact", head: true });
+    const { count: opted } = await supabase
+      .from("leads")
+      .select("id", { count: "exact", head: true })
+      .eq("marketing_opt_in", true);
+    setConsentStats({
+      total: total ?? 0,
+      opted: opted ?? 0,
+      pending: (total ?? 0) - (opted ?? 0),
+    });
+  };
+
+  useEffect(() => {
+    loadConsent();
+  }, []);
+
+  const runRepermission = async () => {
+    setSending(true);
+    const { data, error } = await supabase.functions.invoke("marketing-repermission", {
+      body: { limit: 200, resend_after_days: 30 },
+    });
+    setSending(false);
+    if (error) {
+      toast.error("Could not send the re-permission emails. Please try again.");
+      return;
+    }
+    const result = data as { eligible?: number; sent?: number; failed?: number } | null;
+    toast.success(
+      `Re-permission campaign sent to ${result?.sent ?? 0} of ${result?.eligible ?? 0} contacts.`,
+    );
+    loadConsent();
+    load();
+  };
+
   const stats = useMemo(() => {
     const count = (type: string) => new Set(
       events.filter((e) => e.event_type === type).map((e) => e.provider_message_id ?? e.id),
