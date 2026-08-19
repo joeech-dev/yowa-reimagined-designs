@@ -94,7 +94,7 @@ export const usePresence = () => {
 
     return () => {
       clearInterval(interval);
-      channel.unsubscribe();
+      supabase.removeChannel(channel);
       window.removeEventListener("beforeunload", handleUnload);
       handleUnload();
     };
