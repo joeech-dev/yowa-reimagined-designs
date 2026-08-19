@@ -28,3 +28,9 @@ verify_jwt = false
 
 [functions.resend-webhook]
 verify_jwt = false
+
+[functions.marketing-repermission]
+verify_jwt = false
+
+[functions.marketing-optin-confirm]
+verify_jwt = false
