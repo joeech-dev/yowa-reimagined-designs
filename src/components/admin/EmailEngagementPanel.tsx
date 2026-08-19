@@ -5,7 +5,19 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { MailCheck, MailOpen, MousePointerClick, MailX, RefreshCw } from "lucide-react";
+import { MailCheck, MailOpen, MousePointerClick, MailX, RefreshCw, ShieldCheck, Send } from "lucide-react";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface EmailEvent {
   id: string;
@@ -54,6 +66,44 @@ const EmailEngagementPanel = () => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [range]);
+
+  const [consentStats, setConsentStats] = useState({ total: 0, opted: 0, pending: 0 });
+  const [sending, setSending] = useState(false);
+
+  const loadConsent = async () => {
+    const { count: total } = await supabase.from("leads").select("id", { count: "exact", head: true });
+    const { count: opted } = await supabase
+      .from("leads")
+      .select("id", { count: "exact", head: true })
+      .eq("marketing_opt_in", true);
+    setConsentStats({
+      total: total ?? 0,
+      opted: opted ?? 0,
+      pending: (total ?? 0) - (opted ?? 0),
+    });
+  };
+
+  useEffect(() => {
+    loadConsent();
+  }, []);
+
+  const runRepermission = async () => {
+    setSending(true);
+    const { data, error } = await supabase.functions.invoke("marketing-repermission", {
+      body: { limit: 200, resend_after_days: 30 },
+    });
+    setSending(false);
+    if (error) {
+      toast.error("Could not send the re-permission emails. Please try again.");
+      return;
+    }
+    const result = data as { eligible?: number; sent?: number; failed?: number } | null;
+    toast.success(
+      `Re-permission campaign sent to ${result?.sent ?? 0} of ${result?.eligible ?? 0} contacts.`,
+    );
+    loadConsent();
+    load();
+  };
 
   const stats = useMemo(() => {
     const count = (type: string) => new Set(
@@ -128,6 +178,59 @@ const EmailEngagementPanel = () => {
           </Card>
         ))}
       </div>
+
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-primary" />
+            Mailing list consent
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap gap-6 text-sm">
+            <div>
+              <p className="text-xl font-bold">{consentStats.total}</p>
+              <p className="text-xs text-muted-foreground">Contacts on file</p>
+            </div>
+            <div>
+              <p className="text-xl font-bold text-primary">{consentStats.opted}</p>
+              <p className="text-xs text-muted-foreground">Opted in (synced to Resend)</p>
+            </div>
+            <div>
+              <p className="text-xl font-bold">{consentStats.pending}</p>
+              <p className="text-xs text-muted-foreground">No consent recorded</p>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground max-w-2xl">
+            Older contacts were collected before consent tracking existed, so they are never added to a
+            mailing audience. Send them a one-off re-permission email — only those who click
+            &ldquo;Yes, keep me updated&rdquo; are added to Resend. Contacts already emailed in the last
+            30 days are skipped automatically.
+          </p>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button size="sm" className="gap-2" disabled={sending || consentStats.pending === 0}>
+                <Send className={`h-4 w-4 ${sending ? "animate-pulse" : ""}`} />
+                {sending ? "Sending…" : "Send re-permission campaign"}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Send re-permission emails?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This emails up to {consentStats.pending} contacts once, asking them to confirm they
+                  want updates from Yowa Innovations. No one is added to a mailing list until they
+                  click the confirmation button.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={runRepermission}>Send emails</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
