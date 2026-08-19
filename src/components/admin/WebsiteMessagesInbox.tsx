@@ -37,8 +37,10 @@ const WebsiteMessagesInbox = () => {
 
   // Realtime subscription
   useEffect(() => {
+    // Unique topic per mount — a fixed topic reuses an already-subscribed channel
+    // and calling .on() on it throws, crashing the panel.
     const channel = supabase
-      .channel("website-messages-realtime")
+      .channel(`website-messages-realtime-${Math.random().toString(36).slice(2)}`)
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "website_messages" },
