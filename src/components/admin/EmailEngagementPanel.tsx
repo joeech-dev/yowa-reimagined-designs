@@ -180,6 +180,59 @@ const EmailEngagementPanel = () => {
       </div>
 
       <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-primary" />
+            Mailing list consent
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap gap-6 text-sm">
+            <div>
+              <p className="text-xl font-bold">{consentStats.total}</p>
+              <p className="text-xs text-muted-foreground">Contacts on file</p>
+            </div>
+            <div>
+              <p className="text-xl font-bold text-primary">{consentStats.opted}</p>
+              <p className="text-xs text-muted-foreground">Opted in (synced to Resend)</p>
+            </div>
+            <div>
+              <p className="text-xl font-bold">{consentStats.pending}</p>
+              <p className="text-xs text-muted-foreground">No consent recorded</p>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground max-w-2xl">
+            Older contacts were collected before consent tracking existed, so they are never added to a
+            mailing audience. Send them a one-off re-permission email — only those who click
+            &ldquo;Yes, keep me updated&rdquo; are added to Resend. Contacts already emailed in the last
+            30 days are skipped automatically.
+          </p>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button size="sm" className="gap-2" disabled={sending || consentStats.pending === 0}>
+                <Send className={`h-4 w-4 ${sending ? "animate-pulse" : ""}`} />
+                {sending ? "Sending…" : "Send re-permission campaign"}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Send re-permission emails?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This emails up to {consentStats.pending} contacts once, asking them to confirm they
+                  want updates from Yowa Innovations. No one is added to a mailing list until they
+                  click the confirmation button.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={runRepermission}>Send emails</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </CardContent>
+      </Card>
+
+      <Card>
         <CardHeader>
           <CardTitle className="text-base">Recent email activity</CardTitle>
         </CardHeader>
