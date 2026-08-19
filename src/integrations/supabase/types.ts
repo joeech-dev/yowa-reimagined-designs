@@ -616,6 +616,7 @@ export type Database = {
           created_at: string
           created_by: string
           currency: string
+          doc_notes: string | null
           due_date: string | null
           id: string
           invoice_date: string
@@ -641,6 +642,7 @@ export type Database = {
           created_at?: string
           created_by: string
           currency?: string
+          doc_notes?: string | null
           due_date?: string | null
           id?: string
           invoice_date?: string
@@ -666,6 +668,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           currency?: string
+          doc_notes?: string | null
           due_date?: string | null
           id?: string
           invoice_date?: string
@@ -1359,6 +1362,7 @@ export type Database = {
           created_at: string
           created_by: string
           currency: string
+          doc_notes: string | null
           id: string
           items: Json
           notes: string | null
@@ -1382,6 +1386,7 @@ export type Database = {
           created_at?: string
           created_by: string
           currency?: string
+          doc_notes?: string | null
           id?: string
           items?: Json
           notes?: string | null
@@ -1405,6 +1410,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           currency?: string
+          doc_notes?: string | null
           id?: string
           items?: Json
           notes?: string | null
@@ -2039,6 +2045,7 @@ export type Database = {
           created_at: string
           created_by: string
           currency: string
+          doc_notes: string | null
           id: string
           items: Json
           notes: string | null
@@ -2062,6 +2069,7 @@ export type Database = {
           created_at?: string
           created_by: string
           currency?: string
+          doc_notes?: string | null
           id?: string
           items?: Json
           notes?: string | null
@@ -2085,6 +2093,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           currency?: string
+          doc_notes?: string | null
           id?: string
           items?: Json
           notes?: string | null
