@@ -34,12 +34,26 @@ export const printDocument = (ref: HTMLDivElement | null, title: string) => {
       "grid-template-columns", "grid-column",
       "box-sizing", "vertical-align",
     ];
-    important.forEach((prop) => {
+    // Only copy fixed dimensions where layout depends on them (tables, images).
+    // Copying width/height onto text blocks freezes their measured size, so any
+    // word that wraps differently in the print window spills over the next line.
+    const tag = origEl.tagName;
+    const dimensional = ["TABLE", "TD", "TH", "COL", "COLGROUP", "IMG"].includes(tag);
+    const props = dimensional ? [...important, "width", "height"] : important;
+
+    props.forEach((prop) => {
       const val = computed.getPropertyValue(prop);
       if (val) {
         cloneEl.style.setProperty(prop, val);
       }
     });
+
+    if (!dimensional) {
+      cloneEl.style.setProperty("overflow-wrap", "break-word");
+      cloneEl.style.setProperty("word-break", "break-word");
+      cloneEl.style.setProperty("height", "auto");
+      cloneEl.style.setProperty("min-height", "0");
+    }
   });
 
   // Also inline on the root clone
