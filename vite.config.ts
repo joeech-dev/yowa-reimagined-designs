@@ -12,7 +12,11 @@ export default defineConfig({
     host: "::",
     port: 8080,
   },
-  plugins: [react(), cloudflare(), isDev && componentTagger()].filter(Boolean),
+  plugins: [
+    react(),
+    cloudflare(),
+    ...(isDev ? [componentTagger()] : []),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
