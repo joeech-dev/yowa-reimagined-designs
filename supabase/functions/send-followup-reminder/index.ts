@@ -113,21 +113,50 @@ serve(async (req) => {
         // Get lead email
         const { data: lead } = await supabaseClient
           .from('leads')
-          .select('email, name')
+          .select('email, name, industry_type, email_status, marketing_opt_in')
           .eq('id', assignment.lead_id)
           .single();
 
         if (!lead) { console.error(`Lead not found: ${assignment.lead_id}`); continue; }
 
-        // Apply tag in systeme.io
+        // Apply tag in systeme.io (kept alongside Resend)
         await applyTagToContact(lead.email, step.tag_name);
+
+        // Send the step email through Resend when the step defines a subject and the
+        // address is still healthy. Bounced/complained addresses are never re-emailed.
+        let providerMessageId: string | null = null;
+        let sendStatus = 'queued';
+        let sendDetail = '';
+
+        if (step.email_subject && lead.email_status === 'ok') {
+          const result = await sendEmail({
+            to: lead.email,
+            subject: step.email_subject,
+            html: followupHtml({
+              name: lead.name,
+              subject: step.email_subject,
+              body: step.description ?? '',
+            }),
+            headers: { 'X-Entity-Ref-ID': `seq-${assignment.id}-step-${nextStepOrder}` },
+          });
+          providerMessageId = result.id;
+          sendStatus = result.ok ? 'sent' : 'failed';
+          if (!result.ok) sendDetail = ` — send failed: ${result.error}`;
+        } else if (lead.email_status !== 'ok') {
+          sendStatus = 'suppressed';
+          sendDetail = ` — skipped, address marked ${lead.email_status}`;
+        } else {
+          sendStatus = 'sent';
+        }
 
         // Log outreach
         await supabaseClient.from('outreach_log').insert({
           lead_id: assignment.lead_id,
           channel: 'email',
-          message_content: `Sequence step ${nextStepOrder}: Applied tag "${step.tag_name}"${step.email_subject ? ` — ${step.email_subject}` : ''}`,
-          status: 'sent',
+          subject: step.email_subject ?? null,
+          provider_message_id: providerMessageId,
+          message_content: `Sequence step ${nextStepOrder}: Applied tag "${step.tag_name}"${step.email_subject ? ` — ${step.email_subject}` : ''}${sendDetail}`,
+          status: sendStatus,
         });
 
         // Check if there's a next step after this one
