@@ -27,19 +27,33 @@ export const printDocument = (ref: HTMLDivElement | null, title: string) => {
       "border", "border-top", "border-right", "border-bottom", "border-left",
       "border-radius", "border-collapse",
       "display", "flex-direction", "justify-content", "align-items", "gap",
-      "width", "max-width", "min-width", "height", "min-height",
+      "max-width", "min-width",
       "line-height", "letter-spacing",
-      "white-space", "word-break", "overflow",
+      "white-space", "overflow",
       "position", "top", "right", "bottom", "left",
       "grid-template-columns", "grid-column",
       "box-sizing", "vertical-align",
     ];
-    important.forEach((prop) => {
+    // Only copy fixed dimensions where layout depends on them (tables, images).
+    // Copying width/height onto text blocks freezes their measured size, so any
+    // word that wraps differently in the print window spills over the next line.
+    const tag = origEl.tagName;
+    const dimensional = ["TABLE", "TD", "TH", "COL", "COLGROUP", "IMG"].includes(tag);
+    const props = dimensional ? [...important, "width", "height"] : important;
+
+    props.forEach((prop) => {
       const val = computed.getPropertyValue(prop);
       if (val) {
         cloneEl.style.setProperty(prop, val);
       }
     });
+
+    if (!dimensional) {
+      cloneEl.style.setProperty("overflow-wrap", "break-word");
+      cloneEl.style.setProperty("word-break", "break-word");
+      cloneEl.style.setProperty("height", "auto");
+      cloneEl.style.setProperty("min-height", "0");
+    }
   });
 
   // Also inline on the root clone
@@ -59,7 +73,9 @@ export const printDocument = (ref: HTMLDivElement | null, title: string) => {
     @page { size: A4; margin: 10mm; }
   }
   img { max-width: 100%; height: auto; }
-  table { border-collapse: collapse; width: 100%; }
+  table { border-collapse: collapse; width: 100%; table-layout: fixed; }
+  td, th { overflow-wrap: break-word; word-break: break-word; vertical-align: top; }
+  p, div, span, h1, h2, h3 { overflow-wrap: break-word; word-break: break-word; }
 </style></head><body>
 ${clone.outerHTML}
 </body></html>`);
