@@ -44,7 +44,7 @@ const ReceiptTemplate = forwardRef<HTMLDivElement, ReceiptTemplateProps>(
 
         {/* Client & Receipt Info */}
         <div className="flex justify-between mb-4 border-t border-b border-gray-200 py-3">
-          <div>
+          <div className="max-w-[55%] break-words">
             <p className="text-xs text-gray-500 uppercase mb-1">Received from:</p>
             <p className="font-bold text-sm">{data.client_name}</p>
             {data.client_address && <p className="text-xs text-gray-600 leading-relaxed whitespace-pre-line">{data.client_address}</p>}
