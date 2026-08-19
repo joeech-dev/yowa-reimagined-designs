@@ -300,8 +300,10 @@ export const useTasks = () => {
   useEffect(() => {
     fetchTasks();
 
+    // Unique topic per mount: reusing a fixed topic returns the already-subscribed
+    // channel instance, and calling .on() on it throws and blanks the page.
     const channel = supabase
-      .channel("tasks-realtime")
+      .channel(`tasks-realtime-${Math.random().toString(36).slice(2)}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "tasks" }, () => fetchTasks())
       .on("postgres_changes", { event: "*", schema: "public", table: "task_collaborators" }, () => fetchTasks())
       .subscribe();
