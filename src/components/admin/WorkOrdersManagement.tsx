@@ -35,6 +35,7 @@ interface WorkOrderRow {
   total: number;
   status: string;
   notes: string | null;
+  doc_notes: string | null;
   project_id: string | null;
   requested_by: string | null;
   provided_by: string | null;
@@ -165,6 +166,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
         tax_amount: taxAmount,
         total,
         notes: form.title || null,
+        doc_notes: form.notes || null,
         project_id: form.project_id || null,
         requested_by: form.requested_by || null,
         provided_by: form.provided_by || null,
@@ -207,6 +209,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
         items: w.items as any,
         subtotal, tax_rate: w.tax_rate, tax_amount: taxAmount, total,
         notes: w.notes || null,
+        doc_notes: w.doc_notes || null,
         project_id: w.project_id || null,
         requested_by: w.requested_by || null,
         provided_by: w.provided_by || null,
@@ -347,7 +350,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
                             client_email: w.client_email || undefined,
                             items: w.items,
                             tax_rate: w.tax_rate,
-                            notes: w.notes || undefined,
+                            notes: w.doc_notes || undefined,
                             project_id: w.project_id || undefined,
                             sourceRef: w.work_order_number,
                             currency: w.currency,
@@ -377,6 +380,7 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
                 <div><Label>Date</Label><Input type="date" value={editWorkOrder.work_order_date} onChange={(e) => setEditWorkOrder({ ...editWorkOrder, work_order_date: e.target.value })} required /></div>
               </div>
               <div><Label>Title / Scope</Label><Input value={editWorkOrder.notes || ""} onChange={(e) => setEditWorkOrder({ ...editWorkOrder, notes: e.target.value })} /></div>
+              <div><Label>Notes / Scope Details</Label><Textarea value={editWorkOrder.doc_notes || ""} onChange={(e) => setEditWorkOrder({ ...editWorkOrder, doc_notes: e.target.value })} rows={3} placeholder="Additional scope details or terms (printed on the document)" /></div>
               <div className="grid grid-cols-2 gap-4">
                 <div><Label>Client Name</Label><Input value={editWorkOrder.client_name} onChange={(e) => setEditWorkOrder({ ...editWorkOrder, client_name: e.target.value })} required /></div>
                 <div><Label>Client Email</Label><Input type="email" value={editWorkOrder.client_email || ""} onChange={(e) => setEditWorkOrder({ ...editWorkOrder, client_email: e.target.value })} /></div>
@@ -434,7 +438,8 @@ const WorkOrdersManagement = ({ prefill, onPrefillConsumed, onMakeInvoice }: Wor
                 tax_rate: previewWorkOrder.tax_rate,
                 tax_amount: previewWorkOrder.tax_amount,
                 total: previewWorkOrder.total,
-                notes: previewWorkOrder.notes || undefined,
+                title: previewWorkOrder.notes || undefined,
+                notes: previewWorkOrder.doc_notes || undefined,
                 requested_by: previewWorkOrder.requested_by || undefined,
                 provided_by: previewWorkOrder.provided_by || undefined,
                 currency: previewWorkOrder.currency,
