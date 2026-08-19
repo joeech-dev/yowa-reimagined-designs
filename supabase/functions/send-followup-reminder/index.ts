@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { sendEmail } from "../_shared/resend.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -8,6 +9,33 @@ const corsHeaders = {
 
 const SYSTEME_IO_API_KEY = Deno.env.get("SYSTEME_IO_API_KEY");
 const SYSTEME_IO_API_URL = "https://api.systeme.io/api";
+
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, (c) => (
+    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string
+  ));
+}
+
+function followupHtml({ name, subject, body }: { name: string; subject: string; body: string }) {
+  const paragraphs = (body || "Our team will be in touch shortly with the next steps.")
+    .split(/\n{2,}/)
+    .map((p) => `<p style="margin:0 0 16px;line-height:1.6;color:#333;">${escapeHtml(p)}</p>`)
+    .join("");
+
+  return `
+    <div style="font-family:Arial,Helvetica,sans-serif;max-width:600px;margin:0 auto;padding:24px;">
+      <h2 style="color:#007e5d;margin:0 0 20px;">${escapeHtml(subject)}</h2>
+      <p style="margin:0 0 16px;line-height:1.6;color:#333;">Hello ${escapeHtml(name)},</p>
+      ${paragraphs}
+      <p style="margin:24px 0 0;">
+        <a href="https://yowa.us/contact" style="background:#007e5d;color:#ffffff;padding:12px 22px;border-radius:6px;text-decoration:none;font-weight:600;display:inline-block;">Talk to our team</a>
+      </p>
+      <p style="color:#888;font-size:12px;margin-top:32px;line-height:1.5;">
+        Yowa Innovations, Kampala, Uganda &middot; You are receiving this because you contacted us through yowa.us.
+      </p>
+    </div>
+  `;
+}
 
 async function applyTagToContact(email: string, tagName: string) {
   if (!SYSTEME_IO_API_KEY) {
@@ -113,21 +141,50 @@ serve(async (req) => {
         // Get lead email
         const { data: lead } = await supabaseClient
           .from('leads')
-          .select('email, name')
+          .select('email, name, industry_type, email_status, marketing_opt_in')
           .eq('id', assignment.lead_id)
           .single();
 
         if (!lead) { console.error(`Lead not found: ${assignment.lead_id}`); continue; }
 
-        // Apply tag in systeme.io
+        // Apply tag in systeme.io (kept alongside Resend)
         await applyTagToContact(lead.email, step.tag_name);
+
+        // Send the step email through Resend when the step defines a subject and the
+        // address is still healthy. Bounced/complained addresses are never re-emailed.
+        let providerMessageId: string | null = null;
+        let sendStatus = 'queued';
+        let sendDetail = '';
+
+        if (step.email_subject && lead.email_status === 'ok') {
+          const result = await sendEmail({
+            to: lead.email,
+            subject: step.email_subject,
+            html: followupHtml({
+              name: lead.name,
+              subject: step.email_subject,
+              body: step.description ?? '',
+            }),
+            headers: { 'X-Entity-Ref-ID': `seq-${assignment.id}-step-${nextStepOrder}` },
+          });
+          providerMessageId = result.id;
+          sendStatus = result.ok ? 'sent' : 'failed';
+          if (!result.ok) sendDetail = ` — send failed: ${result.error}`;
+        } else if (lead.email_status !== 'ok') {
+          sendStatus = 'suppressed';
+          sendDetail = ` — skipped, address marked ${lead.email_status}`;
+        } else {
+          sendStatus = 'sent';
+        }
 
         // Log outreach
         await supabaseClient.from('outreach_log').insert({
           lead_id: assignment.lead_id,
           channel: 'email',
-          message_content: `Sequence step ${nextStepOrder}: Applied tag "${step.tag_name}"${step.email_subject ? ` — ${step.email_subject}` : ''}`,
-          status: 'sent',
+          subject: step.email_subject ?? null,
+          provider_message_id: providerMessageId,
+          message_content: `Sequence step ${nextStepOrder}: Applied tag "${step.tag_name}"${step.email_subject ? ` — ${step.email_subject}` : ''}${sendDetail}`,
+          status: sendStatus,
         });
 
         // Check if there's a next step after this one

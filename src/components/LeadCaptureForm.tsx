@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Send, User, Mail, Phone, MapPin } from "lucide-react";
 
 const formSchema = z.object({
@@ -17,6 +18,7 @@ const formSchema = z.object({
   phone: z.string().min(10, "Phone must be at least 10 characters").max(20),
   service: z.string().min(1, "Please select a service"),
   geographic_location: z.string().min(2, "Location is required").max(100),
+  marketing_opt_in: z.boolean().default(false),
   website: z.string().max(0, "").optional(),
 });
 
@@ -45,6 +47,7 @@ export const LeadCaptureForm = () => {
       phone: "",
       service: preselectedService,
       geographic_location: "",
+      marketing_opt_in: false,
       website: "",
     },
   });
@@ -64,8 +67,20 @@ export const LeadCaptureForm = () => {
         geographic_location: data.geographic_location,
         status: "new",
         is_recruitment: false,
+        marketing_opt_in: data.marketing_opt_in,
+        marketing_opt_in_at: data.marketing_opt_in ? new Date().toISOString() : null,
       }]);
       if (error) throw error;
+
+      supabase.functions.invoke("resend-sync-contact", {
+        body: {
+          email: data.email,
+          name: data.name,
+          service: data.service,
+          marketing_opt_in: data.marketing_opt_in,
+          is_recruitment: false,
+        },
+      }).catch(console.error);
 
       supabase.functions.invoke("notify-new-lead", {
         body: {
@@ -245,6 +260,26 @@ export const LeadCaptureForm = () => {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="marketing_opt_in"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start gap-3 rounded-xl border border-border bg-muted/30 p-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      aria-label="Receive occasional updates by email"
+                    />
+                  </FormControl>
+                  <FormLabel className="text-sm font-normal leading-relaxed text-muted-foreground cursor-pointer">
+                    Keep me updated with occasional emails about Yowa Innovations' work, insights and offers.
+                    You can unsubscribe at any time.
+                  </FormLabel>
+                </FormItem>
+              )}
+            />
+
 
             <Button
               type="submit"
