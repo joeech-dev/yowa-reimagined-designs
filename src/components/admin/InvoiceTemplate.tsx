@@ -118,6 +118,14 @@ const InvoiceTemplate = forwardRef<HTMLDivElement, InvoiceTemplateProps>(
           </div>
         </div>
 
+        {/* Notes */}
+        {data.notes && (
+          <div className="bg-gray-50 p-3 rounded mb-4 break-words">
+            <h3 className="font-bold text-xs mb-1" style={{ color: "hsl(164,100%,25%)" }}>Notes</h3>
+            <p className="text-xs text-gray-700 whitespace-pre-line">{data.notes}</p>
+          </div>
+        )}
+
         {/* Bank Details */}
         <div className="bg-gray-50 p-3 rounded mb-4">
           <h3 className="font-bold text-xs mb-1.5" style={{ color: "hsl(164,100%,25%)" }}>Bank Details</h3>
