@@ -35,6 +35,7 @@ interface QuotationRow {
   total: number;
   status: string;
   notes: string | null;
+  doc_notes: string | null;
   project_id: string | null;
   requested_by: string | null;
   provided_by: string | null;
@@ -139,6 +140,7 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
         tax_amount: taxAmount,
         total,
         notes: form.title || null,
+        doc_notes: form.notes || null,
         project_id: form.project_id || null,
         requested_by: form.requested_by || null,
         provided_by: form.provided_by || null,
@@ -181,6 +183,7 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
         items: q.items as any,
         subtotal, tax_rate: q.tax_rate, tax_amount: taxAmount, total,
         notes: q.notes || null,
+        doc_notes: q.doc_notes || null,
         project_id: q.project_id || null,
         requested_by: q.requested_by || null,
         provided_by: q.provided_by || null,
@@ -321,7 +324,7 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
                             client_email: q.client_email || undefined,
                             items: q.items,
                             tax_rate: q.tax_rate,
-                            notes: q.notes || undefined,
+                            notes: q.doc_notes || undefined,
                             project_id: q.project_id || undefined,
                             requested_by: q.requested_by || undefined,
                             provided_by: q.provided_by || undefined,
@@ -353,6 +356,7 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
                 <div><Label>Date</Label><Input type="date" value={editQuotation.quotation_date} onChange={(e) => setEditQuotation({ ...editQuotation, quotation_date: e.target.value })} required /></div>
               </div>
               <div><Label>Title</Label><Input value={editQuotation.notes || ""} onChange={(e) => setEditQuotation({ ...editQuotation, notes: e.target.value })} /></div>
+              <div><Label>Notes</Label><Textarea value={editQuotation.doc_notes || ""} onChange={(e) => setEditQuotation({ ...editQuotation, doc_notes: e.target.value })} rows={3} placeholder="Additional terms or conditions (printed on the document)" /></div>
               <div className="grid grid-cols-2 gap-4">
                 <div><Label>Client Name</Label><Input value={editQuotation.client_name} onChange={(e) => setEditQuotation({ ...editQuotation, client_name: e.target.value })} required /></div>
                 <div><Label>Client Email</Label><Input type="email" value={editQuotation.client_email || ""} onChange={(e) => setEditQuotation({ ...editQuotation, client_email: e.target.value })} /></div>
@@ -410,7 +414,8 @@ const QuotationsManagement = ({ onMakeOrderForm }: QuotationsManagementProps) =>
                 tax_rate: previewQuotation.tax_rate,
                 tax_amount: previewQuotation.tax_amount,
                 total: previewQuotation.total,
-                notes: previewQuotation.notes || undefined,
+                title: previewQuotation.notes || undefined,
+                notes: previewQuotation.doc_notes || undefined,
                 requested_by: previewQuotation.requested_by || undefined,
                 provided_by: previewQuotation.provided_by || undefined,
                 currency: previewQuotation.currency,

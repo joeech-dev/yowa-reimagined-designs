@@ -38,6 +38,7 @@ interface InvoiceRow {
   total: number;
   status: string;
   notes: string | null;
+  doc_notes: string | null;
   project_id: string | null;
   payment_date: string | null;
   payment_method: string | null;
@@ -166,6 +167,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
         tax_amount: taxAmount,
         total,
         notes: form.title || null,
+        doc_notes: form.notes || null,
         project_id: form.project_id || null,
         created_by: user.id,
         currency: form.currency,
@@ -209,6 +211,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
         tax_amount: taxAmount,
         total,
         notes: inv.notes || null,
+        doc_notes: inv.doc_notes || null,
         project_id: inv.project_id || null,
         currency: inv.currency,
       }).eq("id", inv.id);
@@ -377,6 +380,11 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                   ))}
                 </div>
 
+                <div>
+                  <Label>Notes</Label>
+                  <Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} placeholder="Payment terms or any note (printed on the invoice)" />
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label>Tax Rate (%)</Label>
@@ -478,6 +486,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                 <div><Label>Date</Label><Input type="date" value={editInvoice.invoice_date} onChange={(e) => setEditInvoice({ ...editInvoice, invoice_date: e.target.value })} required /></div>
               </div>
               <div><Label>Invoice Title</Label><Input value={editInvoice.notes || ""} onChange={(e) => setEditInvoice({ ...editInvoice, notes: e.target.value })} placeholder="e.g. Transcription of documentary interviews" /></div>
+              <div><Label>Notes</Label><Textarea value={editInvoice.doc_notes || ""} onChange={(e) => setEditInvoice({ ...editInvoice, doc_notes: e.target.value })} rows={3} placeholder="Payment terms or any note (printed on the invoice)" /></div>
               <div className="grid grid-cols-2 gap-4">
                 <div><Label>Client Name</Label><Input value={editInvoice.client_name} onChange={(e) => setEditInvoice({ ...editInvoice, client_name: e.target.value })} required /></div>
                 <div><Label>Client Email</Label><Input type="email" value={editInvoice.client_email || ""} onChange={(e) => setEditInvoice({ ...editInvoice, client_email: e.target.value })} /></div>
@@ -546,6 +555,7 @@ const InvoicesManagement = ({ receiptMode, prefill, onPrefillConsumed }: Invoice
                   tax_amount: previewInvoice.tax_amount,
                   total: previewInvoice.total,
                   title: previewInvoice.notes || undefined,
+                  notes: previewInvoice.doc_notes || undefined,
                   currency: previewInvoice.currency,
                 }} />
               ) : (
