@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const stats = [
   { value: "24h", label: "Response Time", icon: Clock },
@@ -32,6 +33,7 @@ const Contact = () => {
     email: "",
     subject: "",
     message: "",
+    marketingOptIn: false,
   });
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -60,6 +62,8 @@ const Contact = () => {
           email: formData.email.trim(),
           phone: "Not provided",
           status: "new",
+          marketing_opt_in: formData.marketingOptIn,
+          marketing_opt_in_at: formData.marketingOptIn ? new Date().toISOString() : null,
         },
       ]);
       if (leadError) console.warn("Lead note:", leadError.message);
@@ -77,8 +81,21 @@ const Contact = () => {
         })
         .catch(console.error);
 
+      // Sync to the Resend mailing audience only when consent was given
+      supabase.functions
+        .invoke("resend-sync-contact", {
+          body: {
+            email: formData.email.trim(),
+            name: formData.name.trim(),
+            service: formData.subject.trim() || null,
+            marketing_opt_in: formData.marketingOptIn,
+            is_recruitment: false,
+          },
+        })
+        .catch(console.error);
+
       setSubmitted(true);
-      setFormData({ name: "", email: "", subject: "", message: "" });
+      setFormData({ name: "", email: "", subject: "", message: "", marketingOptIn: false });
     } catch (error: unknown) {
       console.error(error);
       toast.error("Failed to send message. Please try again.");
@@ -393,6 +410,24 @@ const Contact = () => {
                           })
                         }
                       />
+                    </div>
+
+                    <div className="flex items-start gap-3 rounded-xl border border-border bg-muted/30 p-4">
+                      <Checkbox
+                        id="marketing-opt-in"
+                        checked={formData.marketingOptIn}
+                        onCheckedChange={(checked) =>
+                          setFormData({ ...formData, marketingOptIn: checked === true })
+                        }
+                        aria-label="Receive occasional updates by email"
+                      />
+                      <label
+                        htmlFor="marketing-opt-in"
+                        className="text-sm leading-relaxed text-muted-foreground cursor-pointer"
+                      >
+                        Keep me updated with occasional emails about Yowa Innovations' work, insights
+                        and offers. You can unsubscribe at any time.
+                      </label>
                     </div>
 
                     <Button
