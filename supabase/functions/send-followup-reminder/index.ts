@@ -9,6 +9,33 @@ const corsHeaders = {
 const SYSTEME_IO_API_KEY = Deno.env.get("SYSTEME_IO_API_KEY");
 const SYSTEME_IO_API_URL = "https://api.systeme.io/api";
 
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, (c) => (
+    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string
+  ));
+}
+
+function followupHtml({ name, subject, body }: { name: string; subject: string; body: string }) {
+  const paragraphs = (body || "Our team will be in touch shortly with the next steps.")
+    .split(/\n{2,}/)
+    .map((p) => `<p style="margin:0 0 16px;line-height:1.6;color:#333;">${escapeHtml(p)}</p>`)
+    .join("");
+
+  return `
+    <div style="font-family:Arial,Helvetica,sans-serif;max-width:600px;margin:0 auto;padding:24px;">
+      <h2 style="color:#007e5d;margin:0 0 20px;">${escapeHtml(subject)}</h2>
+      <p style="margin:0 0 16px;line-height:1.6;color:#333;">Hello ${escapeHtml(name)},</p>
+      ${paragraphs}
+      <p style="margin:24px 0 0;">
+        <a href="https://yowa.us/contact" style="background:#007e5d;color:#ffffff;padding:12px 22px;border-radius:6px;text-decoration:none;font-weight:600;display:inline-block;">Talk to our team</a>
+      </p>
+      <p style="color:#888;font-size:12px;margin-top:32px;line-height:1.5;">
+        Yowa Innovations, Kampala, Uganda &middot; You are receiving this because you contacted us through yowa.us.
+      </p>
+    </div>
+  `;
+}
+
 async function applyTagToContact(email: string, tagName: string) {
   if (!SYSTEME_IO_API_KEY) {
     console.error("SYSTEME_IO_API_KEY not configured");
