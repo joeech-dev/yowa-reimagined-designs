@@ -73,7 +73,9 @@ export const printDocument = (ref: HTMLDivElement | null, title: string) => {
     @page { size: A4; margin: 10mm; }
   }
   img { max-width: 100%; height: auto; }
-  table { border-collapse: collapse; width: 100%; }
+  table { border-collapse: collapse; width: 100%; table-layout: fixed; }
+  td, th { overflow-wrap: break-word; word-break: break-word; vertical-align: top; }
+  p, div, span, h1, h2, h3 { overflow-wrap: break-word; word-break: break-word; }
 </style></head><body>
 ${clone.outerHTML}
 </body></html>`);
