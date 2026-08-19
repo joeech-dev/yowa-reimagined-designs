@@ -335,6 +335,50 @@ export type Database = {
         }
         Relationships: []
       }
+      email_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          lead_id: string | null
+          metadata: Json
+          occurred_at: string
+          provider_message_id: string | null
+          recipient_email: string
+          subject: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          lead_id?: string | null
+          metadata?: Json
+          occurred_at?: string
+          provider_message_id?: string | null
+          recipient_email: string
+          subject?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          lead_id?: string | null
+          metadata?: Json
+          occurred_at?: string
+          provider_message_id?: string | null
+          recipient_email?: string
+          subject?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_events_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       expense_categories: {
         Row: {
           created_at: string
@@ -756,15 +800,19 @@ export type Database = {
           created_at: string | null
           cv_url: string | null
           email: string
+          email_status: string
           geographic_location: string | null
           id: string
           industry_type: string | null
           is_recruitment: boolean
           last_contact_date: string | null
+          marketing_opt_in: boolean
+          marketing_opt_in_at: string | null
           name: string
           national_id_url: string | null
           next_followup_date: string | null
           phone: string
+          resend_contact_id: string | null
           status: string | null
           submitted_by_id: string | null
           submitted_by_name: string | null
@@ -776,15 +824,19 @@ export type Database = {
           created_at?: string | null
           cv_url?: string | null
           email: string
+          email_status?: string
           geographic_location?: string | null
           id?: string
           industry_type?: string | null
           is_recruitment?: boolean
           last_contact_date?: string | null
+          marketing_opt_in?: boolean
+          marketing_opt_in_at?: string | null
           name: string
           national_id_url?: string | null
           next_followup_date?: string | null
           phone: string
+          resend_contact_id?: string | null
           status?: string | null
           submitted_by_id?: string | null
           submitted_by_name?: string | null
@@ -796,15 +848,19 @@ export type Database = {
           created_at?: string | null
           cv_url?: string | null
           email?: string
+          email_status?: string
           geographic_location?: string | null
           id?: string
           industry_type?: string | null
           is_recruitment?: boolean
           last_contact_date?: string | null
+          marketing_opt_in?: boolean
+          marketing_opt_in_at?: string | null
           name?: string
           national_id_url?: string | null
           next_followup_date?: string | null
           phone?: string
+          resend_contact_id?: string | null
           status?: string | null
           submitted_by_id?: string | null
           submitted_by_name?: string | null
@@ -928,24 +984,30 @@ export type Database = {
           id: string
           lead_id: string
           message_content: string | null
+          provider_message_id: string | null
           sent_at: string | null
           status: string | null
+          subject: string | null
         }
         Insert: {
           channel: string
           id?: string
           lead_id: string
           message_content?: string | null
+          provider_message_id?: string | null
           sent_at?: string | null
           status?: string | null
+          subject?: string | null
         }
         Update: {
           channel?: string
           id?: string
           lead_id?: string
           message_content?: string | null
+          provider_message_id?: string | null
           sent_at?: string | null
           status?: string | null
+          subject?: string | null
         }
         Relationships: [
           {
