@@ -82,6 +82,31 @@ const LeadsManagement = () => {
     }
   };
 
+  const createDraftProject = async (lead: Lead) => {
+    // Avoid duplicates if the lead was already turned into a project
+    const { data: existing } = await supabase
+      .from("projects")
+      .select("id")
+      .eq("lead_id", lead.id)
+      .maybeSingle();
+
+    if (existing) return;
+
+    const { error } = await supabase.from("projects").insert([{
+      title: `Draft — ${lead.name}`,
+      description: lead.industry_type ? `Interest: ${lead.industry_type}` : null,
+      client_name: lead.name,
+      client_email: lead.email,
+      client_phone: lead.phone,
+      lead_id: lead.id,
+      budget: lead.budget,
+      status: "lead" as const,
+    }]);
+
+    if (error) throw error;
+    toast.success("Draft project created — edit it in Projects");
+  };
+
   const updateLeadStatus = async (leadId: string, newStatus: string) => {
     try {
       const { error } = await supabase
@@ -94,12 +119,19 @@ const LeadsManagement = () => {
 
       if (error) throw error;
       toast.success("Lead status updated");
+
+      if (newStatus === "contacted") {
+        const lead = leads.find((l) => l.id === leadId);
+        if (lead) await createDraftProject(lead);
+      }
+
       fetchLeads();
     } catch (error) {
       console.error("Error updating lead:", error);
       toast.error("Failed to update lead");
     }
   };
+
 
   const filteredLeads = leads.filter(lead => {
     const matchesSearch = 
