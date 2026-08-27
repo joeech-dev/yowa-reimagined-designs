@@ -184,12 +184,24 @@ const ProductsManagement = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Products</h1>
-          <p className="text-muted-foreground text-sm">Manage items available for sale on your shop page.</p>
+          <p className="text-muted-foreground text-sm">Manage shop items and track orders through their stages.</p>
         </div>
         <Button onClick={openCreate}><Plus className="h-4 w-4 mr-2" />Add Product</Button>
       </div>
 
+      <Tabs defaultValue="catalog" className="w-full">
+        <TabsList>
+          <TabsTrigger value="catalog">Catalog</TabsTrigger>
+          <TabsTrigger value="orders">Orders</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="orders" className="mt-6">
+          <ProductOrdersPanel />
+        </TabsContent>
+
+        <TabsContent value="catalog" className="mt-6">
       <Card>
+
         <CardContent className="p-0">
           <Table>
             <TableHeader>
