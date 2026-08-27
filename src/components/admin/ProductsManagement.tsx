@@ -252,6 +252,10 @@ const ProductsManagement = () => {
           </Table>
         </CardContent>
       </Card>
+        </TabsContent>
+      </Tabs>
+
+
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-lg">
