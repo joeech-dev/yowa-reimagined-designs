@@ -10,8 +10,11 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ProductOrdersPanel from "./ProductOrdersPanel";
 import { Plus, Pencil, Trash2, BookOpen, Video, Camera, FileText, Package, Upload, X } from "lucide-react";
 import { toast } from "sonner";
+
 
 interface Product {
   id: string;
@@ -184,12 +187,24 @@ const ProductsManagement = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Products</h1>
-          <p className="text-muted-foreground text-sm">Manage items available for sale on your shop page.</p>
+          <p className="text-muted-foreground text-sm">Manage shop items and track orders through their stages.</p>
         </div>
         <Button onClick={openCreate}><Plus className="h-4 w-4 mr-2" />Add Product</Button>
       </div>
 
+      <Tabs defaultValue="catalog" className="w-full">
+        <TabsList>
+          <TabsTrigger value="catalog">Catalog</TabsTrigger>
+          <TabsTrigger value="orders">Orders</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="orders" className="mt-6">
+          <ProductOrdersPanel />
+        </TabsContent>
+
+        <TabsContent value="catalog" className="mt-6">
       <Card>
+
         <CardContent className="p-0">
           <Table>
             <TableHeader>
@@ -240,6 +255,10 @@ const ProductsManagement = () => {
           </Table>
         </CardContent>
       </Card>
+        </TabsContent>
+      </Tabs>
+
+
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-lg">

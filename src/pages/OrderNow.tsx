@@ -101,7 +101,39 @@ const OrderNow = () => {
     setSubmitting(true);
 
     try {
-      // Submit to systeme.io via existing edge function
+      // 1. Record the order so it can be tracked through its stages in the dashboard
+      const { error: orderError } = await supabase.from("product_orders").insert({
+        product_id: product.id,
+        product_title: product.title,
+        product_type: product.product_type,
+        customer_name: data.full_name,
+        customer_email: data.email,
+        customer_phone: data.phone || null,
+        country: data.country,
+        amount: product.price,
+        currency: product.currency,
+        status: "new",
+      });
+      if (orderError) console.error("Failed to record order:", orderError);
+
+      // 2. Notify the team immediately
+      supabase.functions.invoke("internal-notify", {
+        body: {
+          event: "order_placed",
+          data: {
+            product_title: product.title,
+            product_type: product.product_type,
+            amount: product.price,
+            currency: product.currency,
+            customer_name: data.full_name,
+            customer_email: data.email,
+            customer_phone: data.phone || "",
+            country: data.country,
+          },
+        },
+      }).catch((e) => console.warn("order notification failed:", e));
+
+      // 3. Submit to systeme.io via existing edge function
       const tags = [
         "order-form",
         `product-${product.product_type}`,
@@ -118,9 +150,10 @@ const OrderNow = () => {
         },
       });
 
-      if (res.error) throw res.error;
+      if (res.error) console.warn("systeme sync failed:", res.error);
 
       setSubmitted(true);
+
 
       // Redirect to actual payment URL after brief delay — only if it's an external URL
       const isExternalUrl = product.purchase_url &&

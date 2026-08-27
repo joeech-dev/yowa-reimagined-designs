@@ -66,6 +66,17 @@
     <priority>0.3</priority>
   </url>
   <url>
+    <loc>https://yowa.us/heroesofkampala</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://yowa.us/blog/iccd-2026-uganda-curriculum-development-conference</loc>
+    <lastmod>2026-08-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://yowa.us/blog/african-mobilities-kampala-s-kitenge-traders-in-focus</loc>
     <lastmod>2026-08-03</lastmod>
     <changefreq>weekly</changefreq>
@@ -79,19 +90,19 @@
   </url>
   <url>
     <loc>https://yowa.us/blog/how-ai-is-transforming-urban-infrastructure-research-and-documentary-production-in-africa</loc>
-    <lastmod>2026-02-21</lastmod>
+    <lastmod>2026-08-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yowa.us/blog/documentary-production-in-kampala-behind-the-scenes-of-filming-informal-transport-for-fes-uganda</loc>
-    <lastmod>2026-02-16</lastmod>
+    <lastmod>2026-08-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yowa.us/blog/uganda-triumphs-in-23-billion-railway-dispute</loc>
-    <lastmod>2026-02-02</lastmod>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -103,7 +114,7 @@
   </url>
   <url>
     <loc>https://yowa.us/blog/entebbe-kampala-expressway-controversial-road</loc>
-    <lastmod>2026-02-02</lastmod>
+    <lastmod>2026-08-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -121,13 +132,13 @@
   </url>
   <url>
     <loc>https://yowa.us/blog/building-uganda-oil-future-cosl-kingfisher-tilenga</loc>
-    <lastmod>2026-08-04</lastmod>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yowa.us/blog/youth-innovation-amidst-neglect-banda-waste-economy</loc>
-    <lastmod>2026-08-04</lastmod>
+    <lastmod>2026-08-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
