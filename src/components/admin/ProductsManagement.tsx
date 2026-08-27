@@ -10,8 +10,11 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ProductOrdersPanel from "./ProductOrdersPanel";
 import { Plus, Pencil, Trash2, BookOpen, Video, Camera, FileText, Package, Upload, X } from "lucide-react";
 import { toast } from "sonner";
+
 
 interface Product {
   id: string;
