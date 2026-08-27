@@ -156,6 +156,31 @@ function buildEmail(event: EventType, data: Record<string, string | number | nul
       return { subject, html: wrapEmail("Invoice Payment Received", body), to: ["info@yowa.us"] };
     }
 
+    case "order_placed": {
+      const price = data.amount != null && data.amount !== ""
+        ? `${String(data.currency ?? "USD")} ${Number(data.amount).toLocaleString()}`
+        : "Free / not priced";
+      const subject = `🛒 New Order: ${data.product_title ?? "Product"} — ${data.customer_name ?? "Customer"}`;
+      const body = `
+        <p style="color:#374151;font-size:14px;margin:0 0 16px;">
+          A new product order was just placed on the website. Open Products → Orders in the dashboard to move it through the stages.
+        </p>
+        <table style="width:100%;border-collapse:collapse;">
+          ${tableRow("Product", String(data.product_title ?? ""))}
+          ${tableRow("Type", String(data.product_type ?? "").replace("_", " "))}
+          ${tableRow("Price", price)}
+          ${tableRow("Customer", String(data.customer_name ?? ""))}
+          ${tableRow("Email", String(data.customer_email ?? ""))}
+          ${tableRow("Phone", String(data.customer_phone ?? "—"))}
+          ${tableRow("Country", String(data.country ?? "—"))}
+          ${tableRow("Stage", "New order")}
+        </table>
+      `;
+      return { subject, html: wrapEmail("New Product Order Received", body), to: ["info@yowa.us", "joeweh@gmail.com", "lubangakene256@gmail.com"] };
+    }
+
+
+
     default:
       return null;
   }
