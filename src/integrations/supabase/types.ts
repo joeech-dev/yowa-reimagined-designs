@@ -1156,6 +1156,71 @@ export type Database = {
         }
         Relationships: []
       }
+      product_orders: {
+        Row: {
+          amount: number | null
+          country: string | null
+          created_at: string
+          currency: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string | null
+          delivered_at: string | null
+          id: string
+          internal_notes: string | null
+          paid_at: string | null
+          product_id: string | null
+          product_title: string
+          product_type: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number | null
+          country?: string | null
+          created_at?: string
+          currency?: string
+          customer_email: string
+          customer_name: string
+          customer_phone?: string | null
+          delivered_at?: string | null
+          id?: string
+          internal_notes?: string | null
+          paid_at?: string | null
+          product_id?: string | null
+          product_title: string
+          product_type?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number | null
+          country?: string | null
+          created_at?: string
+          currency?: string
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string | null
+          delivered_at?: string | null
+          id?: string
+          internal_notes?: string | null
+          paid_at?: string | null
+          product_id?: string | null
+          product_title?: string
+          product_type?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_orders_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           created_at: string
