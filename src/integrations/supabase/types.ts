@@ -10,10 +10,37 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
+    PostgrestVersion: "14.17"
   }
   public: {
     Tables: {
+      ai_conversations: {
+        Row: {
+          created_at: string
+          id: string
+          messages: Json
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          messages?: Json
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          messages?: Json
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       attendance: {
         Row: {
           check_in: string | null
@@ -308,6 +335,50 @@ export type Database = {
         }
         Relationships: []
       }
+      email_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          lead_id: string | null
+          metadata: Json
+          occurred_at: string
+          provider_message_id: string | null
+          recipient_email: string
+          subject: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          lead_id?: string | null
+          metadata?: Json
+          occurred_at?: string
+          provider_message_id?: string | null
+          recipient_email: string
+          subject?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          lead_id?: string | null
+          metadata?: Json
+          occurred_at?: string
+          provider_message_id?: string | null
+          recipient_email?: string
+          subject?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_events_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       expense_categories: {
         Row: {
           created_at: string
@@ -545,6 +616,7 @@ export type Database = {
           created_at: string
           created_by: string
           currency: string
+          doc_notes: string | null
           due_date: string | null
           id: string
           invoice_date: string
@@ -570,6 +642,7 @@ export type Database = {
           created_at?: string
           created_by: string
           currency?: string
+          doc_notes?: string | null
           due_date?: string | null
           id?: string
           invoice_date?: string
@@ -595,6 +668,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           currency?: string
+          doc_notes?: string | null
           due_date?: string | null
           id?: string
           invoice_date?: string
@@ -729,15 +803,20 @@ export type Database = {
           created_at: string | null
           cv_url: string | null
           email: string
+          email_status: string
           geographic_location: string | null
           id: string
           industry_type: string | null
           is_recruitment: boolean
           last_contact_date: string | null
+          marketing_opt_in: boolean
+          marketing_opt_in_at: string | null
           name: string
           national_id_url: string | null
           next_followup_date: string | null
           phone: string
+          repermission_sent_at: string | null
+          resend_contact_id: string | null
           status: string | null
           submitted_by_id: string | null
           submitted_by_name: string | null
@@ -749,15 +828,20 @@ export type Database = {
           created_at?: string | null
           cv_url?: string | null
           email: string
+          email_status?: string
           geographic_location?: string | null
           id?: string
           industry_type?: string | null
           is_recruitment?: boolean
           last_contact_date?: string | null
+          marketing_opt_in?: boolean
+          marketing_opt_in_at?: string | null
           name: string
           national_id_url?: string | null
           next_followup_date?: string | null
           phone: string
+          repermission_sent_at?: string | null
+          resend_contact_id?: string | null
           status?: string | null
           submitted_by_id?: string | null
           submitted_by_name?: string | null
@@ -769,15 +853,20 @@ export type Database = {
           created_at?: string | null
           cv_url?: string | null
           email?: string
+          email_status?: string
           geographic_location?: string | null
           id?: string
           industry_type?: string | null
           is_recruitment?: boolean
           last_contact_date?: string | null
+          marketing_opt_in?: boolean
+          marketing_opt_in_at?: string | null
           name?: string
           national_id_url?: string | null
           next_followup_date?: string | null
           phone?: string
+          repermission_sent_at?: string | null
+          resend_contact_id?: string | null
           status?: string | null
           submitted_by_id?: string | null
           submitted_by_name?: string | null
@@ -901,24 +990,30 @@ export type Database = {
           id: string
           lead_id: string
           message_content: string | null
+          provider_message_id: string | null
           sent_at: string | null
           status: string | null
+          subject: string | null
         }
         Insert: {
           channel: string
           id?: string
           lead_id: string
           message_content?: string | null
+          provider_message_id?: string | null
           sent_at?: string | null
           status?: string | null
+          subject?: string | null
         }
         Update: {
           channel?: string
           id?: string
           lead_id?: string
           message_content?: string | null
+          provider_message_id?: string | null
           sent_at?: string | null
           status?: string | null
+          subject?: string | null
         }
         Relationships: [
           {
@@ -1267,6 +1362,7 @@ export type Database = {
           created_at: string
           created_by: string
           currency: string
+          doc_notes: string | null
           id: string
           items: Json
           notes: string | null
@@ -1290,6 +1386,7 @@ export type Database = {
           created_at?: string
           created_by: string
           currency?: string
+          doc_notes?: string | null
           id?: string
           items?: Json
           notes?: string | null
@@ -1313,6 +1410,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           currency?: string
+          doc_notes?: string | null
           id?: string
           items?: Json
           notes?: string | null
@@ -1947,6 +2045,7 @@ export type Database = {
           created_at: string
           created_by: string
           currency: string
+          doc_notes: string | null
           id: string
           items: Json
           notes: string | null
@@ -1970,6 +2069,7 @@ export type Database = {
           created_at?: string
           created_by: string
           currency?: string
+          doc_notes?: string | null
           id?: string
           items?: Json
           notes?: string | null
@@ -1993,6 +2093,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           currency?: string
+          doc_notes?: string | null
           id?: string
           items?: Json
           notes?: string | null
@@ -2103,6 +2204,23 @@ export type Database = {
       }
     }
     Functions: {
+      get_blog_comments_admin: {
+        Args: never
+        Returns: {
+          author_email: string
+          author_name: string
+          blog_post_id: string
+          content: string
+          created_at: string
+          id: string
+          moderated_at: string
+          moderated_by: string
+          rejection_reason: string
+          status: string
+          updated_at: string
+        }[]
+      }
+      has_any_role: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -2126,6 +2244,7 @@ export type Database = {
         Args: { _task_id: string; _user_id: string }
         Returns: boolean
       }
+      purge_old_ai_conversations: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role:
