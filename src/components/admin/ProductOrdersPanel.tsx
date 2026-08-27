@@ -62,11 +62,14 @@ const ProductOrdersPanel = () => {
   useEffect(() => { fetchOrders(); }, []);
 
   const updateStage = async (order: ProductOrder, status: string) => {
-    const patch: Record<string, string | null> = { status };
-    if (status === "paid") patch.paid_at = new Date().toISOString();
-    if (status === "delivered") patch.delivered_at = new Date().toISOString();
+    const patch = {
+      status,
+      ...(status === "paid" ? { paid_at: new Date().toISOString() } : {}),
+      ...(status === "delivered" ? { delivered_at: new Date().toISOString() } : {}),
+    };
 
     const { error } = await supabase.from("product_orders").update(patch).eq("id", order.id);
+
     if (error) { toast.error("Could not update stage"); return; }
     toast.success(`Order moved to "${ORDER_STAGES.find(s => s.value === status)?.label}"`);
     fetchOrders();
