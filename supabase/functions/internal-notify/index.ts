@@ -12,7 +12,9 @@ type EventType =
   | "requisition_approved"
   | "requisition_rejected"
   | "task_assigned"
-  | "invoice_paid";
+  | "invoice_paid"
+  | "order_placed";
+
 
 interface NotifyPayload {
   event: EventType;
