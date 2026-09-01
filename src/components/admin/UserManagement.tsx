@@ -221,7 +221,7 @@ const UserManagement = () => {
       const { data, error } = await supabase.functions.invoke("create-user", {
         headers: { Authorization: `Bearer ${session.access_token}` },
         body: { 
-          email: newEmail, 
+          email: newEmail.trim().toLowerCase(), 
           password: newPassword, 
           role: newRole,
           fullName: newFullName,
@@ -230,7 +230,7 @@ const UserManagement = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) throw new Error(await readFunctionError(error));
       if (data?.error) throw new Error(data.error);
 
       toast.success("User created successfully");
@@ -248,6 +248,7 @@ const UserManagement = () => {
       setCreating(false);
     }
   };
+
 
   const handleDeleteUser = async (userId: string) => {
     setDeletingUser(userId);
