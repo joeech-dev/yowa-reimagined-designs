@@ -279,7 +279,8 @@ const UserManagement = () => {
         body: { action: "delete", userId },
       });
 
-      if (error) throw error;
+      if (error) throw new Error(await readFunctionError(error));
+
       if (data?.error) throw new Error(data.error);
 
       toast.success("User deleted successfully");
