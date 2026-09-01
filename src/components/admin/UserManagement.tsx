@@ -26,7 +26,25 @@ interface UserWithRole {
   team_board_order: number;
 }
 
+/** Edge functions report failures as "non-2xx"; read the real message from the response body. */
+export const readFunctionError = async (error: any): Promise<string> => {
+  try {
+    const ctx = error?.context;
+    if (ctx?.text) {
+      const raw = await ctx.text();
+      try {
+        const parsed = JSON.parse(raw);
+        return parsed.error || parsed.message || raw;
+      } catch {
+        return raw || error?.message || "Unknown error";
+      }
+    }
+  } catch { /* fall through */ }
+  return error?.message || "Unknown error";
+};
+
 const ROLE_OPTIONS = [
+
   { value: "super_admin", label: "Super Admin" },
   { value: "admin", label: "Admin" },
   { value: "finance", label: "Finance" },
@@ -221,7 +239,7 @@ const UserManagement = () => {
       const { data, error } = await supabase.functions.invoke("create-user", {
         headers: { Authorization: `Bearer ${session.access_token}` },
         body: { 
-          email: newEmail, 
+          email: newEmail.trim().toLowerCase(), 
           password: newPassword, 
           role: newRole,
           fullName: newFullName,
@@ -230,7 +248,7 @@ const UserManagement = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) throw new Error(await readFunctionError(error));
       if (data?.error) throw new Error(data.error);
 
       toast.success("User created successfully");
@@ -249,6 +267,7 @@ const UserManagement = () => {
     }
   };
 
+
   const handleDeleteUser = async (userId: string) => {
     setDeletingUser(userId);
     try {
@@ -260,7 +279,8 @@ const UserManagement = () => {
         body: { action: "delete", userId },
       });
 
-      if (error) throw error;
+      if (error) throw new Error(await readFunctionError(error));
+
       if (data?.error) throw new Error(data.error);
 
       toast.success("User deleted successfully");

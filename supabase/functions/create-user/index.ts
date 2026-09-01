@@ -98,29 +98,70 @@ serve(async (req) => {
       });
     }
 
+    const normalizedEmail = String(email).trim().toLowerCase();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(normalizedEmail)) {
+      return new Response(JSON.stringify({ error: "Please enter a valid email address" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (String(password).length < 6) {
+      return new Response(JSON.stringify({ error: "Password must be at least 6 characters" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Friendly duplicate check before hitting the auth admin API
+    const { data: existingList } = await adminClient.auth.admin.listUsers({ page: 1, perPage: 1000 });
+    const duplicate = existingList?.users?.find((u) => u.email?.toLowerCase() === normalizedEmail);
+    if (duplicate) {
+      return new Response(
+        JSON.stringify({ error: `A user with the email ${normalizedEmail} already exists` }),
+        { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
     // Create the user with service role
     const { data: newUser, error: createError } = await adminClient.auth.admin.createUser({
-      email,
+      email: normalizedEmail,
       password,
       email_confirm: true,
       user_metadata: { full_name: fullName || "" },
     });
 
-    if (createError) throw createError;
+    if (createError) {
+      console.error("createUser failed:", createError.message);
+      return new Response(JSON.stringify({ error: createError.message }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
-    // Assign role
+    // Assign role (idempotent — the signup trigger may already have added one)
     const { error: roleInsertError } = await adminClient
       .from("user_roles")
-      .insert({ user_id: newUser.user.id, role });
+      .upsert({ user_id: newUser.user.id, role }, { onConflict: "user_id,role" });
 
-    if (roleInsertError) throw roleInsertError;
+    if (roleInsertError) {
+      console.error("role assignment failed:", roleInsertError.message);
+      return new Response(
+        JSON.stringify({ error: `User created but role assignment failed: ${roleInsertError.message}` }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    // Ensure a profile row exists with the given name
+    await adminClient
+      .from("profiles")
+      .upsert({ user_id: newUser.user.id, full_name: fullName || null }, { onConflict: "user_id" });
 
     // Create team member if category provided
     if (teamCategory && ["employee", "freelancer", "trainee"].includes(teamCategory)) {
       const { error: teamError } = await adminClient
         .from("team_members")
         .insert({
-          full_name: fullName || email,
+          full_name: fullName || normalizedEmail,
           role: teamRole || role,
           category: teamCategory,
         });
@@ -130,11 +171,12 @@ serve(async (req) => {
       }
     }
 
-    return new Response(JSON.stringify({ success: true, user: { id: newUser.user.id, email } }), {
+    return new Response(JSON.stringify({ success: true, user: { id: newUser.user.id, email: normalizedEmail } }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error("create-user error:", error);
+    return new Response(JSON.stringify({ error: (error as Error).message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
