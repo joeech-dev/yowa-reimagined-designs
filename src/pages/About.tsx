@@ -188,20 +188,20 @@ const About = () => {
                           className="w-full h-full object-cover group-hover:scale-105 transition-smooth"
                         />
                       ) : (
-                        <Avatar className="h-32 w-32">
-                          <AvatarFallback className="text-3xl">
+                        <Avatar className="h-16 w-16">
+                          <AvatarFallback className="text-xl">
                             {getInitials(member.full_name || "?")}
                           </AvatarFallback>
                         </Avatar>
                       )}
                     </div>
-                    <div className="p-6 text-center">
-                      <h3 className="font-display font-semibold text-lg mb-1">{member.full_name}</h3>
-                      <p className="text-sm text-muted-foreground mb-3">{member.position}</p>
+                    <div className="p-3 text-center">
+                      <h3 className="font-display font-semibold text-sm mb-0.5 leading-tight">{member.full_name}</h3>
+                      <p className="text-xs text-muted-foreground mb-2 leading-snug">{member.position}</p>
                       {member.linkedin_url && (
-                        <Button variant="outline" size="sm" asChild className="gap-2">
-                          <a href={member.linkedin_url} target="_blank" rel="noopener noreferrer">
-                            <Linkedin className="h-4 w-4" />
+                        <Button variant="outline" size="sm" asChild className="gap-1 h-7 px-2 text-xs">
+                          <a href={member.linkedin_url} target="_blank" rel="noopener noreferrer" aria-label={`${member.full_name ?? "Team member"} on LinkedIn`}>
+                            <Linkedin className="h-3.5 w-3.5" />
                             LinkedIn
                           </a>
                         </Button>
