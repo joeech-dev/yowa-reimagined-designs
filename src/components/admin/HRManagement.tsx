@@ -83,6 +83,8 @@ const RecruitmentTab = () => {
   const [selectedApplicant, setSelectedApplicant] = useState<Applicant | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [syncing, setSyncing] = useState(false);
+  const autoSynced = useRef(false);
 
   useEffect(() => { fetchApplicants(); }, []);
 
@@ -93,7 +95,15 @@ const RecruitmentTab = () => {
       .eq("is_recruitment", true)
       .order("created_at", { ascending: false });
     if (error) { toast.error("Failed to load applications"); console.error(error); }
-    else setApplicants(data || []);
+    else {
+      setApplicants(data || []);
+      // Backfill: any recruit already marked Qualified but never onboarded gets an account
+      if (!autoSynced.current) {
+        autoSynced.current = true;
+        const pending = (data || []).filter((a) => a.status === "qualified");
+        if (pending.length) void syncQualified(pending as Applicant[], true);
+      }
+    }
     setLoading(false);
   };
 
@@ -104,9 +114,9 @@ const RecruitmentTab = () => {
     return "freelancer";
   };
 
-  const onboardApplicant = async (applicant: Applicant) => {
+  const onboardApplicant = async (applicant: Applicant, silent = false) => {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
+    if (!session) return false;
     try {
       const { data, error } = await supabase.functions.invoke("onboard-recruit", {
         headers: { Authorization: `Bearer ${session.access_token}` },
@@ -116,12 +126,35 @@ const RecruitmentTab = () => {
           category: categoryToTeam(applicant.industry_type),
         },
       });
-      if (error) throw error;
-      if (data?.created) toast.success(`Account created — login details emailed to ${applicant.email}`);
-      else if (data?.reason === "account_exists") toast.info("This person already has a user account");
+      if (error) throw new Error(await readFunctionError(error));
+      if (data?.error) throw new Error(data.error);
+      if (data?.created) {
+        if (!silent) toast.success(`Account created — login details emailed to ${applicant.email}`);
+        return true;
+      }
+      if (!silent && data?.reason === "account_exists") toast.info("This person already has a user account");
+      return false;
     } catch (err: any) {
-      toast.error("Could not create user account: " + (err?.message || "unknown error"));
+      if (!silent) toast.error("Could not create user account: " + (err?.message || "unknown error"));
+      else console.error("onboard-recruit failed for", applicant.email, err?.message);
+      return false;
     }
+  };
+
+  const syncQualified = async (list?: Applicant[], silent = false) => {
+    const targets = (list || applicants).filter((a) => a.status === "qualified");
+    if (!targets.length) {
+      if (!silent) toast.info("No qualified applicants to sync");
+      return;
+    }
+    setSyncing(true);
+    let created = 0;
+    for (const applicant of targets) {
+      if (await onboardApplicant(applicant, true)) created++;
+    }
+    setSyncing(false);
+    if (created > 0) toast.success(`${created} qualified applicant${created > 1 ? "s" : ""} added to Users — login details emailed`);
+    else if (!silent) toast.info("All qualified applicants already have user accounts");
   };
 
   const updateStatus = async (id: string, status: string) => {
@@ -134,6 +167,7 @@ const RecruitmentTab = () => {
     }
     fetchApplicants();
   };
+
 
   const filtered = applicants.filter(a => {
     const matchSearch = a.name.toLowerCase().includes(searchTerm.toLowerCase()) || a.email.toLowerCase().includes(searchTerm.toLowerCase());
