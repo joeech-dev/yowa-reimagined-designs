@@ -177,7 +177,7 @@ const About = () => {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
               </div>
             ) : boardMembers.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                 {boardMembers.map((member, index) => (
                   <Card key={index} className="overflow-hidden hover:shadow-warm transition-smooth group">
                     <div className="aspect-square bg-gradient-to-br from-primary/20 to-accent/20 overflow-hidden flex items-center justify-center">
