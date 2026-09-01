@@ -197,7 +197,12 @@ const RecruitmentTab = () => {
                 <SelectItem value="trainee">Trainee</SelectItem>
               </SelectContent>
             </Select>
+            <Button variant="outline" onClick={() => syncQualified()} disabled={syncing} className="gap-2">
+              <UserCheck className="h-4 w-4" />
+              {syncing ? "Syncing..." : "Sync qualified to Users"}
+            </Button>
           </div>
+
         </div>
       </CardHeader>
       <CardContent>
