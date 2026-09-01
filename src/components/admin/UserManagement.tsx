@@ -26,7 +26,25 @@ interface UserWithRole {
   team_board_order: number;
 }
 
+/** Edge functions report failures as "non-2xx"; read the real message from the response body. */
+export const readFunctionError = async (error: any): Promise<string> => {
+  try {
+    const ctx = error?.context;
+    if (ctx?.text) {
+      const raw = await ctx.text();
+      try {
+        const parsed = JSON.parse(raw);
+        return parsed.error || parsed.message || raw;
+      } catch {
+        return raw || error?.message || "Unknown error";
+      }
+    }
+  } catch { /* fall through */ }
+  return error?.message || "Unknown error";
+};
+
 const ROLE_OPTIONS = [
+
   { value: "super_admin", label: "Super Admin" },
   { value: "admin", label: "Admin" },
   { value: "finance", label: "Finance" },
