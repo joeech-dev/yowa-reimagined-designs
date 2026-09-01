@@ -97,10 +97,42 @@ const RecruitmentTab = () => {
     setLoading(false);
   };
 
+  const categoryToTeam = (industry?: string | null): "employee" | "freelancer" | "trainee" => {
+    const v = (industry || "").toLowerCase();
+    if (v.includes("employ")) return "employee";
+    if (v.includes("train")) return "trainee";
+    return "freelancer";
+  };
+
+  const onboardApplicant = async (applicant: Applicant) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    try {
+      const { data, error } = await supabase.functions.invoke("onboard-recruit", {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+        body: {
+          email: applicant.email,
+          name: applicant.name,
+          category: categoryToTeam(applicant.industry_type),
+        },
+      });
+      if (error) throw error;
+      if (data?.created) toast.success(`Account created — login details emailed to ${applicant.email}`);
+      else if (data?.reason === "account_exists") toast.info("This person already has a user account");
+    } catch (err: any) {
+      toast.error("Could not create user account: " + (err?.message || "unknown error"));
+    }
+  };
+
   const updateStatus = async (id: string, status: string) => {
     const { error } = await supabase.from("leads").update({ status }).eq("id", id);
-    if (error) toast.error("Failed to update status");
-    else { toast.success("Status updated"); fetchApplicants(); }
+    if (error) { toast.error("Failed to update status"); return; }
+    toast.success("Status updated");
+    if (status === "qualified") {
+      const applicant = applicants.find((a) => a.id === id);
+      if (applicant) await onboardApplicant(applicant);
+    }
+    fetchApplicants();
   };
 
   const filtered = applicants.filter(a => {
