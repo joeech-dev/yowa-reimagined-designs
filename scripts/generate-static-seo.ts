@@ -12,8 +12,6 @@ const BASE_URL = "https://yowa.us";
 import { SUPABASE_URL, SUPABASE_KEY } from "./env";
 import { BLOG_SLUG_ALIASES } from "../src/lib/slug";
 
-
-
 interface PageMeta {
   path: string;
   title: string;
