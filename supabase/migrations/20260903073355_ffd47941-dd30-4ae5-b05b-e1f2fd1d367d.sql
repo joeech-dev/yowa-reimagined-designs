@@ -1,0 +1,12 @@
+UPDATE public.blog_posts SET slug = 'heroes-of-kampala' WHERE id = 'be2754e2-e67e-4505-8ec4-baae10179b2a';
+UPDATE public.blog_posts SET slug = 'building-ugandas-oil-future' WHERE id = '69b17978-420a-40ce-98f2-c11ea77f2183';
+UPDATE public.blog_posts SET slug = 'urbanism-in-kampala' WHERE id = 'a91f0838-e149-43ac-98f6-f11f14ef6ca8';
+UPDATE public.blog_posts SET slug = 'banda-waste-economy' WHERE id = 'a4e03b3b-c491-4064-91ec-fc90bec441ad';
+UPDATE public.blog_posts SET slug = 'globalcorridor-sheffield' WHERE id = '72390af8-b797-44d8-9e39-929ffd95b57c';
+UPDATE public.blog_posts SET slug = 'entebbe-kampala-expressway' WHERE id = 'e8e64893-d4ff-437b-963a-bb10a104f256';
+UPDATE public.blog_posts SET slug = 'uganda-railway-dispute-win' WHERE id = '3172cb34-f315-4a50-9a54-ed658994c597';
+UPDATE public.blog_posts SET slug = 'iccd-2026-uganda' WHERE id = '6785710c-d481-4c59-b7f4-f73b7c94bb71';
+UPDATE public.blog_posts SET slug = 'kampala-kitenge-traders' WHERE id = '5fc9fd05-945f-4a27-8265-4b0cd5855ac5';
+UPDATE public.blog_posts SET slug = 'women-in-boda-boda-business' WHERE id = '1167b579-d2a1-4b84-af98-3a50bfa60685';
+UPDATE public.blog_posts SET slug = 'ai-urban-research-africa' WHERE id = '5d188c90-fb92-4621-937c-25e790305f77';
+UPDATE public.blog_posts SET slug = 'documentary-production-kampala' WHERE id = 'bccee22d-c834-4aa6-810e-8f1467396626';

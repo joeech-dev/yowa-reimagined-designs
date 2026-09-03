@@ -10,6 +10,8 @@ import { resolve } from "path";
 
 const BASE_URL = "https://yowa.us";
 import { SUPABASE_URL, SUPABASE_KEY } from "./env";
+import { BLOG_SLUG_ALIASES } from "../src/lib/slug";
+
 
 
 interface PageMeta {
@@ -106,21 +108,33 @@ async function main() {
     type: "article",
   }));
 
-  const heroesPost = blogs.find((row) => row.slug === "unsung-heroes-of-kampala-informal-social-service-providers");
-  if (!heroesPost) {
-    throw new Error("static SEO: the /heroesofkampala source post was not found");
-  }
-  blogPages.push({
-    path: "/heroesofkampala",
-    title: `${heroesPost.title} | Yowa Innovations`,
-    description: descriptionFor(heroesPost),
-    image: heroesPost.image,
-    type: "article",
-  });
-
   const template = readFileSync(resolve("dist/index.html"), "utf8");
   [...staticPages, ...blogPages].forEach((meta) => renderPage(template, meta));
-  console.log(`static SEO HTML written (${staticPages.length} static pages, ${blogPages.length} blog routes)`);
+
+  // Legacy blog URLs: canonical + instant redirect to the new short /blog/<slug> URL.
+  Object.entries(BLOG_SLUG_ALIASES).forEach(([oldSlug, newSlug]) => {
+    const target = `${BASE_URL}/blog/${newSlug}`;
+    [oldSlug.includes("-") ? `/blog/${oldSlug}` : `/${oldSlug}`].forEach((path) => {
+      const directory = resolve("dist", path.slice(1));
+      mkdirSync(directory, { recursive: true });
+      writeFileSync(
+        resolve(directory, "index.html"),
+        `<!doctype html><html lang="en"><head><meta charset="utf-8" />` +
+          `<link rel="canonical" href="${target}" />` +
+          `<meta name="robots" content="noindex, follow" />` +
+          `<meta http-equiv="refresh" content="0; url=${target}" />` +
+          `<title>Moved</title></head><body><p>This page has moved to <a href="${target}">${target}</a>.</p>` +
+          `<script>location.replace(${JSON.stringify(`/blog/${newSlug}`)})</script></body></html>\n`,
+      );
+    });
+  });
+
+  console.log(
+    `static SEO HTML written (${staticPages.length} static pages, ${blogPages.length} blog routes, ` +
+      `${Object.keys(BLOG_SLUG_ALIASES).length} legacy redirects)`,
+  );
+}
+
 }
 
 main().catch((error: unknown) => {

@@ -30,17 +30,36 @@ export const sanitizeSlug = (input: string): string =>
     .replace(/-{2,}/g, "-");
 
 /**
- * Old (unhyphenated) slugs that were already crawled, mapped to their new
- * hyphenated equivalents. SeoRedirects sends the old URL to the new one so no
- * existing search-engine equity is lost.
+ * Every previously published blog slug (old un-hyphenated root URLs and the old
+ * long hyphenated slugs) mapped to its new short slug. SeoRedirects sends the
+ * old URL to /blog/<new-slug> so no search-engine equity is lost.
  */
 export const BLOG_SLUG_ALIASES: Record<string, string> = {
-  buildingugandasoilfuture: "building-uganda-oil-future-cosl-kingfisher-tilenga",
-  youthinnovationamidstneglect: "youth-innovation-amidst-neglect-banda-waste-economy",
-  globalcorridor: "globalcorridor-rethinking-corridors-urban-life-sheffield",
-  urbanisminkampala: "urbanism-in-kampala-post-covid-transformation",
-  whytheentebbekampalaexpresswaybecameafricasmostcontroversialroad: "why-the-entebbe-kampala-expressway-became-africas-most-controversial-road",
+  // Old root-level un-hyphenated URLs
+  heroesofkampala: "heroes-of-kampala",
+  buildingugandasoilfuture: "building-ugandas-oil-future",
+  youthinnovationamidstneglect: "banda-waste-economy",
+  globalcorridor: "globalcorridor-sheffield",
+  urbanisminkampala: "urbanism-in-kampala",
+  whytheentebbekampalaexpresswaybecameafricasmostcontroversialroad: "entebbe-kampala-expressway",
+  // Old long /blog/... slugs
+  "unsung-heroes-of-kampala-informal-social-service-providers": "heroes-of-kampala",
+  "building-uganda-oil-future-cosl-kingfisher-tilenga": "building-ugandas-oil-future",
+  "urbanism-in-kampala-post-covid-transformation": "urbanism-in-kampala",
+  "youth-innovation-amidst-neglect-banda-waste-economy": "banda-waste-economy",
+  "globalcorridor-rethinking-corridors-urban-life-sheffield": "globalcorridor-sheffield",
+  "entebbe-kampala-expressway-controversial-road": "entebbe-kampala-expressway",
+  "why-the-entebbe-kampala-expressway-became-africas-most-controversial-road": "entebbe-kampala-expressway",
+  "uganda-triumphs-in-23-billion-railway-dispute": "uganda-railway-dispute-win",
+  "iccd-2026-uganda-curriculum-development-conference": "iccd-2026-uganda",
+  "african-mobilities-kampala-s-kitenge-traders-in-focus": "kampala-kitenge-traders",
+  "women-in-boda-boda-business-electric-mobility-in-uganda": "women-in-boda-boda-business",
+  "how-ai-is-transforming-urban-infrastructure-research-and-documentary-production-in-africa":
+    "ai-urban-research-africa",
+  "documentary-production-in-kampala-behind-the-scenes-of-filming-informal-transport-for-fes-uganda":
+    "documentary-production-kampala",
 };
+
 
 /**
  * Legacy root-level URLs Google still has indexed (from the old site). They used
