@@ -109,23 +109,31 @@ async function main() {
   const template = readFileSync(resolve("dist/index.html"), "utf8");
   [...staticPages, ...blogPages].forEach((meta) => renderPage(template, meta));
 
-  // Legacy blog URLs: canonical + instant redirect to the new short /blog/<slug> URL.
-  Object.entries(BLOG_SLUG_ALIASES).forEach(([oldSlug, newSlug]) => {
-    const target = `${BASE_URL}/blog/${newSlug}`;
-    [oldSlug.includes("-") ? `/blog/${oldSlug}` : `/${oldSlug}`].forEach((path) => {
-      const directory = resolve("dist", path.slice(1));
-      mkdirSync(directory, { recursive: true });
-      writeFileSync(
-        resolve(directory, "index.html"),
-        `<!doctype html><html lang="en"><head><meta charset="utf-8" />` +
-          `<link rel="canonical" href="${target}" />` +
-          `<meta name="robots" content="noindex, follow" />` +
-          `<meta http-equiv="refresh" content="0; url=${target}" />` +
-          `<title>Moved</title></head><body><p>This page has moved to <a href="${target}">${target}</a>.</p>` +
-          `<script>location.replace(${JSON.stringify(`/blog/${newSlug}`)})</script></body></html>\n`,
-      );
-    });
-  });
+  // Legacy blog URLs: real 301s via Cloudflare _redirects, plus an HTML fallback stub.
+  const redirectRules: string[] = [];
+
+  for (const [oldSlug, newSlug] of Object.entries(BLOG_SLUG_ALIASES)) {
+    const path = oldSlug.includes("-") ? "/blog/" + oldSlug : "/" + oldSlug;
+    const target = BASE_URL + "/blog/" + newSlug;
+    redirectRules.push(path + " /blog/" + newSlug + " 301");
+
+    const directory = resolve("dist", path.slice(1));
+    mkdirSync(directory, { recursive: true });
+
+    const stub = [
+      '<!doctype html><html lang="en"><head><meta charset="utf-8" />',
+      '<link rel="canonical" href="' + target + '" />',
+      '<meta name="robots" content="noindex, follow" />',
+      '<meta http-equiv="refresh" content="0; url=' + target + '" />',
+      "<title>Moved</title></head><body><p>This page has moved to ",
+      '<a href="' + target + '">' + target + "</a>.</p></body></html>\n",
+    ].join("");
+
+    writeFileSync(resolve(directory, "index.html"), stub);
+  }
+
+  writeFileSync(resolve("dist", "_redirects"), redirectRules.join("\n") + "\n");
+
 
   console.log(
     `static SEO HTML written (${staticPages.length} static pages, ${blogPages.length} blog routes, ` +
