@@ -94,7 +94,7 @@ async function main() {
   );
 
   if (!response.ok) {
-    throw new Error(`static SEO: published blog query failed (${response.status}) — refusing to publish generic blog HTML`);
+    throw new Error(`static SEO: published blog query failed (${response.status}) - refusing to publish generic blog HTML`);
   }
 
   const blogs = (await response.json()) as BlogRow[];
