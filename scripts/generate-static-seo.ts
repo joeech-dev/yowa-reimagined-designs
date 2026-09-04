@@ -55,7 +55,7 @@ const descriptionFor = (row: BlogRow) => {
   if (text.length <= 158) return text;
   const cut = text.slice(0, 158);
   const boundary = cut.lastIndexOf(" ");
-  return `${(boundary > 100 ? cut.slice(0, boundary) : cut).trim()}…`;
+  return `${(boundary > 100 ? cut.slice(0, boundary) : cut).trim()}...`;
 };
 
 function renderPage(template: string, meta: PageMeta) {
